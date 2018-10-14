@@ -8,3 +8,4 @@ content	confirmbeforedelete	jar:chrome/confirmbeforedelete.jar!/content/confirmb
 locale	confirmbeforedelete	it-IT	jar:chrome/confirmbeforedelete.jar!/locale/it-IT/confirmbeforedelete/
 locale	confirmbeforedelete	en-US	jar:chrome/confirmbeforedelete.jar!/locale/en-US/confirmbeforedelete/
 locale  confirmbeforedelete	de-DE   jar:chrome/confirmbeforedelete.jar!/locale/de-DE/confirmbeforedelete/
+locale  confirmbeforedelete	fr-FR   jar:chrome/confirmbeforedelete.jar!/locale/fr-FR/confirmbeforedelete/

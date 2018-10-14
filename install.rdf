@@ -19,13 +19,14 @@ xmlns:em="http://www.mozilla.org/2004/em-rdf#">
         </em:targetApplication>
         <em:optionsURL>chrome://confirmbeforedelete/content/CBD-options.xul</em:optionsURL>
         <em:updateURL>https://freeshell.de/~kaosmos/update.rdf</em:updateURL>
-        <em:homepageURL>https://freeshell.de/~kaosmos/index-en.html</em:homepageURL>
+        <em:homepageURL>https://github.com/caligraf/ConfirmBeforeDelete/blob/0.3.6/README.md</em:homepageURL>
         <em:file>
             <Description about="urn:mozilla:extension:file:confirmbeforedelete.jar">
                 <em:package>content/confirmbeforedelete/</em:package>
                 <em:locale>locale/en-US/confirmbeforedelete/</em:locale>
                 <em:locale>locale/it-IT/confirmbeforedelete/</em:locale>
                 <em:locale>locale/de-DE/confirmbeforedelete/</em:locale>
+                <em:locale>locale/fr-FR/confirmbeforedelete/</em:locale>
             </Description>
         </em:file>
     </Description>
