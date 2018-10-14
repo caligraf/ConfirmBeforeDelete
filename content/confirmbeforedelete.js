@@ -66,7 +66,7 @@ if (! String.trim && typeof FolderPaneController != "undefined" && typeof folder
 		switch (command)  {
 			case "cmd_delete":
 			case "button_delete":
-				if (CBD.prefs.getBoolPref("confirmbeforedelete.folders.lock")) {
+				if (CBD.prefs.getBoolPref("extensions.confirmbeforedelete.folders.lock")) {
 					alert(CBD.bundle.GetStringFromName("lockedFolder"));
 					return;
 				}
@@ -87,7 +87,7 @@ if (typeof gFolderTreeController != "undefined" && gFolderTreeController.emptyTr
 	};
 	var DeleteFolderTB3Orig = gFolderTreeController.deleteFolder;
 	gFolderTreeController.deleteFolder = function() {
-		if (CBD.prefs.getBoolPref("confirmbeforedelete.folders.lock")) {
+		if (CBD.prefs.getBoolPref("extensions.confirmbeforedelete.folders.lock")) {
 			alert(CBD.bundle.GetStringFromName("lockedFolder"));
 			return;
 		}
@@ -116,7 +116,7 @@ if (typeof MsgEmptyTrash != "undefined" && typeof MsgEmptyTrashOrig221109 == "un
 if (typeof MsgDeleteFolder != "undefined" && typeof MsgDeleteFolderOrig221109 == "undefined") {
 	var  MsgDeleteFolderOrig221109 =  MsgDeleteFolder;
 	MsgDeleteFolder = function() {
-	if (CBD.prefs.getBoolPref("confirmbeforedelete.folders.lock"))
+	if (CBD.prefs.getBoolPref("extensions.confirmbeforedelete.folders.lock"))
 		alert(CBD.bundle.GetStringFromName("lockedFolder"));
 	else if (CBD.checkforfolder())
 		MsgDeleteFolderOrig221109.apply(this,arguments);
@@ -132,7 +132,7 @@ if (typeof AbDelete != "undefined" && typeof AbDeleteOrig110807 == "undefined" &
 		var types = GetSelectedCardTypes();
 		if (types == kNothingSelected)
 			return;
-		var enableConfirm = CBD.prefs.getBoolPref("confirmbeforedelete.addressbook.enable");
+		var enableConfirm = CBD.prefs.getBoolPref("extensions.confirmbeforedelete.addressbook.enable");
 		var param = isList ? "contactyesno2": "contactyesno";
 		if (types == kCardsOnly && enableConfirm  && ! CBD.confirmbeforedelete(param) )
 			return;
@@ -147,32 +147,25 @@ var CBD = {
 
 	init : function() {
 		window.removeEventListener("load", CBD.init, false);
-		CBD.prefs =   Components.classes["@mozilla.org/preferences-service;1"].getService(Components.interfaces.nsIPrefBranch);
+		CBD.prefs = Components.classes["@mozilla.org/preferences-service;1"].getService(Components.interfaces.nsIPrefBranch);
 		var strBundleService = Components.classes["@mozilla.org/intl/stringbundle;1"].getService(Components.interfaces.nsIStringBundleService);
 		CBD.bundle = strBundleService.createBundle("chrome://confirmbeforedelete/locale/confirmbeforedelete.properties"); 
 	
 		try {
 			if (document.getElementById("folderTree")) {
-				var command = document.getElementById("folderTree").getAttribute("ondraggesture");
-				command = "if (! CBD.isFolderLocked(event)) " + command;
-				document.getElementById("folderTree").setAttribute("ondraggesture", command);
+				document.getElementById("folderTree").addEventListener("dragstart",function(event) {
+                    if (CBD.prefs.getBoolPref("extensions.confirmbeforedelete.folders.lock")) {
+                        alert(CBD.bundle.GetStringFromName("lockedFolder"));
+                        event.preventDefault();
+                    }
+                },false)
 			}
 		}
 		catch(e) {}
 	},
 
-	isFolderLocked : function(event) {
-		if (event.originalTarget.localName != "treechildren" ||
-			! CBD.prefs.getBoolPref("confirmbeforedelete.folders.lock"))
-			return false;
-		else {
-			alert(CBD.bundle.GetStringFromName("lockedFolder"));
-			return true;
-		}	
-	},
-
 	areFoldersLockedWhenEmptyingTrash : function() {
-		if (! CBD.prefs.getBoolPref("confirmbeforedelete.folders.lock"))
+		if (! CBD.prefs.getBoolPref("extensions.confirmbeforedelete.folders.lock"))
 			return false;
 		try {
 			var msgFolder = GetSelectedMsgFolders()[0];
@@ -197,7 +190,7 @@ var CBD = {
 	confirm : function(string) {
 		var prompts = Components.classes["@mozilla.org/embedcomp/prompt-service;1"]
 			.getService(Components.interfaces.nsIPromptService);
-		var canceldefault = CBD.prefs.getBoolPref("confirmbeforedelete.default.cancel");
+		var canceldefault = CBD.prefs.getBoolPref("extensions.confirmbeforedelete.default.cancel");
 		if (canceldefault)
 			// This is the prompt with "Cancel" as default
 			var flags = prompts. BUTTON_TITLE_OK     * prompts.BUTTON_POS_0 +
@@ -232,7 +225,7 @@ var CBD = {
 	checkforfolder : function() {
 		var folder = GetSelectedMsgFolders()[0];
 		var folderSubTrash = CBD.isSubTrash(folder);
-		if (folderSubTrash && CBD.prefs.getBoolPref("confirmbeforedelete.delete.enable"))
+		if (folderSubTrash && CBD.prefs.getBoolPref("extensions.confirmbeforedelete.delete.enable"))
 			return CBD.confirmbeforedelete('folderyesno');
 		else
 			return true;
@@ -240,7 +233,7 @@ var CBD = {
 
 	deleteLocked : function() {
 		try {
-			if (CBD.prefs.getBoolPref("confirmbeforedelete.delete.lock")) {
+			if (CBD.prefs.getBoolPref("extensions.confirmbeforedelete.delete.lock")) {
 				alert(CBD.bundle.GetStringFromName("deleteLocked"));
 				return true;
 			}		
@@ -255,7 +248,7 @@ var CBD = {
 			return false;
 
 		var msgFol = GetSelectedMsgFolders()[0];
-		if (! msgFol || ! CBD.prefs.getBoolPref("confirmbeforedelete.delete.enable"))
+		if (! msgFol || ! CBD.prefs.getBoolPref("extensions.confirmbeforedelete.delete.enable"))
 			return true;
 		if (isButtonDeleteWithShift)
 			return CBD.checkforshift();
@@ -279,7 +272,7 @@ var CBD = {
 			return CBD.confirmbeforedelete('mailyesno');
 		else if (folderSubTrash && isTreeFocused)
 			return CBD.confirmbeforedelete('folderyesno');
-		else if (CBD.prefs.getBoolPref("confirmbeforedelete.gotrash.enable"))	
+		else if (CBD.prefs.getBoolPref("extensions.confirmbeforedelete.gotrash.enable"))	
 			return CBD.confirmbeforedelete('gotrash');
 		else
 			return true;
@@ -300,19 +293,19 @@ var CBD = {
 		if (versionChecker.compare(appInfo.version, "2.9") >= 0)
 	                // Code for TB3
 			isTB3 = true;
-		if (type == "emptytrash" && ! CBD.areFoldersLockedWhenEmptyingTrash() && (! CBD.prefs.getBoolPref("confirmbeforedelete.emptytrash.enable") || isTB3) )
+		if (type == "emptytrash" && ! CBD.areFoldersLockedWhenEmptyingTrash() && (! CBD.prefs.getBoolPref("extensions.confirmbeforedelete.emptytrash.enable") || isTB3) )
 			return true;
 		return CBD.confirm(CBD.bundle.GetStringFromName(type));
 	},
 
 	checkforshift: function() {
-		if (CBD.prefs.getPrefType("mail.warn_on_shift_delete") > 0 || ! CBD.prefs.getBoolPref("confirmbeforedelete.shiftcanc.enable"))
+		if (CBD.prefs.getPrefType("mail.warn_on_shift_delete") > 0 || ! CBD.prefs.getBoolPref("extensions.confirmbeforedelete.shiftcanc.enable"))
 			return true;			
 		return CBD.confirmbeforedelete('mailyesno');
 	},
 	
 	checkForCalendar : function() {
-		if (! CBD.prefs.getBoolPref("confirmbeforedelete.calendar.enable"))
+		if (! CBD.prefs.getBoolPref("extensions.confirmbeforedelete.calendar.enable"))
 			return true;
 		else
 			return CBD.confirmbeforedelete('deleteCalendar');

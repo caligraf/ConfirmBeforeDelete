@@ -20,7 +20,7 @@ var CBD = {
 	confirm : function(string) {
 		var prompts = Components.classes["@mozilla.org/embedcomp/prompt-service;1"]
 			.getService(Components.interfaces.nsIPromptService);
-		var canceldefault = CBD.prefs.getBoolPref("confirmbeforedelete.default.cancel");
+		var canceldefault = CBD.prefs.getBoolPref("extensions.confirmbeforedelete.default.cancel");
 		if (canceldefault)
 			// This is the prompt with "Cancel" as default
 			var flags = prompts. BUTTON_TITLE_OK     * prompts.BUTTON_POS_0 +
@@ -38,11 +38,11 @@ var CBD = {
 	},
 
 	ask : function(isButtonDeleteWithShift) {
-		if (! CBD.prefs.getBoolPref("confirmbeforedelete.delete.enable"))
+		if (! CBD.prefs.getBoolPref("extensions.confirmbeforedelete.delete.enable"))
 			return true;
 		if (isButtonDeleteWithShift)
 			return CBD.checkforshift();
-		else if (CBD.prefs.getBoolPref("confirmbeforedelete.gotrash.enable"))	
+		else if (CBD.prefs.getBoolPref("extensions.confirmbeforedelete.gotrash.enable"))	
 			return CBD.confirmbeforedelete('gotrash');
 		else
 			return true;
@@ -53,7 +53,7 @@ var CBD = {
 	},
 
 	checkforshift: function() {
-		if (! CBD.prefs.getBoolPref("confirmbeforedelete.shiftcanc.enable"))
+		if (! CBD.prefs.getBoolPref("extensions.confirmbeforedelete.shiftcanc.enable"))
 			return true;
 		return CBD.confirmbeforedelete('mailyesno')
 	}
