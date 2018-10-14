@@ -1,0 +1,10 @@
+pref("confirmbeforedelete.addressbook.enable",true);
+pref("confirmbeforedelete.emptytrash.enable", true);
+pref("confirmbeforedelete.shiftcanc.enable", true);
+pref("confirmbeforedelete.delete.enable", true);
+pref("confirmbeforedelete.default.cancel", true);
+pref("confirmbeforedelete.calendar.enable", true);
+pref("confirmbeforedelete.gotrash.enable", true);
+pref("confirmbeforedelete.folders.lock", false);
+pref("confirmbeforedelete.delete.lock", false);
+pref("extensions.{51fff70c-0f33-4769-b411-67bd86836012}.description", "chrome://confirmbeforedelete/locale/confirmbeforedelete.properties");

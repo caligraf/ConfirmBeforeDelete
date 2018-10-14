@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+
+<RDF xmlns="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+xmlns:em="http://www.mozilla.org/2004/em-rdf#">
+
+	<Description about="urn:mozilla:install-manifest">
+
+		<em:id>{51fff70c-0f33-4769-b411-67bd86836012}</em:id>
+		<em:name>ConfirmBeforeDelete</em:name>
+		<em:version>0.3.5</em:version>
+		<em:description> "Ask a confirm before to delete some items"</em:description>
+		<em:creator>Paolo Kaosmos</em:creator>
+		<em:targetApplication>
+			<Description>
+				<em:id>{3550f703-e582-4d05-9a08-453d09bdfdc6}</em:id>
+				<em:minVersion>1.0</em:minVersion>
+				<em:maxVersion>45.*</em:maxVersion>
+			</Description>
+		</em:targetApplication>
+		<em:optionsURL>chrome://confirmbeforedelete/content/CBD-options.xul</em:optionsURL>
+		<em:updateURL>https://freeshell.de/~kaosmos/update.rdf</em:updateURL>
+		<em:homepageURL>https://freeshell.de/~kaosmos/index-en.html</em:homepageURL>
+ 		<em:file>
+ 			<Description about="urn:mozilla:extension:file:confirmbeforedelete.jar">
+		        <em:package>content/confirmbeforedelete/</em:package>
+                      	  <em:locale>locale/en-US/confirmbeforedelete/</em:locale>
+			  <em:locale>locale/it-IT/confirmbeforedelete/</em:locale>
+			  <em:locale>locale/de-DE/confirmbeforedelete/</em:locale>
+     			</Description>
+    		</em:file>
+	</Description>
+
+</RDF>
