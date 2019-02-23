@@ -1,7 +1,7 @@
 <!ENTITY CBDcaption "ConfirmBeforeDelete - Options">
 <!ENTITY CBDcheck1 "Enable the confirm to delete the addressbook's contacts">
 <!ENTITY CBDcheck2 "Enable the confirm to empty the trash">
-<!ENTITY CBDcheck3 "Enable the confirm to delete the messages with shift+canc">
+<!ENTITY CBDcheck3 "Enable the confirm to delete the messages with shift+del">
 <!ENTITY CBDcheck4 "Enable the confirm to delete the messages and the folders from the trash">
 <!ENTITY CBDcheck5 "OK as default action">
 <!ENTITY CBDcheck6 "Enable the confirm to delete items in calendar and agenda">

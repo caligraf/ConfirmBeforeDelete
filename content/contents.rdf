@@ -25,7 +25,7 @@ instead of those above.
     </RDF:Seq> 
 
     <RDF:Description about="urn:mozilla:package:confirmbeforedelete"
-        chrome:displayName="ConfirmBeforeDelete - 0.2.4" 
+        chrome:displayName="ConfirmBeforeDelete - 0.3.7" 
         chrome:author="Paolo Kaosmos"
         chrome:name="confirmbeforedelete"
    	chrome:extension="true"

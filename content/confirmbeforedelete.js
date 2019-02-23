@@ -299,7 +299,7 @@ var CBD = {
 	},
 
 	checkforshift: function() {
-		if (CBD.prefs.getPrefType("mail.warn_on_shift_delete") > 0 || ! CBD.prefs.getBoolPref("extensions.confirmbeforedelete.shiftcanc.enable"))
+		if (CBD.prefs.getPrefType("mail.warn_on_shift_delete") || !CBD.prefs.getBoolPref("extensions.confirmbeforedelete.shiftcanc.enable"))
 			return true;			
 		return CBD.confirmbeforedelete('mailyesno');
 	},

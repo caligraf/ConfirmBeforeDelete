@@ -7,7 +7,7 @@ xmlns:em="http://www.mozilla.org/2004/em-rdf#">
 
         <em:id>confirmbeforedelete@caligraf</em:id>
         <em:name>ConfirmBeforeDelete</em:name>
-        <em:version>0.3.6</em:version>
+        <em:version>0.3.7</em:version>
         <em:type>2</em:type>
         <em:description>Ask a confirm before to delete some items</em:description>
         <em:creator>Paolo Kaosmos</em:creator>
@@ -20,7 +20,7 @@ xmlns:em="http://www.mozilla.org/2004/em-rdf#">
             </Description>
         </em:targetApplication>
         <em:optionsURL>chrome://confirmbeforedelete/content/CBD-options.xul</em:optionsURL>
-        <em:homepageURL>https://github.com/caligraf/ConfirmBeforeDelete/blob/0.3.6/README.md</em:homepageURL>
+        <em:homepageURL>https://github.com/caligraf/ConfirmBeforeDelete/blob/0.3.7/README.md</em:homepageURL>
         <em:iconURL>chrome://confirmbeforedelete/skin/icon32x32.png</em:iconURL>
         <em:localized>
             <Description>
