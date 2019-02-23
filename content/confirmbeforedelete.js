@@ -154,7 +154,7 @@ var CBD = {
 		try {
 			if (document.getElementById("folderTree")) {
 				document.getElementById("folderTree").addEventListener("dragstart",function(event) {
-                    if (CBD.prefs.getBoolPref("extensions.confirmbeforedelete.folders.lock")) {
+                    if (CBD.prefs.getBoolPref("extensions.confirmbeforedelete.folders.lock") && event.target.id != "folderTree") {
                         alert(CBD.bundle.GetStringFromName("lockedFolder"));
                         event.preventDefault();
                     }
