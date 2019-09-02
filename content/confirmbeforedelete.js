@@ -125,7 +125,7 @@ if (typeof MsgDeleteFolder != "undefined" && typeof MsgDeleteFolderOrig221109 ==
     };
 }
 
-if (typeof AbDelete != "undefined" && typeof AbDeleteOrig110807 == "undefined" && typeof "confirmDeleteMessage" == "undefined") {
+if (typeof AbDelete != "undefined" && typeof AbDeleteOrig110807 == "undefined") {
     var AbDeleteOrig110807 = AbDelete;
     AbDelete = function () {
         var selectedDir = GetSelectedDirectory();
@@ -139,6 +139,61 @@ if (typeof AbDelete != "undefined" && typeof AbDeleteOrig110807 == "undefined" &
             return;
         AbDeleteOrig110807.apply(this, arguments);
     };
+}
+
+if (typeof gFolderTreeView != "undefined" && gFolderTreeView.drop && typeof DropInFolderTreeOrig == "undefined") {
+    var DropInFolderTreeOrig = gFolderTreeView.drop;
+    gFolderTreeView.drop = function (aRow, aOrientation) {
+        let targetFolder = gFolderTreeView._rowMap[aRow]._folder;
+        if (targetFolder.getFlag(0x00000100)) {
+            if (CBD.prefs.getBoolPref("extensions.confirmbeforedelete.delete.lock")) {
+                alert(CBD.bundle.GetStringFromName("deleteLocked"));
+            } else if (CBD.prefs.getBoolPref("extensions.confirmbeforedelete.gotrash.enable")) {
+                let dt = this._currentTransfer;
+                // we only lock drag of messages
+                let types = Array.from(dt.mozTypesAt(0));
+                if (types.includes("text/x-moz-message")) {
+                    let isMove = Cc["@mozilla.org/widget/dragservice;1"]
+                            .getService(Ci.nsIDragService).getCurrentSession()
+                            .dragAction == Ci.nsIDragService.DRAGDROP_ACTION_MOVE;
+                            
+                    if (CBD.confirmbeforedelete('gotrash')) {
+                        // copy code of folderPane.js because getCurrentSession become null after showing popup
+
+                        let count = dt.mozItemCount;
+                        let array = Cc["@mozilla.org/array;1"].createInstance(Ci.nsIMutableArray);
+
+                        let sourceFolder;
+                        let messenger = Cc["@mozilla.org/messenger;1"].createInstance(Ci.nsIMessenger);
+
+                        for (let i = 0; i < count; i++) {
+                            let msgHdr = messenger.msgHdrFromURI(dt.mozGetDataAt("text/x-moz-message", i));
+                            if (!i)
+                                sourceFolder = msgHdr.folder;
+                            array.appendElement(msgHdr);
+                        }
+                        let prefBranch = Services.prefs.getBranch("mail.");
+
+                        if (!sourceFolder.canDeleteMessages)
+                            isMove = false;
+
+                        let cs = MailServices.copy;
+                        prefBranch.setCharPref("last_msg_movecopy_target_uri", targetFolder.URI);
+                        prefBranch.setBoolPref("last_msg_movecopy_was_move", isMove);
+                        // ### ugh, so this won't work with cross-folder views. We would
+                        // really need to partition the messages by folder.
+                        cs.CopyMessages(sourceFolder, array, targetFolder, isMove, null, msgWindow, true);
+                    }
+                } else {
+                    DropInFolderTreeOrig.apply(this, arguments);
+                }
+            } else {
+                DropInFolderTreeOrig.apply(this, arguments);
+            }
+        } else {
+            DropInFolderTreeOrig.apply(this, arguments);
+        }
+    }
 }
 
 var CBD = {
@@ -159,56 +214,6 @@ var CBD = {
                     if (CBD.prefs.getBoolPref("extensions.confirmbeforedelete.folders.lock") && event.target.id != "folderTree") {
                         alert(CBD.bundle.GetStringFromName("lockedFolder"));
                         event.preventDefault();
-                    }
-                }, false);
-                folderTree.addEventListener("drop", function (event) {
-
-                    var targetFolder = gFolderTreeView.getFolderAtCoords(event.clientX, event.clientY);
-                    if (targetFolder.getFlag(0x00000100)) {
-                        if (CBD.prefs.getBoolPref("extensions.confirmbeforedelete.delete.lock")) {
-                            event.preventDefault();
-                            alert(CBD.bundle.GetStringFromName("deleteLocked"));
-                        } else if (CBD.prefs.getBoolPref("extensions.confirmbeforedelete.gotrash.enable")) {
-
-                            let dt = event.dataTransfer;
-
-                            // we only lock drag of messages
-                            let types = Array.from(dt.mozTypesAt(0));
-                            if (types.includes("text/x-moz-message")) {
-                                let isMove = Cc["@mozilla.org/widget/dragservice;1"]
-                                    .getService(Ci.nsIDragService).getCurrentSession()
-                                    .dragAction == Ci.nsIDragService.DRAGDROP_ACTION_MOVE;
-
-                                // bug: FolderTreeView.drop in FolderPane.js is still called
-                                event.preventDefault();
-                                event.stopImmediatePropagation();
-                                event.stopPropagation();
-                                let count = dt.mozItemCount;
-                                let array = Cc["@mozilla.org/array;1"].createInstance(Ci.nsIMutableArray);
-
-                                let sourceFolder;
-                                let messenger = Cc["@mozilla.org/messenger;1"].createInstance(Ci.nsIMessenger);
-
-                                for (let i = 0; i < count; i++) {
-                                    let msgHdr = messenger.msgHdrFromURI(dt.mozGetDataAt("text/x-moz-message", i));
-                                    if (!i)
-                                        sourceFolder = msgHdr.folder;
-                                    array.appendElement(msgHdr);
-                                }
-                                let prefBranch = Services.prefs.getBranch("mail.");
-
-                                if (!sourceFolder.canDeleteMessages)
-                                    isMove = false;
-                                if (CBD.confirmbeforedelete('gotrash')) {
-                                    let cs = MailServices.copy;
-                                    prefBranch.setCharPref("last_msg_movecopy_target_uri", targetFolder.URI);
-                                    prefBranch.setBoolPref("last_msg_movecopy_was_move", isMove);
-                                    // ### ugh, so this won't work with cross-folder views. We would
-                                    // really need to partition the messages by folder.
-                                    cs.CopyMessages(sourceFolder, array, targetFolder, isMove, null, msgWindow, true);
-                                }
-                            }
-                        }
                     }
                 }, false);
             }
