@@ -3,15 +3,6 @@ var TB3;
 var nativeShiftDelete;
 
 function CBDinitpanel() {
-    try {
-        var Cal = opener.document.getElementById("urn:mozilla:item:{e2fda1a4-762b-4020-b5ad-a41df1933103}");
-        if (!Cal || Cal.getAttribute("isDisabled") == "true")
-            document.getElementById("CBDoption6").setAttribute("disabled", "true");
-        else
-            document.getElementById("CBDoption6").removeAttribute("disabled");
-    } catch (e) {
-        document.getElementById("CBDoption6").removeAttribute("disabled");
-    }
 
     document.getElementById("CBDoption1").checked = prefs.getBoolPref("extensions.confirmbeforedelete.addressbook.enable");
 
