@@ -9,7 +9,7 @@
     "name": "ConfirmBeforeDelete",
     "description": "Ask a confirm before to delete some items",
     "version": "1.1",
-    "homepage_url": "https://github.com/caligraf/ConfirmBeforeDelete/blob/0.3.7/README.md",
+    "homepage_url": "https://github.com/caligraf/ConfirmBeforeDelete/wiki",
     "icons": {
 		"32": "skin/icon32x32.png"
 	},
