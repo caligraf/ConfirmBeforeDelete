@@ -1,4 +1,4 @@
-const tagService = Cc["@mozilla.org/messenger/tagservice;1"].getService(Ci.nsIMsgTagService);
+
 
 if (typeof MsgMoveMessage != "undefined" && typeof MsgMoveMessageOrig1234 == "undefined") {
     var MsgMoveMessageOrig1234 = MsgMoveMessage;
@@ -143,6 +143,7 @@ if (typeof AbDelete != "undefined" && typeof AbDeleteOrig110807 == "undefined") 
     };
 }
 
+// case when message is dragged to trash
 if (typeof gFolderTreeView != "undefined" && gFolderTreeView.drop && typeof DropInFolderTreeOrig == "undefined") {
     var DropInFolderTreeOrig = gFolderTreeView.drop;
     gFolderTreeView.drop = function (aRow, aOrientation) {
@@ -150,7 +151,7 @@ if (typeof gFolderTreeView != "undefined" && gFolderTreeView.drop && typeof Drop
         if (targetFolder.getFlag(0x00000100)) { // trash flag
             if (CBD.prefs.getBoolPref("extensions.confirmbeforedelete.delete.lock")) {
                 alert(CBD.bundle.GetStringFromName("deleteLocked"));
-            } else if (CBD.prefs.getBoolPref("extensions.confirmbeforedelete.gotrash.enable")) {
+            } else if (CBD.prefs.getBoolPref("extensions.confirmbeforedelete.gotrash.enable") || CBD.prefs.getBoolPref("extensions.confirmbeforedelete.protect.enable")) {
                 let dt = this._currentTransfer;
                 // we only lock drag of messages
                 let types = Array.from(dt.mozTypesAt(0));
@@ -167,7 +168,7 @@ if (typeof gFolderTreeView != "undefined" && gFolderTreeView.drop && typeof Drop
                             let msgHdr = messenger.msgHdrFromURI(dt.mozGetDataAt("text/x-moz-message", i));
                             let keyw = msgHdr.getStringProperty("keywords");
                             if (gFolderDisplay.selectedMessages[i].getStringProperty("keywords").indexOf(tagKey) != -1) {
-                                var tagName = tagService.getTagForKey(tagKey);
+                                var tagName = CBD.tagService.getTagForKey(tagKey);
                                 alert(CBD.bundle.GetStringFromName("deleteTagLocked1") + " " + tagName + " " + CBD.bundle.GetStringFromName("deleteTagLocked2"));
                                 return;
                             }
@@ -217,12 +218,14 @@ var CBD = {
 
     prefs: null,
     bundle: null,
+    tagService: null,
 
     init: function () {
         window.removeEventListener("load", CBD.init, false);
         CBD.prefs = Components.classes["@mozilla.org/preferences-service;1"].getService(Components.interfaces.nsIPrefBranch);
         var strBundleService = Components.classes["@mozilla.org/intl/stringbundle;1"].getService(Components.interfaces.nsIStringBundleService);
         CBD.bundle = strBundleService.createBundle("chrome://confirmbeforedelete/locale/confirmbeforedelete.properties");
+        CBD.tagService = Cc["@mozilla.org/messenger/tagservice;1"].getService(Ci.nsIMsgTagService);
 
         try {
             if (document.getElementById("folderTree")) {
@@ -314,7 +317,7 @@ var CBD = {
                 for (let i = 0; i < nbMsg; i++) {
                     let keyw = gFolderDisplay.selectedMessages[i].getStringProperty("keywords");
                     if (gFolderDisplay.selectedMessages[i].getStringProperty("keywords").indexOf(tagKey) != -1) {
-                        var tagName = tagService.getTagForKey(tagKey);
+                        var tagName = CBD.tagService.getTagForKey(tagKey);
                         alert(CBD.bundle.GetStringFromName("deleteTagLocked1") + " " + tagName + " " + CBD.bundle.GetStringFromName("deleteTagLocked2"));
                         return true;
                     }
