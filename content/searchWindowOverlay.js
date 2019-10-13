@@ -1,7 +1,7 @@
 var MsgDeleteSelectedMessagesOriginal = MsgDeleteSelectedMessages;
 var MsgDeleteSelectedMessages = function(aCommandType) {
 	var reallyDelete;
-	if (aCommandType == nsMsgViewCommandType.deleteNoTrash)
+	if (aCommandType == Components.interfaces.nsMsgViewCommandType.deleteNoTrash)
 		reallyDelete = CBD.ask(true);
 	else
 		reallyDelete = CBD.ask(false);
