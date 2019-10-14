@@ -1,10 +1,10 @@
 
-
+// Menu move message to trash
 if (typeof MsgMoveMessage != "undefined" && typeof MsgMoveMessageOrig1234 == "undefined") {
     var MsgMoveMessageOrig1234 = MsgMoveMessage;
     MsgMoveMessage = function (aDestFolder) {
         if (CBD.isSubTrash(aDestFolder) != 0) {
-            if (CBD.deleteLocked() || !CBD.confirmbeforedelete('mailyesno'))
+            if (CBD.deleteLocked() || !CBD.confirmbeforedelete('gotrash'))
                 return;
         }
         MsgMoveMessageOrig1234.apply(this, arguments);
@@ -40,7 +40,7 @@ if (typeof DefaultController != "undefined" && typeof defaultControllerDoCommand
     };
 }
 
-// New controller for Message Window, landed in TB9
+// case message in a new window
 if (Array.isArray && typeof MessageWindowController != "undefined" && typeof MessageWindowControllerDoCommandOrig == "undefined") {
     var MessageWindowControllerDoCommandOrig = MessageWindowController.doCommand;
     MessageWindowController.doCommand = function (command) {
@@ -144,7 +144,7 @@ if (typeof AbDelete != "undefined" && typeof AbDeleteOrig110807 == "undefined") 
 }
 
 // case when message is dragged to trash
-if (typeof gFolderTreeView != "undefined" && gFolderTreeView.drop && typeof DropInFolderTreeOrig == "undefined") {
+if (typeof gFolderTreeView != "undefined" && gFolderTreeView != null && gFolderTreeView.drop && typeof DropInFolderTreeOrig == "undefined") {
     var DropInFolderTreeOrig = gFolderTreeView.drop;
     gFolderTreeView.drop = function (aRow, aOrientation) {
         let targetFolder = gFolderTreeView._rowMap[aRow]._folder;
