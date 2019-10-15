@@ -7,7 +7,7 @@ xmlns:em="http://www.mozilla.org/2004/em-rdf#">
 
         <em:id>confirmbeforedelete@caligraf</em:id>
         <em:name>ConfirmBeforeDelete</em:name>
-        <em:version>0.3.7</em:version>
+        <em:version>0.3.8</em:version>
         <em:type>2</em:type>
         <em:description>Ask a confirm before to delete some items</em:description>
         <em:creator>Paolo Kaosmos</em:creator>
