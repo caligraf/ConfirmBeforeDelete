@@ -38,14 +38,40 @@ var CBD = {
     },
 
     ask: function (isButtonDeleteWithShift) {
-        if (!CBD.prefs.getBoolPref("extensions.confirmbeforedelete.delete.enable"))
-            return true;
-        if (isButtonDeleteWithShift)
+        if (CBD.prefs.getBoolPref("extensions.confirmbeforedelete.delete.lock")) {
+            alert(CBD.bundle.GetStringFromName("deleteLocked"));
+            return false;
+        } else if (isButtonDeleteWithShift) {
             return CBD.checkforshift();
-        else if (CBD.prefs.getBoolPref("extensions.confirmbeforedelete.gotrash.enable"))
+        }
+
+        if (CBD.prefs.getBoolPref("extensions.confirmbeforedelete.delete.enable")) {
+            let nbMsg = gFolderDisplay.selectedCount;
+            for (let i = 0; i < nbMsg; i++) {
+                if (gFolderDisplay.selectedMessages[i].folder.getFlag(0x00000100) || CBD.isSubTrash(gFolderDisplay.selectedMessages[i].folder)) {
+                    return CBD.confirmbeforedelete('mailyesno');
+                }
+            }
+        }
+
+        if (CBD.prefs.getBoolPref("extensions.confirmbeforedelete.gotrash.enable"))
             return CBD.confirmbeforedelete('gotrash');
-        else
-            return true;
+        return true;
+    },
+
+    isSubTrash: function (msgFolder) {
+        var rootFolder = msgFolder;
+        var isTrash = false;
+        while (!rootFolder.parent.isServer) {
+            rootFolder = rootFolder.parent;
+            if (rootFolder.flags & 0x00000100) {
+                isTrash = true;
+                break;
+            }
+        }
+        if (!isTrash)
+            isTrash = rootFolder.flags & 0x00000100;
+        return isTrash;
     },
 
     confirmbeforedelete: function (type) {

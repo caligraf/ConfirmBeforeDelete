@@ -2,7 +2,7 @@ if (typeof MsgMoveMessage != "undefined" && typeof MsgMoveMessageOrig1234 == "un
     var MsgMoveMessageOrig1234 = MsgMoveMessage;
     MsgMoveMessage = function (aDestFolder) {
         if (CBD.isSubTrash(aDestFolder) != 0) {
-            if (CBD.deleteLocked() || !CBD.confirmbeforedelete('mailyesno'))
+            if (CBD.deleteLocked() || !CBD.confirmbeforedelete('gotrash'))
                 return;
         }
         MsgMoveMessageOrig1234.apply(this, arguments);
@@ -125,7 +125,7 @@ if (typeof MsgDeleteFolder != "undefined" && typeof MsgDeleteFolderOrig221109 ==
     };
 }
 
-if (typeof AbDelete != "undefined" && typeof AbDeleteOrig110807 == "undefined" && typeof "confirmDeleteMessage" == "undefined") {
+if (typeof AbDelete != "undefined" && typeof AbDeleteOrig110807 == "undefined") {
     var AbDeleteOrig110807 = AbDelete;
     AbDelete = function () {
         var selectedDir = GetSelectedDirectory();
@@ -141,6 +141,61 @@ if (typeof AbDelete != "undefined" && typeof AbDeleteOrig110807 == "undefined" &
     };
 }
 
+if (typeof gFolderTreeView != "undefined" && gFolderTreeView != null && gFolderTreeView.drop && typeof DropInFolderTreeOrig == "undefined") {
+    var DropInFolderTreeOrig = gFolderTreeView.drop;
+    gFolderTreeView.drop = function (aRow, aOrientation) {
+        let targetFolder = gFolderTreeView._rowMap[aRow]._folder;
+        if (targetFolder.getFlag(0x00000100)) {
+            if (CBD.prefs.getBoolPref("extensions.confirmbeforedelete.delete.lock")) {
+                alert(CBD.bundle.GetStringFromName("deleteLocked"));
+            } else if (CBD.prefs.getBoolPref("extensions.confirmbeforedelete.gotrash.enable")) {
+                let dt = this._currentTransfer;
+                // we only lock drag of messages
+                let types = Array.from(dt.mozTypesAt(0));
+                if (types.includes("text/x-moz-message")) {
+                    let isMove = Cc["@mozilla.org/widget/dragservice;1"]
+                        .getService(Ci.nsIDragService).getCurrentSession()
+                        .dragAction == Ci.nsIDragService.DRAGDROP_ACTION_MOVE;
+
+                    if (CBD.confirmbeforedelete('gotrash')) {
+                        // copy code of folderPane.js because getCurrentSession become null after showing popup
+
+                        let count = dt.mozItemCount;
+                        let array = Cc["@mozilla.org/array;1"].createInstance(Ci.nsIMutableArray);
+
+                        let sourceFolder;
+                        let messenger = Cc["@mozilla.org/messenger;1"].createInstance(Ci.nsIMessenger);
+
+                        for (let i = 0; i < count; i++) {
+                            let msgHdr = messenger.msgHdrFromURI(dt.mozGetDataAt("text/x-moz-message", i));
+                            if (!i)
+                                sourceFolder = msgHdr.folder;
+                            array.appendElement(msgHdr);
+                        }
+                        let prefBranch = Services.prefs.getBranch("mail.");
+
+                        if (!sourceFolder.canDeleteMessages)
+                            isMove = false;
+
+                        let cs = MailServices.copy;
+                        prefBranch.setCharPref("last_msg_movecopy_target_uri", targetFolder.URI);
+                        prefBranch.setBoolPref("last_msg_movecopy_was_move", isMove);
+                        // ### ugh, so this won't work with cross-folder views. We would
+                        // really need to partition the messages by folder.
+                        cs.CopyMessages(sourceFolder, array, targetFolder, isMove, null, msgWindow, true);
+                    }
+                } else {
+                    DropInFolderTreeOrig.apply(this, arguments);
+                }
+            } else {
+                DropInFolderTreeOrig.apply(this, arguments);
+            }
+        } else {
+            DropInFolderTreeOrig.apply(this, arguments);
+        }
+    }
+}
+
 var CBD = {
 
     prefs: null,
@@ -154,7 +209,8 @@ var CBD = {
 
         try {
             if (document.getElementById("folderTree")) {
-                document.getElementById("folderTree").addEventListener("dragstart", function (event) {
+                var folderTree = document.getElementById("folderTree");
+                folderTree.addEventListener("dragstart", function (event) {
                     if (CBD.prefs.getBoolPref("extensions.confirmbeforedelete.folders.lock") && event.target.id != "folderTree") {
                         alert(CBD.bundle.GetStringFromName("lockedFolder"));
                         event.preventDefault();
@@ -246,7 +302,7 @@ var CBD = {
                 return false;
 
             var msgFol = GetSelectedMsgFolders()[0];
-            if (!msgFol || !CBD.prefs.getBoolPref("extensions.confirmbeforedelete.delete.enable"))
+            if (!msgFol)
                 return true;
             if (isButtonDeleteWithShift)
                 return CBD.checkforshift();
@@ -261,15 +317,15 @@ var CBD = {
 
             try {
                 var prefDM = "mail.server." + msgFol.server.key + ".delete_model";
-                if (!folderistrash && CBD.prefs.getPrefType(prefDM) > 0 && CBD.prefs.getIntPref(prefDM) == 2)
-                    folderistrash = true;
+                if (!folderTrash && CBD.prefs.getPrefType(prefDM) > 0 && CBD.prefs.getIntPref(prefDM) == 2)
+                    folderTrash = true;
             } catch (e) {}
 
-            if (folderTrash)
+            if (folderTrash && CBD.prefs.getBoolPref("extensions.confirmbeforedelete.delete.enable"))
                 return CBD.confirmbeforedelete('mailyesno');
-            else if (folderSubTrash && isTreeFocused)
+            else if (folderSubTrash && isTreeFocused && CBD.prefs.getBoolPref("extensions.confirmbeforedelete.delete.enable"))
                 return CBD.confirmbeforedelete('folderyesno');
-            else if (CBD.prefs.getBoolPref("extensions.confirmbeforedelete.gotrash.enable"))
+            else if (!folderTrash && CBD.prefs.getBoolPref("extensions.confirmbeforedelete.gotrash.enable"))
                 return CBD.confirmbeforedelete('gotrash');
             else
                 return true;
