@@ -356,7 +356,7 @@ var CBD = {
                 return CBD.confirmbeforedelete('mailyesno');
             else if (folderSubTrash && isTreeFocused && CBD.prefs.getBoolPref("extensions.confirmbeforedelete.delete.enable"))
                 return CBD.confirmbeforedelete('folderyesno');
-            else if (CBD.prefs.getBoolPref("extensions.confirmbeforedelete.gotrash.enable"))
+            else if (!folderTrash && CBD.prefs.getBoolPref("extensions.confirmbeforedelete.gotrash.enable"))
                 return CBD.confirmbeforedelete('gotrash');
             else
                 return true;
