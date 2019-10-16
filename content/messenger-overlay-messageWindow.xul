@@ -6,4 +6,5 @@
 <overlay id="messsenger-overlay-messageWindow"
          xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul" xmlns:html="http://www.w3.org/1999/xhtml">
     <script src="chrome://confirmbeforedelete/content/confirmbeforedelete.js"/>
+    <script type="application/x-javascript" src="chrome://confirmbeforedelete/content/CBD-common.js"/>
 </overlay>
