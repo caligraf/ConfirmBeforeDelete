@@ -22,7 +22,7 @@ messenger.WindowListener.registerWindow(
     
 messenger.WindowListener.registerWindow(
 	"chrome://messenger/content/addressbook/addressbook.xhtml",
-	"chrome://confirmbeforedelete/content/confirmbeforedelete/confirmbeforedelete.js");
+	"chrome://confirmbeforedelete/content/confirmbeforedelete/addressbook.js");
     
 messenger.WindowListener.registerWindow(
 	"chrome://messenger/content/messageWindow.xhtml",
