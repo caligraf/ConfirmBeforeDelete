@@ -1,10 +1,53 @@
+// Import any needed modules.
+var { Services } = ChromeUtils.import("resource://gre/modules/Services.jsm");
+
+// Load an additional JavaScript file.
+Services.scriptloader.loadSubScript("chrome://confirmbeforedelete/content/confirmbeforedelete/CBD-common.js", window, "UTF-8");
+
+if (!CBD)
+    var CBD = {};
+
+function onLoad(activatedWhileWindowOpen) {
+    window.CBD.init();
+    
+    // Delete message
+    if (typeof DefaultController != "undefined" && typeof defaultControllerDoCommandOrig == "undefined") {
+        var defaultControllerDoCommandOrig = DefaultController.doCommand;
+        DefaultController.doCommand = function (command) {
+            if (!this.isCommandEnabled(command))
+                return;
+            switch (command) {
+            case "button_delete":
+            case "cmd_delete":
+                if (CBD.checktrash(false))
+                    defaultControllerDoCommandOrig.apply(this, arguments);
+                break;
+            case "cmd_shiftDelete":
+                if (CBD.checktrash(true))
+                    defaultControllerDoCommandOrig.apply(this, arguments);
+                break;
+            default:
+                defaultControllerDoCommandOrig.apply(this, arguments);
+            }
+        };
+    }
+}
+
+function onUnload(deactivatedWhileWindowOpen) {
+  // Cleaning up the window UI is only needed when the
+  // add-on is being deactivated/removed while the window
+  // is still open. It can be skipped otherwise.
+  if (!deactivatedWhileWindowOpen) {
+    return
+  }
+}
 
 // Menu move message to trash
 if (typeof MsgMoveMessage != "undefined" && typeof MsgMoveMessageOrig1234 == "undefined") {
     var MsgMoveMessageOrig1234 = MsgMoveMessage;
     MsgMoveMessage = function (aDestFolder) {
-        if (CBD.isSubTrash(aDestFolder) != 0) {
-            if (CBD.deleteLocked() || !CBD.confirmbeforedelete('gotrash'))
+        if (window.CBD.isSubTrash(aDestFolder) != 0) {
+            if (CBD.deleteLocked() || !window.CBD.confirmbeforedelete ('gotrash'))
                 return;
         }
         MsgMoveMessageOrig1234.apply(this, arguments);
@@ -19,27 +62,7 @@ if (typeof calendarViewController != "undefined" && typeof calendarViewControlle
             calendarViewControllerDeleteOccurrencesOrig.apply(this, arguments);
     };
 }
-// Delete message
-if (typeof DefaultController != "undefined" && typeof defaultControllerDoCommandOrig == "undefined") {
-    var defaultControllerDoCommandOrig = DefaultController.doCommand;
-    DefaultController.doCommand = function (command) {
-        if (!this.isCommandEnabled(command))
-            return;
-        switch (command) {
-        case "button_delete":
-        case "cmd_delete":
-            if (CBD.checktrash(false))
-                defaultControllerDoCommandOrig.apply(this, arguments);
-            break;
-        case "cmd_shiftDelete":
-            if (CBD.checktrash(true))
-                defaultControllerDoCommandOrig.apply(this, arguments);
-            break;
-        default:
-            defaultControllerDoCommandOrig.apply(this, arguments);
-        }
-    };
-}
+
 
 // case message in a new window
 if (Array.isArray && typeof MessageWindowController != "undefined" && typeof MessageWindowControllerDoCommandOrig == "undefined") {
@@ -72,8 +95,8 @@ if (typeof gFolderTreeController != "undefined" && gFolderTreeController.emptyTr
     };
     var DeleteFolderTB3Orig = gFolderTreeController.deleteFolder;
     gFolderTreeController.deleteFolder = function () {
-        if (CBD.prefs.getBoolPref("extensions.confirmbeforedelete.folders.lock")) {
-            alert(CBD.bundle.GetStringFromName("lockedFolder"));
+        if (window.CBD.prefs.getBoolPref("extensions.confirmbeforedelete.folders.lock")) {
+            window.alert(window.CBD.bundle.GetStringFromName("lockedFolder"));
             return;
         }
         if (CBD.checkforfolder())
@@ -90,9 +113,9 @@ if (typeof AbDelete != "undefined" && typeof AbDeleteOrig110807 == "undefined") 
             var types = GetSelectedCardTypes();
         if (types == kNothingSelected)
             return;
-        var enableConfirm = CBD.prefs.getBoolPref("extensions.confirmbeforedelete.addressbook.enable");
+        var enableConfirm = window.CBD.prefs.getBoolPref("extensions.confirmbeforedelete.addressbook.enable");
         var param = isList ? "contactyesno2" : "contactyesno";
-        if (types == kCardsOnly && enableConfirm && !CBD.confirmbeforedelete(param))
+        if (types == kCardsOnly && enableConfirm && !window.CBD.confirmbeforedelete (param))
             return;
         AbDeleteOrig110807.apply(this, arguments);
     };
@@ -104,9 +127,9 @@ if (typeof gFolderTreeView != "undefined" && gFolderTreeView != null && gFolderT
     gFolderTreeView.drop = function (aRow, aOrientation) {
         let targetFolder = gFolderTreeView._rowMap[aRow]._folder;
         if (targetFolder.getFlag(0x00000100)) { // trash flag
-            if (CBD.prefs.getBoolPref("extensions.confirmbeforedelete.delete.lock")) {
-                alert(CBD.bundle.GetStringFromName("deleteLocked"));
-            } else if (CBD.prefs.getBoolPref("extensions.confirmbeforedelete.gotrash.enable") || CBD.prefs.getBoolPref("extensions.confirmbeforedelete.protect.enable")) {
+            if (window.CBD.prefs.getBoolPref("extensions.confirmbeforedelete.delete.lock")) {
+                window.alert(window.CBD.bundle.GetStringFromName("deleteLocked"));
+            } else if (window.CBD.prefs.getBoolPref("extensions.confirmbeforedelete.gotrash.enable") || window.CBD.prefs.getBoolPref("extensions.confirmbeforedelete.protect.enable")) {
                 let dt = this._currentTransfer;
                 // we only lock drag of messages
                 let types = Array.from(dt.mozTypesAt(0));
@@ -115,22 +138,22 @@ if (typeof gFolderTreeView != "undefined" && gFolderTreeView != null && gFolderT
                         .getService(Ci.nsIDragService).getCurrentSession()
                         .dragAction == Ci.nsIDragService.DRAGDROP_ACTION_MOVE;
 
-                    if (CBD.prefs.getBoolPref("extensions.confirmbeforedelete.protect.enable")) {
-                        let tagKey = CBD.prefs.getCharPref("extensions.confirmbeforedelete.protect.tag");
+                    if (window.CBD.prefs.getBoolPref("extensions.confirmbeforedelete.protect.enable")) {
+                        let tagKey = window.CBD.prefs.getCharPref("extensions.confirmbeforedelete.protect.tag");
                         let nbMsg = dt.mozItemCount;
                         let messenger = Cc["@mozilla.org/messenger;1"].createInstance(Ci.nsIMessenger);
                         for (let i = 0; i < nbMsg; i++) {
                             let msgHdr = messenger.msgHdrFromURI(dt.mozGetDataAt("text/x-moz-message", i));
                             let keyw = msgHdr.getStringProperty("keywords");
-                            if (gFolderDisplay.selectedMessages[i].getStringProperty("keywords").indexOf(tagKey) != -1) {
-                                var tagName = CBD.tagService.getTagForKey(tagKey);
-                                alert(CBD.bundle.GetStringFromName("deleteTagLocked1") + " " + tagName + " " + CBD.bundle.GetStringFromName("deleteTagLocked2"));
+                            if (window.gFolderDisplay.selectedMessages[i].getStringProperty("keywords").indexOf(tagKey) != -1) {
+                                var tagName = window.CBD.tagService.getTagForKey(tagKey);
+                                window.alert(window.CBD.bundle.GetStringFromName("deleteTagLocked1") + " " + tagName + " " + window.CBD.bundle.GetStringFromName("deleteTagLocked2"));
                                 return;
                             }
                         }
                     }
 
-                    if (CBD.confirmbeforedelete('gotrash')) {
+                    if (window.CBD.confirmbeforedelete ('gotrash')) {
                         // copy code of folderPane.js because getCurrentSession become null after showing popup
 
                         let count = dt.mozItemCount;
@@ -169,14 +192,11 @@ if (typeof gFolderTreeView != "undefined" && gFolderTreeView != null && gFolderT
     }
 }
 
-if (!CBD)
-    var CBD = {};
-
 CBD.areFoldersLockedWhenEmptyingTrash = function () {
-    if (!CBD.prefs.getBoolPref("extensions.confirmbeforedelete.folders.lock"))
+    if (!window.CBD.prefs.getBoolPref("extensions.confirmbeforedelete.folders.lock"))
         return false;
     try {
-        var msgFolder = GetSelectedMsgFolders()[0];
+        var msgFolder = window.GetSelectedMsgFolders()[0];
         if (msgFolder) {
             var rootFolder = msgFolder.rootFolder;
             var len = {};
@@ -186,7 +206,7 @@ CBD.areFoldersLockedWhenEmptyingTrash = function () {
                 // TB3 syntax
                 var trashFolder = msgFolder.getFolderWithFlags(0x00000100);
             if (trashFolder && trashFolder.hasSubFolders) {
-                alert(CBD.bundle.GetStringFromName("cantEmptyTrash") + CBD.bundle.GetStringFromName("lockedFolder"));
+                window.alert(window.CBD.bundle.GetStringFromName("cantEmptyTrash") + window.CBD.bundle.GetStringFromName("lockedFolder"));
                 return true;
             }
         }
@@ -195,32 +215,34 @@ CBD.areFoldersLockedWhenEmptyingTrash = function () {
 }
 
 CBD.checkforfolder = function () {
-    var folder = GetSelectedMsgFolders()[0];
-    var folderSubTrash = CBD.isSubTrash(folder);
-    if (folderSubTrash && CBD.prefs.getBoolPref("extensions.confirmbeforedelete.delete.enable"))
-        return CBD.confirmbeforedelete('folderyesno');
+    var folder = window.GetSelectedMsgFolders()[0];
+    var folderSubTrash = window.CBD.isSubTrash(folder);
+    if (folderSubTrash && window.CBD.prefs.getBoolPref("extensions.confirmbeforedelete.delete.enable"))
+        return window.CBD.confirmbeforedelete ('folderyesno');
     else
         return true;
 }
 
 CBD.deleteLocked = function () {
     try {
-        if (CBD.prefs.getBoolPref("extensions.confirmbeforedelete.delete.lock")) {
-            alert(CBD.bundle.GetStringFromName("deleteLocked"));
+        if (window.CBD.prefs.getBoolPref("extensions.confirmbeforedelete.delete.lock")) {
+            window.alert(window.CBD.bundle.GetStringFromName("deleteLocked"));
             return true;
-        } else if (CBD.prefs.getBoolPref("extensions.confirmbeforedelete.protect.enable")) {
-            let tagKey = CBD.prefs.getCharPref("extensions.confirmbeforedelete.protect.tag");
-            let nbMsg = gFolderDisplay.selectedCount;
+        } else if (window.CBD.prefs.getBoolPref("extensions.confirmbeforedelete.protect.enable")) {
+            let tagKey = window.CBD.prefs.getCharPref("extensions.confirmbeforedelete.protect.tag");
+            let nbMsg = window.gFolderDisplay.selectedCount;
             for (let i = 0; i < nbMsg; i++) {
-                let keyw = gFolderDisplay.selectedMessages[i].getStringProperty("keywords");
-                if (gFolderDisplay.selectedMessages[i].getStringProperty("keywords").indexOf(tagKey) != -1) {
-                    var tagName = CBD.tagService.getTagForKey(tagKey);
-                    alert(CBD.bundle.GetStringFromName("deleteTagLocked1") + " " + tagName + " " + CBD.bundle.GetStringFromName("deleteTagLocked2"));
+                let keyw = window.gFolderDisplay.selectedMessages[i].getStringProperty("keywords");
+                if (window.gFolderDisplay.selectedMessages[i].getStringProperty("keywords").indexOf(tagKey) != -1) {
+                    var tagName = window.CBD.tagService.getTagForKey(tagKey);
+                    window.alert(window.CBD.bundle.GetStringFromName("deleteTagLocked1") + " " + tagName + " " + window.CBD.bundle.GetStringFromName("deleteTagLocked2"));
                     return true;
                 }
             }
         }
-    } catch (e) {}
+    } catch (e) {
+        window.alert(e);
+    }
     return false;
 }
 
@@ -229,14 +251,14 @@ CBD.checktrash = function (isButtonDeleteWithShift) {
         if (CBD.deleteLocked())
             return false;
 
-        var msgFol = GetSelectedMsgFolders()[0];
+        var msgFol = window.GetSelectedMsgFolders()[0];
         if (!msgFol)
             return true;
         if (isButtonDeleteWithShift)
-            return CBD.checkforshift();
+            return window.CBD.checkforshift();
 
         var folderTrash = (msgFol.flags & 0x00000100);
-        var folderSubTrash = CBD.isSubTrash(msgFol);
+        var folderSubTrash = window.CBD.isSubTrash(msgFol);
         var isTreeFocused = false;
 
         if (document.getElementById("folderTree") &&
@@ -245,26 +267,26 @@ CBD.checktrash = function (isButtonDeleteWithShift) {
 
         try {
             var prefDM = "mail.server." + msgFol.server.key + ".delete_model";
-            if (!folderTrash && CBD.prefs.getPrefType(prefDM) > 0 && CBD.prefs.getIntPref(prefDM) == 2)
+            if (!folderTrash && window.CBD.prefs.getPrefType(prefDM) > 0 && window.CBD.prefs.getIntPref(prefDM) == 2)
                 folderTrash = true;
         } catch (e) {}
 
-        if (folderTrash && CBD.prefs.getBoolPref("extensions.confirmbeforedelete.delete.enable"))
-            return CBD.confirmbeforedelete('mailyesno');
-        else if (folderSubTrash && isTreeFocused && CBD.prefs.getBoolPref("extensions.confirmbeforedelete.delete.enable"))
-            return CBD.confirmbeforedelete('folderyesno');
-        else if (!folderTrash && CBD.prefs.getBoolPref("extensions.confirmbeforedelete.gotrash.enable"))
-            return CBD.confirmbeforedelete('gotrash');
+        if (folderTrash && window.CBD.prefs.getBoolPref("extensions.confirmbeforedelete.delete.enable"))
+            return window.CBD.confirmbeforedelete ('mailyesno');
+        else if (folderSubTrash && isTreeFocused && window.CBD.prefs.getBoolPref("extensions.confirmbeforedelete.delete.enable"))
+            return window.CBD.confirmbeforedelete ('folderyesno');
+        else if (!folderTrash && window.CBD.prefs.getBoolPref("extensions.confirmbeforedelete.gotrash.enable"))
+            return window.CBD.confirmbeforedelete ('gotrash');
         else
             return true;
     } catch (e) {
-        alert(e)
+        window.alert(e)
     }
 }
 
 CBD.checkForCalendar = function () {
-    if (!CBD.prefs.getBoolPref("extensions.confirmbeforedelete.calendar.enable"))
+    if (!window.CBD.prefs.getBoolPref("extensions.confirmbeforedelete.calendar.enable"))
         return true;
     else
-        return CBD.confirmbeforedelete('deleteCalendar');
+        return window.CBD.confirmbeforedelete ('deleteCalendar');
 }

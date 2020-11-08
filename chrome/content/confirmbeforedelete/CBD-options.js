@@ -53,6 +53,11 @@ function CBDinitpanel() {
     }
 }
 
+
+function onLoad(activatedWhileWindowOpen) {
+    CBDinitpanel();
+}
+
 function toggleTag(el) {
     var taglist = document.getElementById("taglist");
     if (el.checked) {

@@ -1,9 +1,12 @@
+if (!CBD)
+    var CBD = {};
+
 CBD.prefs = null;
 CBD.bundle = null;
 CBD.tagService = null;
 
 CBD.init = function () {
-    window.removeEventListener("load", CBD.init, false);
+    //window.removeEventListener("load", CBD.init, false);
     CBD.prefs = Components.classes["@mozilla.org/preferences-service;1"].getService(Components.interfaces.nsIPrefBranch);
     var strBundleService = Components.classes["@mozilla.org/intl/stringbundle;1"].getService(Components.interfaces.nsIStringBundleService);
     CBD.bundle = strBundleService.createBundle("chrome://confirmbeforedelete/locale/confirmbeforedelete.properties");
@@ -14,7 +17,7 @@ CBD.init = function () {
             var folderTree = document.getElementById("folderTree");
             folderTree.addEventListener("dragstart", function (event) {
                 if (CBD.prefs.getBoolPref("extensions.confirmbeforedelete.folders.lock") && event.target.id != "folderTree") {
-                    alert(CBD.bundle.GetStringFromName("lockedFolder"));
+                    window.alert(CBD.bundle.GetStringFromName("lockedFolder"));
                     event.preventDefault();
                 }
             }, false);
@@ -59,7 +62,7 @@ CBD.isSubTrash = function (msgFolder) {
 
 CBD.confirmbeforedelete = function (type) {
     if (document.getElementById("folderTree")) {
-        if (GetSelectedMsgFolders()[0].server.type == "nntp")
+        if (window.GetSelectedMsgFolders()[0].server.type == "nntp")
             return false;
     }
     return CBD.confirm(CBD.bundle.GetStringFromName(type));
@@ -71,4 +74,4 @@ CBD.checkforshift = function () {
     return CBD.confirmbeforedelete('mailyesno');
 }
 
-window.addEventListener("load", CBD.init, false);
+//window.addEventListener("load", CBD.init, false);
