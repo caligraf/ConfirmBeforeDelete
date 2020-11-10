@@ -30,6 +30,7 @@ function CBDinitpanel() {
     document.getElementById("CBDoption9").checked = prefs.getBoolPref("extensions.confirmbeforedelete.delete.lock");
     document.getElementById("CBDoption2").checked = !(prefs.getBoolPref("mailnews.emptyTrash.dontAskAgain"));
     document.getElementById("CBDoption10").checked = prefs.getBoolPref("extensions.confirmbeforedelete.protect.enable");
+    document.getElementById("CBDoption11").checked = prefs.getBoolPref("mailnews.confirm.moveFoldersToTrash");
 
     if (document.getElementById("CBDoption9").checked) {
         document.getElementById("CBDoption3").setAttribute("disabled", "true");
@@ -37,6 +38,10 @@ function CBDinitpanel() {
         document.getElementById("CBDoption8").setAttribute("disabled", "true");
     }
 
+    if (document.getElementById("CBDoption7").checked) {
+        document.getElementById("CBDoption11").setAttribute("disabled", "true");
+    }
+    
     var taglist = document.getElementById("taglist");
     var tagpop = document.getElementById("tagpop");
     var TagKey = prefs.getCharPref("extensions.confirmbeforedelete.protect.tag");
@@ -78,18 +83,30 @@ function toggleDeleteLock(el) {
         document.getElementById("CBDoption4").setAttribute("disabled", "true");
         document.getElementById("CBDoption8").setAttribute("disabled", "true");
         document.getElementById("CBDoption10").setAttribute("disabled", "true");
+        document.getElementById("CBDoption11").setAttribute("disabled", "true");
         document.getElementById("taglist").setAttribute("disabled", "true");
     } else {
         document.getElementById("CBDoption3").removeAttribute("disabled");
         document.getElementById("CBDoption4").removeAttribute("disabled");
         document.getElementById("CBDoption8").removeAttribute("disabled");
         document.getElementById("CBDoption10").removeAttribute("disabled");
+        document.getElementById("CBDoption11").removeAttribute("disabled");
         if (document.getElementById("CBDoption10").checked) {
             let taglist = document.getElementById("taglist");
             taglist.removeAttribute("disabled");
         }
     }
 }
+
+function toggleFolderLock(el) {
+    var confirmDeleteFolder = document.getElementById("CBDoption11");
+    if (el.checked) {
+        confirmDeleteFolder.setAttribute("disabled", "true");
+    } else {
+        confirmDeleteFolder.removeAttribute("disabled");
+    }
+}
+
 
 document.addEventListener("dialogaccept", function (event) {
     prefs.setBoolPref("extensions.confirmbeforedelete.addressbook.enable", document.getElementById("CBDoption1").checked);
@@ -105,6 +122,7 @@ document.addEventListener("dialogaccept", function (event) {
     prefs.setBoolPref("extensions.confirmbeforedelete.gotrash.enable", document.getElementById("CBDoption8").checked);
     prefs.setBoolPref("extensions.confirmbeforedelete.delete.lock", document.getElementById("CBDoption9").checked);
     prefs.setBoolPref("extensions.confirmbeforedelete.protect.enable", document.getElementById("CBDoption10").checked);
+    prefs.setBoolPref("mailnews.confirm.moveFoldersToTrash", document.getElementById("CBDoption11").checked);
 
     var taglist = document.getElementById("taglist");
     prefs.setCharPref("extensions.confirmbeforedelete.protect.tag", allTags[taglist.selectedIndex].key);

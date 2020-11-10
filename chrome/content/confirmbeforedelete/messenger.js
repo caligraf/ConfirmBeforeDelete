@@ -1,5 +1,6 @@
 // Import any needed modules.
 var { Services } = ChromeUtils.import("resource://gre/modules/Services.jsm");
+var { MailServices } = ChromeUtils.import("resource:///modules/MailServices.jsm");
 
 // Load an additional JavaScript file.
 Services.scriptloader.loadSubScript("chrome://confirmbeforedelete/content/confirmbeforedelete/CBD-common.js", window, "UTF-8");
@@ -58,8 +59,9 @@ function onLoad(activatedWhileWindowOpen) {
                 window.alert(window.CBD.bundle.GetStringFromName("lockedFolder"));
                 return;
             }
-            if (CBD.checkforfolder())
-                DeleteFolderOrig.apply(this, arguments);
+            
+            //confirmation popup is in DeleteFolderOrig
+            DeleteFolderOrig.apply(this, arguments);
         };
     }
     
@@ -71,7 +73,8 @@ function onLoad(activatedWhileWindowOpen) {
             if (targetFolder.getFlag(0x00000100)) { // trash flag
                 if (window.CBD.prefs.getBoolPref("extensions.confirmbeforedelete.delete.lock")) {
                     window.alert(window.CBD.bundle.GetStringFromName("deleteLocked"));
-                } else if (window.CBD.prefs.getBoolPref("extensions.confirmbeforedelete.gotrash.enable") || window.CBD.prefs.getBoolPref("extensions.confirmbeforedelete.protect.enable")) {
+                } else if (window.CBD.prefs.getBoolPref("extensions.confirmbeforedelete.gotrash.enable") || window.CBD.prefs.getBoolPref("extensions.confirmbeforedelete.protect.enable")
+                    || window.CBD.prefs.getBoolPref("mailnews.confirm.moveFoldersToTrash") ) {
                     let dt = this._currentTransfer;
                     // we only lock drag of messages
                     let types = Array.from(dt.mozTypesAt(0));
@@ -95,34 +98,39 @@ function onLoad(activatedWhileWindowOpen) {
                             }
                         }
     
-                        if (window.CBD.confirmbeforedelete ('gotrash')) {
-                            // copy code of folderPane.js because getCurrentSession become null after showing popup
-    
-                            let count = dt.mozItemCount;
-                            let array = Cc["@mozilla.org/array;1"].createInstance(Ci.nsIMutableArray);
-    
-                            let sourceFolder;
-                            let messenger = Cc["@mozilla.org/messenger;1"].createInstance(Ci.nsIMessenger);
-    
-                            for (let i = 0; i < count; i++) {
-                                let msgHdr = messenger.msgHdrFromURI(dt.mozGetDataAt("text/x-moz-message", i));
-                                if (!i)
-                                    sourceFolder = msgHdr.folder;
-                                array.appendElement(msgHdr);
+                        if (!window.CBD.prefs.getBoolPref("extensions.confirmbeforedelete.gotrash.enable")){
+                            DropInFolderTreeOrig.apply(this, arguments);
+                        } else {
+                            if( window.CBD.confirmbeforedelete('gotrash')) {
+                                // copy code of folderPane.js because getCurrentSession become null after showing popup
+                                let count = dt.mozItemCount;
+                                let array = Cc["@mozilla.org/array;1"].createInstance(Ci.nsIMutableArray);
+        
+                                let sourceFolder;
+                                let messenger = Cc["@mozilla.org/messenger;1"].createInstance(Ci.nsIMessenger);
+        
+                                for (let i = 0; i < count; i++) {
+                                    let msgHdr = messenger.msgHdrFromURI(dt.mozGetDataAt("text/x-moz-message", i));
+                                    if (!i)
+                                        sourceFolder = msgHdr.folder;
+                                    array.appendElement(msgHdr);
+                                }
+                                let prefBranch = Services.prefs.getBranch("mail.");
+        
+                                if (!sourceFolder.canDeleteMessages)
+                                    isMove = false;
+        
+                                let cs = MailServices.copy;
+                                prefBranch.setCharPref("last_msg_movecopy_target_uri", targetFolder.URI);
+                                prefBranch.setBoolPref("last_msg_movecopy_was_move", isMove);
+                                // ### ugh, so this won't work with cross-folder views. We would
+                                // really need to partition the messages by folder.
+                                cs.CopyMessages(sourceFolder, array, targetFolder, isMove, null, window.msgWindow, true);
                             }
-                            let prefBranch = Services.prefs.getBranch("mail.");
-    
-                            if (!sourceFolder.canDeleteMessages)
-                                isMove = false;
-    
-                            let cs = MailServices.copy;
-                            prefBranch.setCharPref("last_msg_movecopy_target_uri", targetFolder.URI);
-                            prefBranch.setBoolPref("last_msg_movecopy_was_move", isMove);
-                            // ### ugh, so this won't work with cross-folder views. We would
-                            // really need to partition the messages by folder.
-                            cs.CopyMessages(sourceFolder, array, targetFolder, isMove, null, msgWindow, true);
                         }
                     } else {
+                        if( window.CBD.prefs.getBoolPref("mailnews.confirm.moveFoldersToTrash") && !window.CBD.confirmbeforedelete('gotrashfolder') )
+                            return;
                         DropInFolderTreeOrig.apply(this, arguments);
                     }
                 } else {
@@ -173,15 +181,6 @@ CBD.areFoldersLockedWhenEmptyingTrash = function () {
         }
     } catch (e) {}
     return false;
-}
-
-CBD.checkforfolder = function () {
-    var folder = window.GetSelectedMsgFolders()[0];
-    var folderSubTrash = window.CBD.isSubTrash(folder);
-    if (folderSubTrash && window.CBD.prefs.getBoolPref("extensions.confirmbeforedelete.delete.enable"))
-        return window.CBD.confirmbeforedelete ('folderyesno');
-    else
-        return true;
 }
 
 CBD.checkForCalendar = function () {

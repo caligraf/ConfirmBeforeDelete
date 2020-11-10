@@ -1,4 +1,3 @@
-console.debug('background Start');
 messenger.WindowListener.registerDefaultPrefs("defaults/preferences/prefs.js")
 
 messenger.WindowListener.registerChromeUrl([ 
@@ -29,5 +28,3 @@ messenger.WindowListener.registerWindow(
 	"chrome://confirmbeforedelete/content/confirmbeforedelete/newwindow.js");
     
 messenger.WindowListener.startListening();
-
-console.debug('background End');
