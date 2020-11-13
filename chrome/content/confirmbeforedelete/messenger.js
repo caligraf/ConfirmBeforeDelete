@@ -59,9 +59,16 @@ function onLoad(activatedWhileWindowOpen) {
                 window.alert(window.CBD.bundle.GetStringFromName("lockedFolder"));
                 return;
             }
+            let folders = window.gFolderTreeView.getSelectedFolders();
+            let folder = folders[0];
             
-            //confirmation popup is in DeleteFolderOrig
-            DeleteFolderOrig.apply(this, arguments);
+            if( folder.incomingServerType == "imap" ) {
+                //confirmation popup is in DeleteFolderOrig for imap
+                DeleteFolderOrig.apply(this, arguments);
+            } else {
+                if (CBD.checkforfolder())
+                    DeleteFolderOrig.apply(this, arguments);
+            }
         };
     }
     
@@ -181,6 +188,15 @@ CBD.areFoldersLockedWhenEmptyingTrash = function () {
         }
     } catch (e) {}
     return false;
+}
+
+CBD.checkforfolder = function () {
+    var folder = window.GetSelectedMsgFolders()[0];
+    var folderSubTrash = window.CBD.isSubTrash(folder);
+    if (folderSubTrash && window.CBD.prefs.getBoolPref("extensions.confirmbeforedelete.delete.enable"))
+        return window.CBD.confirmbeforedelete ('folderyesno');
+    else
+        return true;
 }
 
 CBD.checkForCalendar = function () {
