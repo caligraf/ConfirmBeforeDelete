@@ -3,13 +3,14 @@
     "applications": {
         "gecko": {
             "id": "confirmbeforedelete@caligraf",
-            "strict_min_version": "78.0"
+            "strict_min_version": "78.0",
+            "strict_max_version": "78.*"
         }
     },
     "name": "ConfirmBeforeDelete",
     "description": "Ask a confirm before to delete some items",
     "author": "Caligraf",
-    "version": "1.5.3",
+    "version": "1.5.4",
     "homepage_url": "https://github.com/caligraf/ConfirmBeforeDelete/wiki",
     "icons": {
         "16": "skin/icon16x16.png",
