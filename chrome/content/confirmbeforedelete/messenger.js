@@ -111,7 +111,7 @@ function onLoad(activatedWhileWindowOpen) {
                             if( window.CBD.confirmbeforedelete('gotrash')) {
                                 // copy code of folderPane.js because getCurrentSession become null after showing popup
                                 let count = dt.mozItemCount;
-                                let array = Cc["@mozilla.org/array;1"].createInstance(Ci.nsIMutableArray);
+                                let array = [];
         
                                 let sourceFolder;
                                 let messenger = Cc["@mozilla.org/messenger;1"].createInstance(Ci.nsIMessenger);
@@ -120,7 +120,7 @@ function onLoad(activatedWhileWindowOpen) {
                                     let msgHdr = messenger.msgHdrFromURI(dt.mozGetDataAt("text/x-moz-message", i));
                                     if (!i)
                                         sourceFolder = msgHdr.folder;
-                                    array.appendElement(msgHdr);
+                                    array[i] = msgHdr;
                                 }
                                 let prefBranch = Services.prefs.getBranch("mail.");
         
@@ -132,7 +132,7 @@ function onLoad(activatedWhileWindowOpen) {
                                 prefBranch.setBoolPref("last_msg_movecopy_was_move", isMove);
                                 // ### ugh, so this won't work with cross-folder views. We would
                                 // really need to partition the messages by folder.
-                                cs.CopyMessages(sourceFolder, array, targetFolder, isMove, null, window.msgWindow, true);
+                                cs.copyMessages(sourceFolder, array, targetFolder, isMove, null, window.msgWindow, true);
                             }
                         }
                     } else {
