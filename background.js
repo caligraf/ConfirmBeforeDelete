@@ -18,11 +18,7 @@ messenger.WindowListener.registerWindow(
 messenger.WindowListener.registerWindow(
 	"chrome://messenger/content/SearchDialog.xhtml",
 	"chrome://confirmbeforedelete/content/confirmbeforedelete/searchWindowOverlay.js");
-    
-messenger.WindowListener.registerWindow(
-	"chrome://messenger/content/addressbook/addressbook.xhtml",
-	"chrome://confirmbeforedelete/content/confirmbeforedelete/addressbook.js");
-    
+       
 messenger.WindowListener.registerWindow(
 	"chrome://messenger/content/messageWindow.xhtml",
 	"chrome://confirmbeforedelete/content/confirmbeforedelete/newwindow.js");
