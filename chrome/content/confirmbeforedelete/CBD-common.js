@@ -12,8 +12,9 @@ CBD.init = function () {
     CBD.tagService = Cc["@mozilla.org/messenger/tagservice;1"].getService(Ci.nsIMsgTagService);
 
     try {
-        if (document.getElementById("folderTree")) {
-            var folderTree = document.getElementById("folderTree");
+        let contentWindow = window.gTabmail.tabInfo[0].chromeBrowser.contentWindow;
+        let folderTree = contentWindow.folderTree;
+        if (folderTree) {
             folderTree.addEventListener("dragstart", function (event) {
                 if (CBD.prefs.getBoolPref("extensions.confirmbeforedelete.folders.lock") && event.target.id != "folderTree") {
                     window.alert(CBD.bundle.GetStringFromName("lockedFolder"));
@@ -21,12 +22,20 @@ CBD.init = function () {
                 }
             }, false);
         }
+        if( contentWindow ) {
+            contentWindow.addEventListener("keydown", function (event) {
+                if (event.key == "Delete")  {
+                  if (!window.CBD.checktrash(false)) {
+                      event.preventDefault();
+                  }
+                }
+            }, false);
+        }
     } catch (e) {}
 },
 
 CBD.confirm = function (string) {
-    var prompts = Components.classes["@mozilla.org/embedcomp/prompt-service;1"]
-        .getService(Components.interfaces.nsIPromptService);
+    var prompts = Components.classes["@mozilla.org/prompter;1"].getService(Components.interfaces.nsIPromptService);
     var canceldefault = CBD.prefs.getBoolPref("extensions.confirmbeforedelete.default.cancel");
     if (canceldefault)
         // This is the prompt with "Cancel" as default
@@ -60,7 +69,8 @@ CBD.isSubTrash = function (msgFolder) {
 }
 
 CBD.confirmbeforedelete = function (type) {
-    if (document.getElementById("folderTree")) {
+    let folderTree = window.gTabmail.tabInfo[0].chromeBrowser.contentWindow.folderTree;
+    if (folderTree) {
         if (window.GetSelectedMsgFolders()[0].server.type == "nntp")
             return false;
     }
@@ -80,10 +90,10 @@ CBD.deleteLocked = function () {
             return true;
         } else if (window.CBD.prefs.getBoolPref("extensions.confirmbeforedelete.protect.enable")) {
             let tagKey = window.CBD.prefs.getCharPref("extensions.confirmbeforedelete.protect.tag");
-            let nbMsg = window.gFolderDisplay.selectedCount;
+            let nbMsg = window.gTabmail.currentAbout3Pane.gDBView.numSelected;
             for (let i = 0; i < nbMsg; i++) {
-                let keyw = window.gFolderDisplay.selectedMessages[i].getStringProperty("keywords");
-                if (window.gFolderDisplay.selectedMessages[i].getStringProperty("keywords").indexOf(tagKey) != -1) {
+                let keyw = window.gTabmail.currentAbout3Pane.gDBView.getSelectedMsgHdrs()[i].getStringProperty("keywords");
+                if (keyw.indexOf(tagKey) != -1) {
                     var tagName = window.CBD.tagService.getTagForKey(tagKey);
                     window.alert(window.CBD.bundle.GetStringFromName("deleteTagLocked1") + " " + tagName + " " + window.CBD.bundle.GetStringFromName("deleteTagLocked2"));
                     return true;
@@ -111,8 +121,8 @@ CBD.checktrash = function (isButtonDeleteWithShift) {
         var folderSubTrash = window.CBD.isSubTrash(msgFol);
         var isTreeFocused = false;
 
-        if (document.getElementById("folderTree") &&
-            document.getElementById("folderTree").getAttribute("focusring") == "true")
+        let folderTree = window.gTabmail.tabInfo[0].chromeBrowser.contentWindow.folderTree;
+        if (folderTree && folderTree.getAttribute("focusring") == "true")
             isTreeFocused = true;
 
         try {
