@@ -13,23 +13,33 @@ CBD.init = function () {
 
     try {
         let contentWindow = window.gTabmail.tabInfo[0].chromeBrowser.contentWindow;
-        let folderTree = contentWindow.folderTree;
-        if (folderTree) {
-            folderTree.addEventListener("dragstart", function (event) {
-                if (CBD.prefs.getBoolPref("extensions.confirmbeforedelete.folders.lock") && event.target.id != "folderTree") {
-                    window.alert(CBD.bundle.GetStringFromName("lockedFolder"));
-                    event.preventDefault();
-                }
-            }, false);
-        }
         if( contentWindow ) {
             contentWindow.addEventListener("keydown", function (event) {
                 if (event.key == "Delete")  {
-                  if (!window.CBD.checktrash(false)) {
-                      event.preventDefault();
-                  }
+                    if (!window.CBD.checktrash(event.shiftKey)) {
+                       event.preventDefault();
+                    }
                 }
             }, false);
+            
+            let folderTree = contentWindow.folderTree;
+            if (folderTree) {
+                folderTree.addEventListener("dragstart", function (event) {
+                    if (CBD.prefs.getBoolPref("extensions.confirmbeforedelete.folders.lock") && event.target.id != "folderTree") {
+                        window.alert(CBD.bundle.GetStringFromName("lockedFolder"));
+                        event.preventDefault();
+                    }
+                }, false);
+            }
+            
+            contentWindow.mailContextMenu._menupopup.addEventListener("command", function (event) {
+               if (event.target.id == "mailContext-delete" )  {
+                  if (!window.CBD.checktrash(false)) {
+                      event.preventDefault();
+                      event.stopPropagation();
+                  }
+                }
+            }, true);
         }
     } catch (e) {}
 },
@@ -78,7 +88,7 @@ CBD.confirmbeforedelete = function (type) {
 }
 
 CBD.checkforshift = function () {
-    if (CBD.prefs.getPrefType("mail.warn_on_shift_delete") > 0 || !CBD.prefs.getBoolPref("extensions.confirmbeforedelete.shiftcanc.enable"))
+    if (CBD.prefs.getPrefType("mail.warn_on_shift_delete") == 0 || !CBD.prefs.getBoolPref("extensions.confirmbeforedelete.shiftcanc.enable"))
         return true;
     return CBD.confirmbeforedelete('mailyesno');
 }
