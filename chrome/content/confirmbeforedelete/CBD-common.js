@@ -51,6 +51,8 @@ CBD.init = function () {
                             }
                         }
                     }, true);
+                }, {
+                    once: true
                 }, false);
             }
         }
