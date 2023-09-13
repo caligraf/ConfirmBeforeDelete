@@ -13,15 +13,15 @@ CBD.init = function () {
 
     try {
         let contentWindow = window.gTabmail.tabInfo[0].chromeBrowser.contentWindow;
-        if( contentWindow ) {
+        if (contentWindow) {
             contentWindow.addEventListener("keydown", function (event) {
-                if (event.key == "Delete")  {
+                if (event.key == "Delete") {
                     if (!window.CBD.checktrash(event.shiftKey)) {
-                       event.preventDefault();
+                        event.preventDefault();
                     }
                 }
             }, false);
-            
+
             let folderTree = contentWindow.folderTree;
             if (folderTree) {
                 folderTree.addEventListener("dragstart", function (event) {
@@ -31,17 +31,32 @@ CBD.init = function () {
                     }
                 }, false);
             }
-            
-            contentWindow.mailContextMenu._menupopup.addEventListener("command", function (event) {
-               if (event.target.id == "mailContext-delete" )  {
-                  if (!window.CBD.checktrash(false)) {
-                      event.preventDefault();
-                      event.stopPropagation();
-                  }
-                }
-            }, true);
+
+            if (contentWindow.mailContextMenu && contentWindow.mailContextMenu._menupopup) {
+                contentWindow.mailContextMenu._menupopup.addEventListener("command", function (event) {
+                    if (event.target.id == "mailContext-delete") {
+                        if (!window.CBD.checktrash(false)) {
+                            event.preventDefault();
+                            event.stopPropagation();
+                        }
+                    }
+                }, true);
+            } else {
+                contentWindow.addEventListener("contextmenu", function (event) {
+                    contentWindow.mailContextMenu._menupopup.addEventListener("command", function (event) {
+                        if (event.target.id == "mailContext-delete") {
+                            if (!window.CBD.checktrash(false)) {
+                                event.preventDefault();
+                                event.stopPropagation();
+                            }
+                        }
+                    }, true);
+                }, false);
+            }
         }
-    } catch (e) {}
+    } catch (e) {
+        window.alert(e);
+    }
 },
 
 CBD.confirm = function (string) {
