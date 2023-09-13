@@ -12,8 +12,17 @@ CBD.init = function () {
     CBD.tagService = Cc["@mozilla.org/messenger/tagservice;1"].getService(Ci.nsIMsgTagService);
 
     try {
+        window.addEventListener("command", function (event) {
+            if (event.target.id == "hdrTrashButton" || event.target.id == "cmd_delete") {
+                if (!window.CBD.checktrash(event.shiftKey)) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+            }
+        }, true); // first to capture event
         let contentWindow = window.gTabmail.tabInfo[0].chromeBrowser.contentWindow;
         if (contentWindow) {
+            // Delete and delete + shift keyboard
             contentWindow.addEventListener("keydown", function (event) {
                 if (event.key == "Delete") {
                     if (!window.CBD.checktrash(event.shiftKey)) {
@@ -22,6 +31,16 @@ CBD.init = function () {
                 }
             }, false);
 
+            contentWindow.addEventListener("command", function (event) {
+                if (event.target.id == "hdrTrashButton") {
+                    if (!window.CBD.checktrash(event.shiftKey)) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+                }
+            }, true); // first to capture event
+
+            // drag a folder into trash
             let folderTree = contentWindow.folderTree;
             if (folderTree) {
                 folderTree.addEventListener("dragstart", function (event) {
@@ -32,6 +51,7 @@ CBD.init = function () {
                 }, false);
             }
 
+            // delete from context menu
             if (contentWindow.mailContextMenu && contentWindow.mailContextMenu._menupopup) {
                 contentWindow.mailContextMenu._menupopup.addEventListener("command", function (event) {
                     if (event.target.id == "mailContext-delete") {
@@ -40,8 +60,9 @@ CBD.init = function () {
                             event.stopPropagation();
                         }
                     }
-                }, true);
+                }, true); // first to capture event
             } else {
+                // case when context menu is not loaded
                 contentWindow.addEventListener("contextmenu", function (event) {
                     contentWindow.mailContextMenu._menupopup.addEventListener("command", function (event) {
                         if (event.target.id == "mailContext-delete") {
@@ -50,7 +71,7 @@ CBD.init = function () {
                                 event.stopPropagation();
                             }
                         }
-                    }, true);
+                    }, true); // first to capture event
                 }, {
                     once: true
                 }, false);
@@ -97,9 +118,14 @@ CBD.isSubTrash = function (msgFolder) {
 
 CBD.confirmbeforedelete = function (type) {
     let folderTree = window.gTabmail.tabInfo[0].chromeBrowser.contentWindow.folderTree;
-    if (folderTree) {
+    if (folderTree && window.GetSelectedMsgFolders()[0]) {
         if (window.GetSelectedMsgFolders()[0].server.type == "nntp")
             return false;
+    } else {
+        if (window.gTabmail.currentAboutMessage && window.gTabmail.currentAboutMessage.gMessage.folder) {
+            if (window.gTabmail.currentAboutMessage.gMessage.folder.server.type == "nntp")
+                return false;
+        }
     }
     return CBD.confirm(CBD.bundle.GetStringFromName(type));
 }
@@ -117,9 +143,18 @@ CBD.deleteLocked = function () {
             return true;
         } else if (window.CBD.prefs.getBoolPref("extensions.confirmbeforedelete.protect.enable")) {
             let tagKey = window.CBD.prefs.getCharPref("extensions.confirmbeforedelete.protect.tag");
-            let nbMsg = window.gTabmail.currentAbout3Pane.gDBView.numSelected;
-            for (let i = 0; i < nbMsg; i++) {
-                let keyw = window.gTabmail.currentAbout3Pane.gDBView.getSelectedMsgHdrs()[i].getStringProperty("keywords");
+            if (window.gTabmail.currentAbout3Pane) {
+                let nbMsg = window.gTabmail.currentAbout3Pane.gDBView.numSelected;
+                for (let i = 0; i < nbMsg; i++) {
+                    let keyw = window.gTabmail.currentAbout3Pane.gDBView.getSelectedMsgHdrs()[i].getStringProperty("keywords");
+                    if (keyw.indexOf(tagKey) != -1) {
+                        var tagName = window.CBD.tagService.getTagForKey(tagKey);
+                        window.alert(window.CBD.bundle.GetStringFromName("deleteTagLocked1") + " " + tagName + " " + window.CBD.bundle.GetStringFromName("deleteTagLocked2"));
+                        return true;
+                    }
+                }
+            } else {
+                let keyw = window.gTabmail.currentAboutMessage.gMessage.getStringProperty("keywords");
                 if (keyw.indexOf(tagKey) != -1) {
                     var tagName = window.CBD.tagService.getTagForKey(tagKey);
                     window.alert(window.CBD.bundle.GetStringFromName("deleteTagLocked1") + " " + tagName + " " + window.CBD.bundle.GetStringFromName("deleteTagLocked2"));
@@ -138,9 +173,13 @@ CBD.checktrash = function (isButtonDeleteWithShift) {
         if (CBD.deleteLocked())
             return false;
 
-        var msgFol = window.GetSelectedMsgFolders()[0];
-        if (!msgFol)
-            return true;
+        let msgFol = window.GetSelectedMsgFolders()[0];
+        if (!msgFol) {
+            msgFol = window.gTabmail.currentAboutMessage.gMessage.folder;
+            if (!msgFol) {
+                return true;
+            }
+        }
         if (isButtonDeleteWithShift)
             return window.CBD.checkforshift();
 

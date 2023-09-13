@@ -13,41 +13,7 @@ if (!CBD)
 function onLoad(activatedWhileWindowOpen) {
     
     window.CBD.init();
-    
-    // Delete message
-    if (typeof window.DefaultController != "undefined" && typeof defaultControllerDoCommandOrig == "undefined") {
-        var defaultControllerDoCommandOrig = window.DefaultController.doCommand;
-        window.DefaultController.doCommand = function (command) {
-            if (!this.isCommandEnabled(command))
-                return;
-            switch (command) {
-            case "button_delete":
-            case "cmd_delete":
-                if (window.CBD.checktrash(false))
-                    defaultControllerDoCommandOrig.apply(this, arguments);
-                break;
-            case "cmd_shiftDelete":
-                if (window.CBD.checktrash(true))
-                    defaultControllerDoCommandOrig.apply(this, arguments);
-                break;
-            default:
-                defaultControllerDoCommandOrig.apply(this, arguments);
-            }
-        };
-    }
-    
-    // Menu move message to trash
-    if (typeof window.MsgMoveMessage != "undefined" && typeof MsgMoveMessageOrig == "undefined") {
-        var MsgMoveMessageOrig = window.MsgMoveMessage;
-        window.MsgMoveMessage = function (aDestFolder) {
-            if (window.CBD.isSubTrash(aDestFolder) != 0) {
-                if (window.CBD.deleteLocked() || !window.CBD.confirmbeforedelete ('gotrash'))
-                    return;
-            }
-            MsgMoveMessageOrig.apply(this, arguments);
-        };
-    }
-    
+       
     // case folder delete
     if (typeof window.gFolderTreeController != "undefined" && window.gFolderTreeController.emptyTrash && typeof EmptyTrashOrig == "undefined") {
         var EmptyTrashOrig = window.gFolderTreeController.emptyTrash;
