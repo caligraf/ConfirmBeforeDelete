@@ -12,6 +12,7 @@ CBD.init = function () {
     CBD.tagService = Cc["@mozilla.org/messenger/tagservice;1"].getService(Ci.nsIMsgTagService);
 
     try {
+        // butons delete and menu edit delete
         window.addEventListener("command", function (event) {
             if (event.target.id == "hdrTrashButton" || event.target.id == "cmd_delete") {
                 if (!window.CBD.checktrash(event.shiftKey)) {
@@ -20,6 +21,7 @@ CBD.init = function () {
                 }
             }
         }, true); // first to capture event
+        
         let contentWindow = window.gTabmail.tabInfo[0].chromeBrowser.contentWindow;
         if (contentWindow) {
             // Delete and delete + shift keyboard
@@ -30,15 +32,6 @@ CBD.init = function () {
                     }
                 }
             }, false);
-
-            contentWindow.addEventListener("command", function (event) {
-                if (event.target.id == "hdrTrashButton") {
-                    if (!window.CBD.checktrash(event.shiftKey)) {
-                        event.preventDefault();
-                        event.stopPropagation();
-                    }
-                }
-            }, true); // first to capture event
 
             // drag a folder into trash
             let folderTree = contentWindow.folderTree;
