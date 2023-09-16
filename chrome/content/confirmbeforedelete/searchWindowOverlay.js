@@ -1,7 +1,6 @@
 // Import any needed modules.
 var Services = globalThis.Services || ChromeUtils.import(
-  "resource://gre/modules/Services.jsm"
-).Services;
+        "resource://gre/modules/Services.jsm").Services;
 
 // Load an additional JavaScript file.
 Services.scriptloader.loadSubScript("chrome://confirmbeforedelete/content/confirmbeforedelete/CBD-common.js", window, "UTF-8");
@@ -11,8 +10,7 @@ if (!CBD)
 
 function onLoad(activatedWhileWindowOpen) {
     window.CBD.init2();
-    
-    
+
     // Delete message
     if (typeof window.nsSearchResultsController != "undefined" && typeof searchResultsControllerDoCommandOrig == "undefined") {
         var searchResultsControllerDoCommandOrig = window.nsSearchResultsController.doCommand;
@@ -37,9 +35,7 @@ function onLoad(activatedWhileWindowOpen) {
 }
 
 function onUnload(deactivatedWhileWindowOpen) {
-  if (!deactivatedWhileWindowOpen) {
-    return
-  }
+    if (!deactivatedWhileWindowOpen) {
+        return
+    }
 }
-
-

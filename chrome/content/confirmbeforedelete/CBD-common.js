@@ -352,11 +352,11 @@ CBD.deleteLocked = function () {
                     }
                 } else { // message opened in a new window
                     let keyw = Services.wm.getMostRecentWindow("mail:3pane").gTabmail.tabInfo[0].chromeBrowser.contentWindow.gDBView.getSelectedMsgHdrs()[0].getStringProperty("keywords")
-                    if (keyw.indexOf(tagKey) != -1) {
-                        var tagName = window.CBD.tagService.getTagForKey(tagKey);
-                        window.alert(window.CBD.bundle.GetStringFromName("deleteTagLocked1") + " " + tagName + " " + window.CBD.bundle.GetStringFromName("deleteTagLocked2"));
-                        return true;
-                    }
+                        if (keyw.indexOf(tagKey) != -1) {
+                            var tagName = window.CBD.tagService.getTagForKey(tagKey);
+                            window.alert(window.CBD.bundle.GetStringFromName("deleteTagLocked1") + " " + tagName + " " + window.CBD.bundle.GetStringFromName("deleteTagLocked2"));
+                            return true;
+                        }
                 }
             }
         }
