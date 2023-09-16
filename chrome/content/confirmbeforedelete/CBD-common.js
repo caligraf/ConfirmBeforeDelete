@@ -1,3 +1,8 @@
+var {
+    MailServices
+} = ChromeUtils.import(
+        "resource:///modules/MailServices.jsm");
+
 if (!CBD)
     var CBD = {};
 
@@ -5,7 +10,25 @@ CBD.prefs = null;
 CBD.bundle = null;
 CBD.tagService = null;
 
-CBD.init = function () {
+// async sleep function using Promise
+
+CBD.sleep = async function (delay) {
+    let timer = Components.classes["@mozilla.org/timer;1"].createInstance(
+            Components.interfaces.nsITimer);
+    return new Promise(function (resolve, reject) {
+        let event = {
+            notify: function (timer) {
+                resolve();
+            },
+        };
+        timer.initWithCallback(
+            event,
+            delay,
+            Components.interfaces.nsITimer.TYPE_ONE_SHOT);
+    });
+},
+
+CBD.init = async function () {
     CBD.prefs = Components.classes["@mozilla.org/preferences-service;1"].getService(Components.interfaces.nsIPrefBranch);
     var strBundleService = Components.classes["@mozilla.org/intl/stringbundle;1"].getService(Components.interfaces.nsIStringBundleService);
     CBD.bundle = strBundleService.createBundle("chrome://confirmbeforedelete/locale/confirmbeforedelete.properties");
@@ -21,7 +44,7 @@ CBD.init = function () {
                 }
             }
         }, true); // first to capture event
-        
+
         let contentWindow = window.gTabmail.tabInfo[0].chromeBrowser.contentWindow;
         if (contentWindow) {
             // Delete and delete + shift keyboard
@@ -35,6 +58,15 @@ CBD.init = function () {
 
             // drag a folder into trash
             let folderTree = contentWindow.folderTree;
+            if (!folderTree) {
+                for (let i = 0; i < 20; i++) {
+                    await this.sleep(50);
+                    if (contentWindow.folderTree) {
+                        folderTree = contentWindow.folderTree;
+                        break;
+                    }
+                }
+            }
             if (folderTree) {
                 folderTree.addEventListener("dragstart", function (event) {
                     if (CBD.prefs.getBoolPref("extensions.confirmbeforedelete.folders.lock") && event.target.id != "folderTree") {
@@ -42,6 +74,89 @@ CBD.init = function () {
                         event.preventDefault();
                     }
                 }, false);
+
+                folderTree.addEventListener("drop", function (event) {
+                    //const isFolderMovement = dt.types.indexOf('text/x-moz-folder') !== -1;
+                    //event.preventDefault();
+                    let folderTree = window.gTabmail.tabInfo[0].chromeBrowser.contentWindow.folderTree;
+                    let row = event.target.closest("li");
+                    if (!row) {
+                        return;
+                    }
+                    let targetFolder = MailServices.folderLookup.getFolderForURL(row.uri);
+                    const isFolderTrash = (targetFolder.flags & 0x00000100);
+                    //event.stopPropagation();
+                    if (isFolderTrash) {
+                        if (window.CBD.prefs.getBoolPref("extensions.confirmbeforedelete.delete.lock")) {
+                            window.alert(window.CBD.bundle.GetStringFromName("deleteLocked"));
+                        } else if (window.CBD.prefs.getBoolPref("extensions.confirmbeforedelete.gotrash.enable") || window.CBD.prefs.getBoolPref("extensions.confirmbeforedelete.protect.enable")
+                             || window.CBD.prefs.getBoolPref("mailnews.confirm.moveFoldersToTrash")) {
+                            let session = Cc["@mozilla.org/widget/dragservice;1"].getService(Ci.nsIDragService).getCurrentSession();
+                            const dt = session.dataTransfer;
+                            // we only lock drag of messages
+                            const isMessageMovement = dt.types.indexOf('text/x-moz-message') !== -1;
+                            if (isMessageMovement) {
+                                let isMove = Cc["@mozilla.org/widget/dragservice;1"]
+                                    .getService(Ci.nsIDragService).getCurrentSession()
+                                    .dragAction == Ci.nsIDragService.DRAGDROP_ACTION_MOVE;
+
+                                if (window.CBD.prefs.getBoolPref("extensions.confirmbeforedelete.protect.enable")) {
+                                    let tagKey = window.CBD.prefs.getCharPref("extensions.confirmbeforedelete.protect.tag");
+                                    const nbMsg = dt.mozItemCount;
+                                    let messenger = Cc["@mozilla.org/messenger;1"].createInstance(Ci.nsIMessenger);
+                                    for (let i = 0; i < nbMsg; i++) {
+                                        let msgHdr = messenger.msgHdrFromURI(dt.mozGetDataAt("text/x-moz-message", i));
+                                        const keyw = msgHdr.getStringProperty("keywords");
+                                        if (keyw.indexOf(tagKey) != -1) {
+                                            var tagName = window.CBD.tagService.getTagForKey(tagKey);
+                                            window.alert(window.CBD.bundle.GetStringFromName("deleteTagLocked1") + " " + tagName + " " + window.CBD.bundle.GetStringFromName("deleteTagLocked2"));
+                                            return;
+                                        }
+                                    }
+                                }
+
+                                if (!window.CBD.prefs.getBoolPref("extensions.confirmbeforedelete.gotrash.enable")) {
+                                    return;
+                                } else {
+                                    if (window.CBD.confirmbeforedelete('gotrash')) {
+                                        // copy code of folderPane.js because getCurrentSession become null after showing popup
+                                        let count = dt.mozItemCount;
+                                        let array = [];
+
+                                        let sourceFolder;
+                                        let messenger = Cc["@mozilla.org/messenger;1"].createInstance(Ci.nsIMessenger);
+
+                                        for (let i = 0; i < count; i++) {
+                                            let msgHdr = messenger.msgHdrFromURI(dt.mozGetDataAt("text/x-moz-message", i));
+                                            if (!i)
+                                                sourceFolder = msgHdr.folder;
+                                            array[i] = msgHdr;
+                                        }
+                                        let prefBranch = Services.prefs.getBranch("mail.");
+
+                                        if (!sourceFolder.canDeleteMessages)
+                                            isMove = false;
+
+                                        let cs = MailServices.copy;
+                                        prefBranch.setCharPref("last_msg_movecopy_target_uri", targetFolder.URI);
+                                        prefBranch.setBoolPref("last_msg_movecopy_was_move", isMove);
+                                        // ### ugh, so this won't work with cross-folder views. We would
+                                        // really need to partition the messages by folder.
+                                        cs.copyMessages(sourceFolder, array, targetFolder, isMove, null, window.msgWindow, true);
+                                    }
+                                }
+                            } else {
+                                if (window.CBD.prefs.getBoolPref("mailnews.confirm.moveFoldersToTrash") && !window.CBD.confirmbeforedelete('gotrashfolder'))
+                                    return;
+                                return;
+                            }
+                        } else {
+                            return;
+                        }
+                    }
+                }, true);
+            } else {
+                window.alert("folderTree not yet loaded! " + window.document.readyState);
             }
 
             // delete from context menu
