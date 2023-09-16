@@ -28,6 +28,27 @@ CBD.sleep = async function (delay) {
     });
 },
 
+CBD.init2 = function () {
+    CBD.prefs = Components.classes["@mozilla.org/preferences-service;1"].getService(Components.interfaces.nsIPrefBranch);
+    var strBundleService = Components.classes["@mozilla.org/intl/stringbundle;1"].getService(Components.interfaces.nsIStringBundleService);
+    CBD.bundle = strBundleService.createBundle("chrome://confirmbeforedelete/locale/confirmbeforedelete.properties");
+    CBD.tagService = Cc["@mozilla.org/messenger/tagservice;1"].getService(Ci.nsIMsgTagService);
+
+    try {
+        // butons delete and menu edit delete
+        window.addEventListener("command", function (event) {
+            if (event.target.id == "hdrTrashButton" || event.target.id == "cmd_delete") {
+                if (!window.CBD.checkdelete(event.shiftKey)) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+            }
+        }, true); // first to capture event
+    } catch (e) {
+        window.alert(e);
+    }
+},
+
 CBD.init = async function () {
     CBD.prefs = Components.classes["@mozilla.org/preferences-service;1"].getService(Components.interfaces.nsIPrefBranch);
     var strBundleService = Components.classes["@mozilla.org/intl/stringbundle;1"].getService(Components.interfaces.nsIStringBundleService);
@@ -47,30 +68,30 @@ CBD.init = async function () {
 
         let contentWindow = window.gTabmail.tabInfo[0].chromeBrowser.contentWindow;
         if (contentWindow) {
-            
-            let threadTree = contentWindow.threadTree
-            if (!threadTree) {
-                for (let i = 0; i < 20; i++) {
-                    await this.sleep(50);
-                    if (contentWindow.threadTree) {
-                        threadTree = contentWindow.threadTree;
-                        break;
-                    }
-                }
-            }
-            if (threadTree) {
-               // Delete and delete + shift keyboard
-                threadTree.addEventListener("keydown", function (event) {              
-                if (event.key == "Delete") {
-                    if (!window.CBD.checktrash(event.shiftKey)) {
-                        event.preventDefault();
-                    }
-                }
-            }, false);
-            }
 
-            // drag a folder into trash
-            let folderTree = contentWindow.folderTree;
+            let threadTree = contentWindow.threadTree
+                if (!threadTree) {
+                    for (let i = 0; i < 20; i++) {
+                        await this.sleep(50);
+                        if (contentWindow.threadTree) {
+                            threadTree = contentWindow.threadTree;
+                            break;
+                        }
+                    }
+                }
+                if (threadTree) {
+                    // Delete and delete + shift keyboard
+                    threadTree.addEventListener("keydown", function (event) {
+                        if (event.key == "Delete") {
+                            if (!window.CBD.checktrash(event.shiftKey)) {
+                                event.preventDefault();
+                            }
+                        }
+                    }, false);
+                }
+
+                // drag a folder into trash
+                let folderTree = contentWindow.folderTree;
             if (!folderTree) {
                 for (let i = 0; i < 20; i++) {
                     await this.sleep(50);
@@ -245,7 +266,7 @@ CBD.confirm = function (string) {
         return false;
     else
         return true;
-}
+},
 
 CBD.isSubTrash = function (msgFolder) {
     var rootFolder = msgFolder;
@@ -260,27 +281,37 @@ CBD.isSubTrash = function (msgFolder) {
     if (!isTrash)
         isTrash = rootFolder.flags & 0x00000100;
     return isTrash;
-}
+},
 
 CBD.confirmbeforedelete = function (type) {
-    let folderTree = window.gTabmail.tabInfo[0].chromeBrowser.contentWindow.folderTree;
-    if (folderTree && window.GetSelectedMsgFolders()[0]) {
-        if (window.GetSelectedMsgFolders()[0].server.type == "nntp")
-            return false;
+    if (window.gTabmail) {
+        let folderTree = window.gTabmail.tabInfo[0].chromeBrowser.contentWindow.folderTree;
+        if (folderTree && window.GetSelectedMsgFolders()[0]) {
+            if (window.GetSelectedMsgFolders()[0].server.type == "nntp")
+                return false;
+        } else {
+            if (window.gTabmail.currentAboutMessage && window.gTabmail.currentAboutMessage.gMessage.folder) {
+                if (window.gTabmail.currentAboutMessage.gMessage.folder.server.type == "nntp")
+                    return false;
+            }
+        }
     } else {
-        if (window.gTabmail.currentAboutMessage && window.gTabmail.currentAboutMessage.gMessage.folder) {
-            if (window.gTabmail.currentAboutMessage.gMessage.folder.server.type == "nntp")
+        if (window.gDBView) {
+            if (window.gDBView.window.gDBView.getSelectedMsgHdrs()[0].folder.server.type == "nntp")
+                return false;
+        } else { // message opened in a new window
+            if (window.arguments[0].folder.server.type == "nntp")
                 return false;
         }
     }
     return CBD.confirm(CBD.bundle.GetStringFromName(type));
-}
+},
 
 CBD.checkforshift = function () {
     if (CBD.prefs.getPrefType("mail.warn_on_shift_delete") == 0 || !CBD.prefs.getBoolPref("extensions.confirmbeforedelete.shiftcanc.enable"))
         return true;
     return CBD.confirmbeforedelete('mailyesno');
-}
+},
 
 CBD.deleteLocked = function () {
     try {
@@ -289,10 +320,19 @@ CBD.deleteLocked = function () {
             return true;
         } else if (window.CBD.prefs.getBoolPref("extensions.confirmbeforedelete.protect.enable")) {
             let tagKey = window.CBD.prefs.getCharPref("extensions.confirmbeforedelete.protect.tag");
-            if (window.gTabmail.currentAbout3Pane) {
-                let nbMsg = window.gTabmail.currentAbout3Pane.gDBView.numSelected;
-                for (let i = 0; i < nbMsg; i++) {
-                    let keyw = window.gTabmail.currentAbout3Pane.gDBView.getSelectedMsgHdrs()[i].getStringProperty("keywords");
+            if (window.gTabmail) {
+                if (window.gTabmail.currentAbout3Pane) {
+                    let nbMsg = window.gTabmail.currentAbout3Pane.gDBView.numSelected;
+                    for (let i = 0; i < nbMsg; i++) {
+                        let keyw = window.gTabmail.currentAbout3Pane.gDBView.getSelectedMsgHdrs()[i].getStringProperty("keywords");
+                        if (keyw.indexOf(tagKey) != -1) {
+                            var tagName = window.CBD.tagService.getTagForKey(tagKey);
+                            window.alert(window.CBD.bundle.GetStringFromName("deleteTagLocked1") + " " + tagName + " " + window.CBD.bundle.GetStringFromName("deleteTagLocked2"));
+                            return true;
+                        }
+                    }
+                } else {
+                    let keyw = window.gTabmail.currentAboutMessage.gMessage.getStringProperty("keywords");
                     if (keyw.indexOf(tagKey) != -1) {
                         var tagName = window.CBD.tagService.getTagForKey(tagKey);
                         window.alert(window.CBD.bundle.GetStringFromName("deleteTagLocked1") + " " + tagName + " " + window.CBD.bundle.GetStringFromName("deleteTagLocked2"));
@@ -300,11 +340,23 @@ CBD.deleteLocked = function () {
                     }
                 }
             } else {
-                let keyw = window.gTabmail.currentAboutMessage.gMessage.getStringProperty("keywords");
-                if (keyw.indexOf(tagKey) != -1) {
-                    var tagName = window.CBD.tagService.getTagForKey(tagKey);
-                    window.alert(window.CBD.bundle.GetStringFromName("deleteTagLocked1") + " " + tagName + " " + window.CBD.bundle.GetStringFromName("deleteTagLocked2"));
-                    return true;
+                if (window.gDBView) {
+                    let nbMsg = window.gDBView.numSelected;
+                    for (let i = 0; i < nbMsg; i++) {
+                        let keyw = window.gDBView.getSelectedMsgHdrs()[i].getStringProperty("keywords");
+                        if (keyw.indexOf(tagKey) != -1) {
+                            var tagName = window.CBD.tagService.getTagForKey(tagKey);
+                            window.alert(window.CBD.bundle.GetStringFromName("deleteTagLocked1") + " " + tagName + " " + window.CBD.bundle.GetStringFromName("deleteTagLocked2"));
+                            return true;
+                        }
+                    }
+                } else { // message opened in a new window
+                    let keyw = window.arguments[0].getStringProperty("keywords");
+                    if (keyw.indexOf(tagKey) != -1) {
+                        var tagName = window.CBD.tagService.getTagForKey(tagKey);
+                        window.alert(window.CBD.bundle.GetStringFromName("deleteTagLocked1") + " " + tagName + " " + window.CBD.bundle.GetStringFromName("deleteTagLocked2"));
+                        return true;
+                    }
                 }
             }
         }
@@ -312,7 +364,7 @@ CBD.deleteLocked = function () {
         window.alert(e);
     }
     return false;
-}
+},
 
 CBD.checktrash = function (isButtonDeleteWithShift) {
     try {
@@ -348,6 +400,44 @@ CBD.checktrash = function (isButtonDeleteWithShift) {
         else if (folderSubTrash && isTreeFocused && window.CBD.prefs.getBoolPref("extensions.confirmbeforedelete.delete.enable"))
             return window.CBD.confirmbeforedelete('folderyesno');
         else if (!folderTrash && window.CBD.prefs.getBoolPref("extensions.confirmbeforedelete.gotrash.enable"))
+            return window.CBD.confirmbeforedelete('gotrash');
+        else
+            return true;
+    } catch (e) {
+        window.alert(e);
+    }
+},
+
+CBD.checkdelete = function (isButtonDeleteWithShift) {
+    try {
+        if (window.CBD.deleteLocked())
+            return false;
+
+        // cannot use window.CBD.checkforshift because in search window default TB window confirmation popup does show when mail.warn_on_shift_delete is true
+        if (isButtonDeleteWithShift) {
+            if ((window.CBD.prefs.getPrefType("mail.warn_on_shift_delete") > 0 && window.CBD.prefs.getBoolPref("mail.warn_on_shift_delete"))
+                 || window.CBD.prefs.getBoolPref("extensions.confirmbeforedelete.shiftcanc.enable"))
+                return window.CBD.confirmbeforedelete('mailyesno');
+            return true;
+        }
+
+        if (window.CBD.prefs.getBoolPref("extensions.confirmbeforedelete.delete.enable")) {
+            if (window.gFolderDisplay) {
+                let nbMsg = window.gFolderDisplay.selectedCount;
+                for (let i = 0; i < nbMsg; i++) {
+                    if (window.gFolderDisplay.selectedMessages[i].folder.getFlag(0x00000100) || window.CBD.isSubTrash(window.gFolderDisplay.selectedMessages[i].folder)) {
+                        return window.CBD.confirmbeforedelete('mailyesno');
+                    }
+                }
+            } else { // opened message in a new window
+                const folder = window.arguments[0].folder;
+                if (folder.getFlag(0x00000100) || window.CBD.isSubTrash(folder)) {
+                    return window.CBD.confirmbeforedelete('mailyesno');
+                }
+            }
+        }
+
+        if (window.CBD.prefs.getBoolPref("extensions.confirmbeforedelete.gotrash.enable"))
             return window.CBD.confirmbeforedelete('gotrash');
         else
             return true;

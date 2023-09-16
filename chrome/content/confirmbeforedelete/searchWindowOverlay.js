@@ -10,7 +10,7 @@ if (!CBD)
     var CBD = {};
 
 function onLoad(activatedWhileWindowOpen) {
-    window.CBD.init();
+    window.CBD.init2();
     
     
     // Delete message
@@ -22,11 +22,11 @@ function onLoad(activatedWhileWindowOpen) {
             switch (command) {
             case "button_delete":
             case "cmd_delete":
-                if (CBD.checkdelete(false))
+                if (window.CBD.checkdelete(false))
                     searchResultsControllerDoCommandOrig.apply(this, arguments);
                 break;
             case "cmd_shiftDelete":
-                if (CBD.checkdelete(true))
+                if (window.CBD.checkdelete(true))
                     searchResultsControllerDoCommandOrig.apply(this, arguments);
                 break;
             default:
@@ -42,34 +42,4 @@ function onUnload(deactivatedWhileWindowOpen) {
   }
 }
 
-CBD.checkdelete = function (isButtonDeleteWithShift) {
-    try {
-        if (window.CBD.deleteLocked())
-            return false;
-
-        // cannot use window.CBD.checkforshift because in search window default TB window confirmation popup does show when mail.warn_on_shift_delete is true
-        if (isButtonDeleteWithShift) {
-            if ((window.CBD.prefs.getPrefType("mail.warn_on_shift_delete") > 0 && window.CBD.prefs.getBoolPref("mail.warn_on_shift_delete")) 
-                || window.CBD.prefs.getBoolPref("extensions.confirmbeforedelete.shiftcanc.enable"))
-                return window.CBD.confirmbeforedelete('mailyesno');
-            return true;
-        }
-
-        if (window.CBD.prefs.getBoolPref("extensions.confirmbeforedelete.delete.enable")) {
-            let nbMsg = window.gFolderDisplay.selectedCount;
-            for (let i = 0; i < nbMsg; i++) {
-                if (window.gFolderDisplay.selectedMessages[i].folder.getFlag(0x00000100) || window.CBD.isSubTrash(window.gFolderDisplay.selectedMessages[i].folder)) {
-                    return window.CBD.confirmbeforedelete ('mailyesno');
-                }
-            }
-        }
-        
-        if (window.CBD.prefs.getBoolPref("extensions.confirmbeforedelete.gotrash.enable"))
-            return window.CBD.confirmbeforedelete ('gotrash');
-        else
-            return true;
-    } catch (e) {
-        window.alert(e);
-    }
-}
 

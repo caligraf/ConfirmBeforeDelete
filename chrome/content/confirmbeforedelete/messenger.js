@@ -15,32 +15,6 @@ function onLoad(activatedWhileWindowOpen) {
 
     window.CBD.init();
 
-    // case folder delete
-    if (typeof window.gFolderTreeController != "undefined" && window.gFolderTreeController.emptyTrash && typeof EmptyTrashOrig == "undefined") {
-        var EmptyTrashOrig = window.gFolderTreeController.emptyTrash;
-        window.gFolderTreeController.emptyTrash = function (aFolder) {
-            if (!CBD.areFoldersLockedWhenEmptyingTrash())
-                EmptyTrashOrig.apply(this, arguments);
-        };
-        var DeleteFolderOrig = window.gFolderTreeController.deleteFolder;
-        window.gFolderTreeController.deleteFolder = function () {
-            if (window.CBD.prefs.getBoolPref("extensions.confirmbeforedelete.folders.lock")) {
-                window.alert(window.CBD.bundle.GetStringFromName("lockedFolder"));
-                return;
-            }
-            let folders = window.gFolderTreeView.getSelectedFolders();
-            let folder = folders[0];
-
-            if (folder.incomingServerType == "imap") {
-                //confirmation popup is in DeleteFolderOrig for imap
-                DeleteFolderOrig.apply(this, arguments);
-            } else {
-                if (CBD.checkforfolder())
-                    DeleteFolderOrig.apply(this, arguments);
-            }
-        };
-    }
-
     // calendar
     if (typeof window.calendarViewController != "undefined" && typeof calendarViewControllerDeleteOccurrencesOrig == "undefined") {
         var calendarViewControllerDeleteOccurrencesOrig = window.calendarViewController.deleteOccurrences;
