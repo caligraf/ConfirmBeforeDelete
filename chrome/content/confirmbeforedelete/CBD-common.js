@@ -146,9 +146,36 @@ CBD.init = async function () {
                                     }
                                 }
                             } else {
-                                if (window.CBD.prefs.getBoolPref("mailnews.confirm.moveFoldersToTrash") && !window.CBD.confirmbeforedelete('gotrashfolder'))
-                                    return;
-                                return;
+                                if (window.CBD.prefs.getBoolPref("mailnews.confirm.moveFoldersToTrash") && !window.CBD.confirmbeforedelete('gotrashfolder')) {
+                                    event.preventDefault();
+                                } else {
+                                    event.preventDefault();
+                                    let sourceFolder = dt.mozGetDataAt("text/x-moz-folder", 0)
+                                        .QueryInterface(Ci.nsIMsgFolder);
+                                    let isMove = dt.dropEffect == "move";
+                                    if (!isMove && sourceFolder.server == targetFolder.server) {
+                                        // Don't allow folder copy within the same server; only move allowed.
+                                        // Can't copy folder intra-server, change to move.
+                                        isMove = true;
+                                    }
+                                    // Do the transfer. A slight delay in calling copyFolder() helps the
+                                    // folder-menupopup chain of items get properly closed so the next folder
+                                    // context popup can occur.
+                                    setTimeout(() =>
+                                        MailServices.copy.copyFolder(
+                                            sourceFolder,
+                                            targetFolder,
+                                            isMove,
+                                            null,
+                                            msgWindow));
+                                    // Save in prefs the target folder URI and if this was a move or copy.
+                                    // This is to fill in the next folder or message context menu item
+                                    // "Move|Copy to <TargetFolderName> Again".
+                                    Services.prefs.setStringPref(
+                                        "mail.last_msg_movecopy_target_uri",
+                                        targetFolder.URI);
+                                    Services.prefs.setBoolPref("mail.last_msg_movecopy_was_move", isMove);
+                                }
                             }
                         } else {
                             return;
