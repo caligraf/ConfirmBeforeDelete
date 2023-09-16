@@ -3,7 +3,7 @@
     "applications": {
         "gecko": {
             "id": "confirmbeforedelete@caligraf",
-            "strict_min_version": "115.0.1",
+            "strict_min_version": "115.0",
             "strict_max_version": "115.*"
         }
     },
