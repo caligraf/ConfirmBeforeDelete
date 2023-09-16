@@ -47,14 +47,27 @@ CBD.init = async function () {
 
         let contentWindow = window.gTabmail.tabInfo[0].chromeBrowser.contentWindow;
         if (contentWindow) {
-            // Delete and delete + shift keyboard
-            contentWindow.addEventListener("keydown", function (event) {
+            
+            let threadTree = contentWindow.threadTree
+            if (!threadTree) {
+                for (let i = 0; i < 20; i++) {
+                    await this.sleep(50);
+                    if (contentWindow.threadTree) {
+                        threadTree = contentWindow.threadTree;
+                        break;
+                    }
+                }
+            }
+            if (threadTree) {
+               // Delete and delete + shift keyboard
+                threadTree.addEventListener("keydown", function (event) {              
                 if (event.key == "Delete") {
                     if (!window.CBD.checktrash(event.shiftKey)) {
                         event.preventDefault();
                     }
                 }
             }, false);
+            }
 
             // drag a folder into trash
             let folderTree = contentWindow.folderTree;
@@ -77,7 +90,6 @@ CBD.init = async function () {
 
                 folderTree.addEventListener("drop", function (event) {
                     //const isFolderMovement = dt.types.indexOf('text/x-moz-folder') !== -1;
-                    //event.preventDefault();
                     let folderTree = window.gTabmail.tabInfo[0].chromeBrowser.contentWindow.folderTree;
                     let row = event.target.closest("li");
                     if (!row) {
@@ -85,7 +97,6 @@ CBD.init = async function () {
                     }
                     let targetFolder = MailServices.folderLookup.getFolderForURL(row.uri);
                     const isFolderTrash = (targetFolder.flags & 0x00000100);
-                    //event.stopPropagation();
                     if (isFolderTrash) {
                         if (window.CBD.prefs.getBoolPref("extensions.confirmbeforedelete.delete.lock")) {
                             window.alert(window.CBD.bundle.GetStringFromName("deleteLocked"));
