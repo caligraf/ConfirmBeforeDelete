@@ -300,7 +300,7 @@ CBD.confirmbeforedelete = function (type) {
             if (window.gDBView.window.gDBView.getSelectedMsgHdrs()[0].folder.server.type == "nntp")
                 return false;
         } else { // message opened in a new window
-            if (window.arguments[0].folder.server.type == "nntp")
+            if (Services.wm.getMostRecentWindow("mail:3pane").gTabmail.tabInfo[0].chromeBrowser.contentWindow.gDBView.getSelectedMsgHdrs()[0].folder.server.type == "nntp")
                 return false;
         }
     }
@@ -351,7 +351,7 @@ CBD.deleteLocked = function () {
                         }
                     }
                 } else { // message opened in a new window
-                    let keyw = window.arguments[0].getStringProperty("keywords");
+                    let keyw = Services.wm.getMostRecentWindow("mail:3pane").gTabmail.tabInfo[0].chromeBrowser.contentWindow.gDBView.getSelectedMsgHdrs()[0].getStringProperty("keywords")
                     if (keyw.indexOf(tagKey) != -1) {
                         var tagName = window.CBD.tagService.getTagForKey(tagKey);
                         window.alert(window.CBD.bundle.GetStringFromName("deleteTagLocked1") + " " + tagName + " " + window.CBD.bundle.GetStringFromName("deleteTagLocked2"));
@@ -430,7 +430,7 @@ CBD.checkdelete = function (isButtonDeleteWithShift) {
                     }
                 }
             } else { // opened message in a new window
-                const folder = window.arguments[0].folder;
+                const folder = Services.wm.getMostRecentWindow("mail:3pane").gTabmail.tabInfo[0].chromeBrowser.contentWindow.gDBView.getSelectedMsgHdrs()[0].folder;
                 if (folder.getFlag(0x00000100) || window.CBD.isSubTrash(folder)) {
                     return window.CBD.confirmbeforedelete('mailyesno');
                 }
