@@ -66,6 +66,15 @@ CBD.init = async function () {
             }
         }, true); // first to capture event
 
+        window.document.querySelector("unified-toolbar").addEventListener("click", function (event) {
+            if (event.target?.attributes['is'].nodeValue == "delete-button" ) {
+                if (!window.CBD.checktrash(event.shiftKey)) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+            }
+        }, true); // first to capture event
+        
         let contentWindow = window.gTabmail.tabInfo[0].chromeBrowser.contentWindow;
         if (contentWindow) {
 
