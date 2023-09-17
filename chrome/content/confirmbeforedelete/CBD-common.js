@@ -56,9 +56,9 @@ CBD.init = async function () {
     CBD.tagService = Cc["@mozilla.org/messenger/tagservice;1"].getService(Ci.nsIMsgTagService);
 
     try {
-        // butons delete and menu edit delete
+        // edit delete
         window.addEventListener("command", function (event) {
-            if (event.target.id == "hdrTrashButton" || event.target.id == "cmd_delete") {
+            if (event.target.id == "cmd_delete") {
                 if (!window.CBD.checktrash(event.shiftKey)) {
                     event.preventDefault();
                     event.stopPropagation();
@@ -66,6 +66,17 @@ CBD.init = async function () {
             }
         }, true); // first to capture event
 
+        // button delete in threadpane: both case one message selected and severals messaages selected
+        window.addEventListener("click", function (event) {
+            if (event.target.id == "hdrTrashButton") {
+                if (!window.CBD.checktrash(event.shiftKey)) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+            }
+        }, true); // first to capture event
+
+        //unified toolbar delete button
         window.document.querySelector("unified-toolbar").addEventListener("click", function (event) {
             if (event.target?.attributes['is'].nodeValue == "delete-button" ) {
                 if (!window.CBD.checktrash(event.shiftKey)) {
@@ -74,33 +85,33 @@ CBD.init = async function () {
                 }
             }
         }, true); // first to capture event
-        
+
         let contentWindow = window.gTabmail.tabInfo[0].chromeBrowser.contentWindow;
         if (contentWindow) {
 
-            let threadTree = contentWindow.threadTree
-                if (!threadTree) {
-                    for (let i = 0; i < 20; i++) {
-                        await this.sleep(50);
-                        if (contentWindow.threadTree) {
-                            threadTree = contentWindow.threadTree;
-                            break;
-                        }
+            let threadTree = contentWindow.threadTree;
+            if (!threadTree) {
+                for (let i = 0; i < 20; i++) {
+                    await this.sleep(50);
+                    if (contentWindow.threadTree) {
+                        threadTree = contentWindow.threadTree;
+                        break;
                     }
                 }
-                if (threadTree) {
-                    // Delete and delete + shift keyboard
-                    threadTree.addEventListener("keydown", function (event) {
-                        if (event.key == "Delete") {
-                            if (!window.CBD.checktrash(event.shiftKey)) {
-                                event.preventDefault();
-                            }
+            }
+            if (threadTree) {
+                // Delete and delete + shift keyboard
+                threadTree.addEventListener("keydown", function (event) {
+                    if (event.key == "Delete") {
+                        if (!window.CBD.checktrash(event.shiftKey)) {
+                            event.preventDefault();
                         }
-                    }, false);
-                }
+                    }
+                }, false);
+            }
 
-                // drag a folder into trash
-                let folderTree = contentWindow.folderTree;
+            // drag a folder into trash
+            let folderTree = contentWindow.folderTree;
             if (!folderTree) {
                 for (let i = 0; i < 20; i++) {
                     await this.sleep(50);
@@ -119,7 +130,6 @@ CBD.init = async function () {
                 }, false);
 
                 folderTree.addEventListener("drop", function (event) {
-                    //const isFolderMovement = dt.types.indexOf('text/x-moz-folder') !== -1;
                     let folderTree = window.gTabmail.tabInfo[0].chromeBrowser.contentWindow.folderTree;
                     let row = event.target.closest("li");
                     if (!row) {
