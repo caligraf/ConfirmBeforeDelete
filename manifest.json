@@ -11,12 +11,21 @@
     "description": "Ask a confirm before to delete some items",
     "author": "Caligraf",
     "version": "1.8.1",
+    "default_locale": "en-US",
     "homepage_url": "https://github.com/caligraf/ConfirmBeforeDelete/wiki",
     "icons": {
         "16": "skin/icon16x16.png",
 		"32": "skin/icon32x32.png",
         "64": "skin/icon64x64.png"
 	},
+    "options_ui": {
+      "page": "/options/options.html",
+      "browser_style": true
+    },
+    "permissions": [
+        "messagesRead",
+        "storage"
+    ],
     "experiment_apis": {
       "WindowListener": {
         "schema": "api/WindowListener/schema.json",
@@ -25,7 +34,15 @@
           "paths": [["WindowListener"]],
           "script": "api/WindowListener/implementation.js"
         }
-      }
+      },
+      "LegacyPrefs": {
+            "schema": "api/LegacyPrefs/schema.json",
+            "parent": {
+                "scopes": ["addon_parent"],
+                "paths": [["LegacyPrefs"]],
+                "script": "api/LegacyPrefs/implementation.js"
+            }
+        }
     },
     "background": {
       "scripts": [ "background.js" ]

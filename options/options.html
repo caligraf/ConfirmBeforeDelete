@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>ConfirmBeforeDelete Preferences</title>
+        <link rel="stylesheet" href="chrome://messenger/skin/colors.css">
+        <link rel="stylesheet" href="options.css">
+        <script src="/chrome/content/i18n.js"></script>
+        <script src="options.js" type="module"></script>
+    </head>
+    <body>
+        <div id="tabpanel">
+            <div class="hbox">
+                <input type="checkbox" id="CBDBlockMsgDeletion" data-preference="extensions.confirmbeforedelete.delete.lock" />
+                <label for="CBDBlockMsgDeletion">__MSG_CBDcheck9__</label>
+            </div>
+            <div class="hbox">
+                <input type="checkbox" id="CBDConfirmShiftDel" data-preference="extensions.confirmbeforedelete.shiftcanc.enable" />
+                <label for="CBDConfirmShiftDel">__MSG_CBDcheck3__</label>
+            </div>
+            <div class="hbox">
+                <input type="checkbox" id="CBDMovetoTrash" data-preference="extensions.confirmbeforedelete.gotrash.enable" />
+                <label for="CBDMovetoTrash">__MSG_CBDcheck8__</label>
+            </div>
+            <div class="hbox">
+                <input type="checkbox" id="CBDMoveFoldertoTrash" data-preference="mailnews.confirm.moveFoldersToTrash" />
+                <label for="CBDMoveFoldertoTrash">__MSG_CBDcheck11__</label>
+            </div>
+            <div class="hbox">
+                <input type="checkbox" id="CBDEmptyTrashConfirmation" data-preference="mailnews.emptyTrash.dontAskAgain" />
+                <label for="CBDEmptyTrashConfirmation">__MSG_CBDcheck2__</label>
+            </div>
+            <div class="hbox">
+                <input type="checkbox" id="CBDMsgInTrashConfirmation" data-preference="extensions.confirmbeforedelete.delete.enable" />
+                <label for="CBDMsgInTrashConfirmation">__MSG_CBDcheck4__</label>
+            </div>
+            <div class="hbox">
+                <input type="checkbox" id="CBDAdressBook" data-preference="extensions.confirmbeforedelete.addressbook.enable" />
+                <label for="CBDAdressBook">__MSG_CBDcheck1__</label>
+            </div>
+            <div class="hbox">
+                <input type="checkbox" id="CBDCalendar" data-preference="extensions.confirmbeforedelete.calendar.enable" />
+                <label for="CBDCalendar">__MSG_CBDcheck6__</label>
+            </div>
+            <pre>
+            
+            </pre>
+            <div class="hbox">
+                <input type="checkbox" id="CBDOKdefault" data-preference="extensions.confirmbeforedelete.default.cancel" />
+                <label for="CBDOKdefault">__MSG_CBDcheck5__</label>
+            </div>
+            <div class="hbox">
+                <input type="checkbox" id="CBDLockFolders" data-preference="extensions.confirmbeforedelete.folders.lock" />
+                <label for="CBDLockFolders">__MSG_CBDcheck7__</label>
+            </div>
+            <div class="hbox">
+                <input type="checkbox" id="CBDMsgTag" data-preference="extensions.confirmbeforedelete.protect.enable" />
+                <label for="CBDMsgTag">__MSG_CBDcheck10__</label>
+            </div>
+            <select class="select" id="CBDtags" data-preference="extensions.confirmbeforedelete.protect.tag">
+                <!-- <option value="">--Please choose a tag--</option> -->
+            </select>
+        </div> 
+        <script src="options.js"/>
+    </body>
+</html>

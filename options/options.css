@@ -1,0 +1,30 @@
+html,
+body {
+    background-color: var(--color-gray-10);
+}
+
+body {
+    margin: 1em;
+}
+
+.center {
+    align-items: center;
+}
+
+button {
+    margin: 3px;
+}
+
+.hbox {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+[aria-hidden="true"] {
+    display: none;
+}
+
+[aria-hidden="false"] {
+    display: block;
+}
