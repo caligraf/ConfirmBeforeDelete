@@ -78,7 +78,7 @@ CBD.init = async function () {
 
         //unified toolbar delete button
         window.document.querySelector("unified-toolbar").addEventListener("click", function (event) {
-            if (event.target?.attributes['is'].nodeValue == "delete-button" ) {
+            if (event?.target?.attributes['is'].nodeValue == "delete-button" ) {
                 if (!window.CBD.checktrash(event.shiftKey)) {
                     event.preventDefault();
                     event.stopPropagation();
