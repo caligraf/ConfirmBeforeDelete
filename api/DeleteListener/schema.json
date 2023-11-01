@@ -1,0 +1,61 @@
+[
+  {
+    "namespace": "DeleteListener",
+    "events": [
+      {
+        "name": "onButtonDeleteClick",
+        "type": "function",
+        "parameters": [
+          {
+            "name": "shiftKey",
+            "type": "boolean"
+          }
+        ]
+      },
+      {
+        "name": "onSupprPressed",
+        "type": "function",
+        "parameters": [
+          {
+            "name": "shiftKey",
+            "type": "boolean"
+          }
+        ]
+      },
+      {
+        "name": "onToolBarButtonDeleteClick",
+        "type": "function",
+        "parameters": [
+          {
+            "name": "shiftKey",
+            "type": "boolean"
+          }
+        ]
+      }
+    ],
+    "functions": [
+      {
+        "name": "initTab",
+        "type": "function",
+        "async": true,
+        "parameters": [
+          {
+            "name": "tabId",
+            "type": "integer"
+          }
+        ]
+      },
+      {
+        "name": "initWindow",
+        "type": "function",
+        "async": true,
+        "parameters": [
+          {
+            "name": "windowId",
+            "type": "integer"
+          }
+        ]
+      }
+    ]
+  }
+]

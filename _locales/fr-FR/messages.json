@@ -39,13 +39,13 @@
         "message": "Impossible de vider la corbeille, parce qu'il contient un ou plusieurs dossiers.\\n"
     },
     "contactyesno": {
-        "message": "Voulez vous supprimer définitivement ces contacts?"
+        "message": "Voulez vous supprimer définitivement ces contacts ?"
     },
     "contactyesno2": {
-        "message": "Voulez vous supprimer ces contacts de la liste?"
+        "message": "Voulez vous supprimer ces contacts de la liste ?"
     },
     "deleteCalendar": {
-        "message": "Voulez vous supprimer définitivement cet élement?"
+        "message": "Voulez vous supprimer définitivement cet élement ?"
     },
     "deleteLocked": {
         "message": "La suppression des messages est bloquée par l'extension ConfirmBeforeDelete.\\nVous pouvez modifier ce choix en cliquant sur l'icône de la clé dans le gestionnaire de modules complémentaires.\\nhttps://support.mozilla.org/fr/kb/faq-modules-complementaires-thunderbird"
@@ -57,25 +57,25 @@
         "message": "est bloquée par l'extension ConfirmBeforeDelete.\\nVous pouvez modifier ce choix en cliquant sur l'icône de la clé dans le gestionnaire de modules complémentaires.\\nhttps://support.mozilla.org/fr/kb/faq-modules-complementaires-thunderbird"
     },
     "emptytrash": {
-        "message": "Voulez vous vider la corbeille?"
+        "message": "Voulez vous vider la corbeille ?"
     },
     "extensions.confirmbeforedelete.description": {
         "message": "Demande confirmation avant de supprimer des éléments"
     },
     "folderyesno": {
-        "message": "Voulez vous supprimer définitivement ces dossiers?"
+        "message": "Voulez vous supprimer définitivement ces dossiers ?"
     },
     "gotrash": {
-        "message": "Voulez vous déplacer ces messages dans la corbeille?"
+        "message": "Voulez vous déplacer ces messages dans la corbeille ?"
     },
     "gotrashfolder": {
-        "message": "Voulez vous déplacer ce dossier dans la corbeille?"
+        "message": "Voulez vous déplacer ce dossier dans la corbeille ?"
     },
     "lockedFolder": {
         "message": "Les Dossiers sont protégés par l'extension ConfirmBeforeDelete.\\nVous pouvez modifier ce choix en cliquant sur l'icône de la clé dans le gestionnaire de modules complémentaires.\\nhttps://support.mozilla.org/fr/kb/faq-modules-complementaires-thunderbird"
     },
     "mailyesno": {
-        "message": "Voulez vous supprimer définitivement ces messages?"
+        "message": "Voulez vous supprimer définitivement ces messages ?"
     },
     "wintitle": {
         "message": "Confimation de suppression"

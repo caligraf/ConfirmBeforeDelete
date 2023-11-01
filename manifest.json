@@ -24,7 +24,11 @@
     },
     "permissions": [
         "messagesRead",
-        "storage"
+        "storage",
+        "tabs",
+        "activeTab",
+        "messagesDelete",
+        "accountsRead"
     ],
     "experiment_apis": {
       "WindowListener": {
@@ -42,7 +46,16 @@
                 "paths": [["LegacyPrefs"]],
                 "script": "api/LegacyPrefs/implementation.js"
             }
-        }
+      },
+      "DeleteListener": {
+          "schema": "api/DeleteListener/schema.json",
+          "parent": {
+              "scopes": ["addon_parent"],
+              "paths": [["DeleteListener"]],
+              "script": "api/DeleteListener/implementation.js",
+              "events": ["startup"]
+          }
+      }
     },
     "background": {
       "scripts": [ "background.js" ]

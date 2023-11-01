@@ -39,10 +39,10 @@
         "message": "Unable to empty the trash, because it contains one or more folders.\\n"
     },
     "contactyesno": {
-        "message": "Do you want to permanently delete these contacts?"
+        "message": "Do you want to permanently delete these contacts ?"
     },
     "contactyesno2": {
-        "message": "Do you want to delete these contacts from the list?"
+        "message": "Do you want to delete these contacts from the list ?"
     },
     "deleteCalendar": {
         "message": "Do you want to permanently delete this item?"
@@ -63,19 +63,19 @@
         "message": "Request confirmation before deletion of items"
     },
     "folderyesno": {
-        "message": "Do you want to permanently delete these folders?"
+        "message": "Do you want to permanently delete these folders ?"
     },
     "gotrash": {
-        "message": "Do you want to move these messages to the trash?"
+        "message": "Do you want to move these messages to the trash ?"
     },
     "gotrashfolder": {
-        "message": "Do you want to move these folders to the trash?"
+        "message": "Do you want to move these folders to the trash ?"
     },
     "lockedFolder": {
         "message": "Folders are locked by the ConfirmBeforeDelete extension.\\nYou can change this option by clicking wrench icon in the Add-on Manager.\\nhttps://support.mozilla.org/en-US/kb/thunderbird-add-ons-frequently-asked-questions"
     },
     "mailyesno": {
-        "message": "Do you want to permanently delete these messages?"
+        "message": "Do you want to permanently delete these messages ?"
     },
     "wintitle": {
         "message": "Confirmation of deletion"
