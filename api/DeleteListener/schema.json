@@ -23,7 +23,47 @@
         ]
       },
       {
+        "name": "onWindowSupprPressed",
+        "type": "function",
+        "parameters": [
+          {
+            "name": "shiftKey",
+            "type": "boolean"
+          }
+        ]
+      },
+      {
         "name": "onToolBarButtonDeleteClick",
+        "type": "function",
+        "parameters": [
+          {
+            "name": "shiftKey",
+            "type": "boolean"
+          }
+        ]
+      },
+      {
+        "name": "onWindowToolBarButtonDeleteClick",
+        "type": "function",
+        "parameters": [
+          {
+            "name": "shiftKey",
+            "type": "boolean"
+          }
+        ]
+      },
+      {
+        "name": "onMailMessageToolBarButtonDeleteClick",
+        "type": "function",
+        "parameters": [
+          {
+            "name": "shiftKey",
+            "type": "boolean"
+          }
+        ]
+      },
+      {
+        "name": "onMailMessageSupprPressed",
         "type": "function",
         "parameters": [
           {
@@ -47,6 +87,17 @@
       },
       {
         "name": "initWindow",
+        "type": "function",
+        "async": true,
+        "parameters": [
+          {
+            "name": "windowId",
+            "type": "integer"
+          }
+        ]
+      },
+      {
+        "name": "initWindowDisplay",
         "type": "function",
         "async": true,
         "parameters": [

@@ -14,31 +14,28 @@ async function setPrefInStorage(prefName, prefValue) {
 async function prompt4Confirm(message) {
    
     return new Promise(resolve => {
-        try {
-            function close(sender, value) {
-                messenger.windows.remove(sender.tab.windowId);        
-                messenger.runtime.onMessage.removeListener(handleCommands);        
-                resolve(value);
-            }
-            function handleCommands(message, sender) {
-                const { command } = message;
-                switch (command) {
-                    case "prompt.clickOk":
-                        close(sender, true);
-                        break;                    
-                    case "prompt.clickCancel":
-                        close(sender, false);
-                        break;
-                }
-            };
-            messenger.runtime.onMessage.addListener(handleCommands);
-            messenger.windows.create({
-                type: "popup",
-                url: "prompt4Confirm/prompt.html?message="+message
-            });
-        } catch(ex) {
-            console.log(ex);
-        }
+
+         function close(sender, value) {
+             messenger.windows.remove(sender.tab.windowId);        
+             messenger.runtime.onMessage.removeListener(handleCommands);        
+             resolve(value);
+         }
+         function handleCommands(message, sender) {
+             const { command } = message;
+             switch (command) {
+                 case "prompt.clickOk":
+                     close(sender, true);
+                     break;                    
+                 case "prompt.clickCancel":
+                     close(sender, false);
+                     break;
+             }
+         };
+         messenger.runtime.onMessage.addListener(handleCommands);
+         messenger.windows.create({
+             type: "popup",
+             url: "prompt4Confirm/prompt.html?message="+message
+         });
     });
 }
 
@@ -111,12 +108,11 @@ async function isMessageInTrash(folder) {
     }
 }
 
-async function askUserToConfirmDelete(shiftKey) {
-  let selectedMessages = await messenger.mailTabs.getSelectedMessages();
-  if( selectedMessages.messages.length > 0 ) {
-    let deleteLocked = await isDeleteLocked(selectedMessages.messages);
+async function askUserToConfirmDelete(shiftKey, selectedMessages) {
+  if( selectedMessages.length > 0 ) {
+    let deleteLocked = await isDeleteLocked(selectedMessages);
     if( !deleteLocked ) {
-        let inTrash = await isMessageInTrash(selectedMessages.messages[0].folder);
+        let inTrash = await isMessageInTrash(selectedMessages[0].folder);
         let deleteMessage = false;
         let confirmDeleteInTrash = await getPrefInStorage("extensions.confirmbeforedelete.delete.enable")
         if (inTrash && confirmDeleteInTrash)
@@ -139,8 +135,8 @@ async function askUserToConfirmDelete(shiftKey) {
             deleteMessage = true;
         if (deleteMessage) {
             let messagesIds = [];
-            for( let i =0; i < selectedMessages.messages.length; i++) {
-                messagesIds.push(selectedMessages.messages[i].id);
+            for( let i =0; i < selectedMessages.length; i++) {
+                messagesIds.push(selectedMessages[i].id);
             }
             messenger.messages.delete(messagesIds, shiftKey);
         }
@@ -150,17 +146,84 @@ async function askUserToConfirmDelete(shiftKey) {
 
 // listen on suppr key
 browser.DeleteListener.onSupprPressed.addListener( async (shiftKey) => {
-  await askUserToConfirmDelete(shiftKey);
+    let selectedMessages = await messenger.mailTabs.getSelectedMessages();
+    await askUserToConfirmDelete(shiftKey, selectedMessages.messages);
 });
+
+// listen on suppr key in a MessageDispaly
+browser.DeleteListener.onWindowSupprPressed.addListener( async (shiftKey) => {
+    let currentWindow = await messenger.windows.getCurrent({populate:true});
+    if( currentWindow && currentWindow.tabs.length > 0) {
+        let message = await browser.messageDisplay.getDisplayedMessage(currentWindow.tabs[0].id);
+        let messagesDisplayed = [];
+        messagesDisplayed.push(message);
+        await askUserToConfirmDelete(shiftKey, messagesDisplayed);
+    }
+});
+
+browser.DeleteListener.onMailMessageSupprPressed.addListener( async (shiftKey) => {
+   let currentWindow = await messenger.windows.getCurrent({populate:true});
+   if( currentWindow && currentWindow.tabs.length > 0) {
+       let i = 0;
+       for( ; i < currentWindow.tabs.length ; i++ ) {
+           if( currentWindow.tabs[i].active )
+               break;
+       }
+       if( i < currentWindow.tabs.length) {
+        let currentTab = await messenger.tabs.get(currentWindow.tabs[i].id);
+        if( currentTab ) {
+            let displayedMesage = await messenger.messageDisplay.getDisplayedMessage(currentTab.id);
+            let messagesDisplayed = [];
+            messagesDisplayed.push(displayedMesage);
+            await askUserToConfirmDelete(shiftKey, messagesDisplayed);
+        }
+       }
+   }
+});
+
 
 // listen on delete button on unified toolbar
 browser.DeleteListener.onToolBarButtonDeleteClick.addListener( async (shiftKey) => {
-  await askUserToConfirmDelete(shiftKey);
+    let selectedMessages = await messenger.mailTabs.getSelectedMessages();
+    await askUserToConfirmDelete(shiftKey, selectedMessages.messages);
 });
+
+// listen on delete button on window message toolbar
+browser.DeleteListener.onWindowToolBarButtonDeleteClick.addListener( async (shiftKey) => {
+    let currentWindow = await messenger.windows.getCurrent({populate:true});
+    if( currentWindow && currentWindow.tabs.length > 0) {
+        let message = await browser.messageDisplay.getDisplayedMessage(currentWindow.tabs[0].id);
+        let messagesDisplayed = [];
+        messagesDisplayed.push(message);
+        await askUserToConfirmDelete(shiftKey, messagesDisplayed);
+    }
+});
+
+browser.DeleteListener.onMailMessageToolBarButtonDeleteClick.addListener( async (shiftKey) => {
+   let currentWindow = await messenger.windows.getCurrent({populate:true});
+   if( currentWindow && currentWindow.tabs.length > 0) {
+       let i = 0;
+       for( ; i < currentWindow.tabs.length ; i++ ) {
+           if( currentWindow.tabs[i].active )
+               break;
+       }
+       if( i < currentWindow.tabs.length) {
+        let currentTab = await messenger.tabs.get(currentWindow.tabs[i].id);
+        if( currentTab ) {
+            let displayedMesage = await messenger.messageDisplay.getDisplayedMessage(currentTab.id);
+            let messagesDisplayed = [];
+            messagesDisplayed.push(displayedMesage);
+            await askUserToConfirmDelete(shiftKey, messagesDisplayed);
+        }
+       }
+   }
+});
+
 
 // listen on delete button
 browser.DeleteListener.onButtonDeleteClick.addListener( async (shiftKey) => {
-  await askUserToConfirmDelete(shiftKey);
+    let selectedMessages = await messenger.mailTabs.getSelectedMessages();
+    await askUserToConfirmDelete(shiftKey, selectedMessages.messages);
 });
 
 // move preference in local storage, if not exists set value to defaultValue
@@ -201,7 +264,10 @@ async function main() {
     });
     
     messenger.windows.onCreated.addListener((windowCreated) => {
-        messenger.DeleteListener.initWindow(windowCreated.id);
+        if( windowCreated.type == "normal" ) 
+            messenger.DeleteListener.initWindow(windowCreated.id);
+        else if(windowCreated.type == "messageDisplay" ) 
+            messenger.DeleteListener.initWindowDisplay(windowCreated.id);
     });
 
     let currentWindow = await messenger.windows.getCurrent();

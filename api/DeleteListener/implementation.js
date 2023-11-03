@@ -7,6 +7,9 @@
   var { ExtensionCommon } = ChromeUtils.import("resource://gre/modules/ExtensionCommon.jsm");
 
   const listenerThreadPanes = new Set();
+  const listenerMailMessageTab = new Set();
+  const listenerWindow1 = new Set();
+  const listenerWindow2 = new Set();
   const messageListListener = new ExtensionCommon.EventEmitter();
 
   class DeleteListener extends ExtensionCommon.ExtensionAPI {
@@ -22,12 +25,18 @@
         about3PaneWindow.removeEventListener("click", onButtonDeleteClick, true);
         about3PaneWindow.removeEventListener("keydown", onSupprPressed, true);
       }
-      //removing previously set onClick listeners
-      // for (const threadPane of listenerThreadPanes.values()) {
-        // if (threadPane) {
-          // threadPane.removeEventListener("click", onButtonDeleteClick, true);
-        // }
-      // }
+      for (const mailMessageTab of listenerMailMessageTab.values()) {
+        mailMessageTab.removeEventListener("click", onMailMessageToolBarButtonDeleteClick, true);
+        mailMessageTab.removeEventListener("keydown", onMailMessageSupprPressed, true);
+      }
+      for (const windowListened of listenerWindow1.values()) {
+        windowListened.removeEventListener("click", onToolBarButtonDeleteClick, true);
+      }
+      for (const windowListened of listenerWindow2.values()) {
+        windowListened.removeEventListener("click", onWindowToolBarButtonDeleteClick, true);
+        windowListened.removeEventListener("keydown", onWindowSupprPressed, true);
+      }
+
       // Flush all caches
       Services.obs.notifyObservers(null, "startupcache-invalidate");
     }
@@ -64,6 +73,34 @@
             },
           }).api(),
           
+          onWindowToolBarButtonDeleteClick: new ExtensionCommon.EventManager({
+            context,
+            name: "DeleteListener.onWindowToolBarButtonDeleteClick",
+            register(fire) {
+              function callback(event, shiftKey) {
+                return fire.async(shiftKey);
+              }
+              messageListListener.on("messagelist-windowtoolbarclicked", callback);
+              return function () {
+                messageListListener.off("messagelist-windowtoolbarclicked", callback);
+              };
+            },
+          }).api(),
+          
+          onMailMessageToolBarButtonDeleteClick: new ExtensionCommon.EventManager({
+            context,
+            name: "DeleteListener.onMailMessageToolBarButtonDeleteClick",
+            register(fire) {
+              function callback(event, shiftKey) {
+                return fire.async(shiftKey);
+              }
+              messageListListener.on("messagelist-mailmessagetoolbarclicked", callback);
+              return function () {
+                messageListListener.off("messagelist-mailmessagetoolbarclicked", callback);
+              };
+            },
+          }).api(),
+          
           onSupprPressed: new ExtensionCommon.EventManager({
             context,
             name: "DeleteListener.onSupprPressed",
@@ -77,22 +114,51 @@
               };
             },
           }).api(),
+          
+          onWindowSupprPressed: new ExtensionCommon.EventManager({
+            context,
+            name: "DeleteListener.onWindowSupprPressed",
+            register(fire) {
+              function callback(event, shiftKey) {
+                return fire.async(shiftKey);
+              }
+              messageListListener.on("messagelist-windowkeypressed", callback);
+              return function () {
+                messageListListener.off("messagelist-windowkeypressed", callback);
+              };
+            },
+          }).api(),
 
+          onMailMessageSupprPressed: new ExtensionCommon.EventManager({
+            context,
+            name: "DeleteListener.onMailMessageSupprPressed",
+            register(fire) {
+              function callback(event, shiftKey) {
+                return fire.async(shiftKey);
+              }
+              messageListListener.on("messagelist-mailmessagekeypressed", callback);
+              return function () {
+                messageListListener.off("messagelist-mailmessagekeypressed", callback);
+              };
+            },
+          }).api(),
+          
           initTab: async function (tabId) {
             let { nativeTab } = context.extension.tabManager.get(tabId);
             let about3PaneWindow = getAbout3PaneWindow(nativeTab);
-            if (!about3PaneWindow) {
-              return
+            if (about3PaneWindow) {
+                about3PaneWindow.addEventListener("click", onButtonDeleteClick, true);
+                listenerThreadPanes.add(about3PaneWindow);
+                about3PaneWindow.addEventListener("keydown", onSupprPressed, true);    
+            } else {
+                let mailMessageTab = getMailMessageTab(nativeTab);
+                if( !mailMessageTab) {
+                    return;
+                }
+                mailMessageTab.addEventListener("click", onMailMessageToolBarButtonDeleteClick, true);
+                listenerMailMessageTab.add(mailMessageTab);
+                mailMessageTab.addEventListener("keydown", onMailMessageSupprPressed, true); 
             }
-            about3PaneWindow.addEventListener("click", onButtonDeleteClick, true);
-            listenerThreadPanes.add(about3PaneWindow);
-            about3PaneWindow.addEventListener("keydown", onSupprPressed, true);
-            
-            // let threadPane = about3PaneWindow.threadPane
-            // if (threadPane) {
-              // threadPane.addEventListener("click", onButtonDeleteClick, true);
-              // listenerThreadPanes.add(threadPane);
-            // }
           },
           
           initWindow: async function (windowId) {
@@ -101,8 +167,20 @@
                 return
             }
             let toolbar = nativeWindow.document.querySelector("unified-toolbar");
-            toolbar.addEventListener("click", onToolBarButtonDeleteClick, true);
-            listenerThreadPanes.add(nativeWindow);
+            if( toolbar ) {
+                toolbar.addEventListener("click", onToolBarButtonDeleteClick, true);
+                listenerWindow1.add(toolbar);
+            }
+          },
+          
+          initWindowDisplay: async function (windowId) {
+            let nativeWindow = context.extension.windowManager.get(windowId, context).window;
+            if( !nativeWindow ) {
+                return
+            }
+            nativeWindow.addEventListener("click", onWindowToolBarButtonDeleteClick, true);
+            nativeWindow.addEventListener("keydown", onWindowSupprPressed, true);
+            listenerWindow2.add(nativeWindow);
           }
         },
       };
@@ -110,7 +188,14 @@
   };
 
   function getAbout3PaneWindow(nativeTab) {
-    if (nativeTab.mode && nativeTab.mode.name == "mail3PaneTab") {
+    if (nativeTab.mode && nativeTab.mode.name == "mail3PaneTab" ) {
+      return nativeTab.chromeBrowser.contentWindow
+    }
+    return null;
+  }
+  
+  function getMailMessageTab(nativeTab) {
+    if (nativeTab.mode && nativeTab.mode.name == "mailMessageTab") {
       return nativeTab.chromeBrowser.contentWindow
     }
     return null;
@@ -123,7 +208,23 @@
         messageListListener.emit("messagelist-toolbarclicked", event.shiftKey);
     }
   }
+  
+  function onWindowToolBarButtonDeleteClick(event) {
+    if (event?.target?.id == "hdrTrashButton") {
+        event.preventDefault();
+        event.stopPropagation();
+        messageListListener.emit("messagelist-windowtoolbarclicked", event.shiftKey);
+    }
+  }
 
+  function onMailMessageToolBarButtonDeleteClick(event) {
+    if (event?.target?.id == "hdrTrashButton") {
+        event.preventDefault();
+        event.stopPropagation();
+        messageListListener.emit("messagelist-mailmessagetoolbarclicked", event.shiftKey);
+    }
+  }
+  
   function onButtonDeleteClick(event) {
     if (event?.target?.id == "hdrTrashButton") {
         event.preventDefault();
@@ -136,6 +237,20 @@
     if (event.key == "Delete") {
         event.preventDefault();
         messageListListener.emit("messagelist-keypressed", event.shiftKey);
+    }
+  }
+  
+  function onWindowSupprPressed(event) {
+    if (event.key == "Delete") {
+        event.preventDefault();
+        messageListListener.emit("messagelist-windowkeypressed", event.shiftKey);
+    }
+  }
+  
+  function onMailMessageSupprPressed(event) {
+    if (event.key == "Delete") {
+        event.preventDefault();
+        messageListListener.emit("messagelist-mailmessagekeypressed", event.shiftKey);
     }
   }
   // Export the api by assigning in to the exports parameter of the anonymous closure
