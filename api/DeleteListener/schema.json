@@ -142,6 +142,10 @@
           {
             "name": "tabId",
             "type": "integer"
+          },
+          {
+            "name": "isMail",
+            "type": "boolean"
           }
         ]
       },
@@ -164,6 +168,17 @@
           {
             "name": "windowId",
             "type": "integer"
+          }
+        ]
+      },
+      {
+        "name": "disableDragAndDropFolder",
+        "type": "function",
+        "async": true,
+        "parameters": [
+          {
+            "name": "disable",
+            "type": "boolean"
           }
         ]
       }

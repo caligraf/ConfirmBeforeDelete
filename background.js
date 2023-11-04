@@ -361,7 +361,7 @@ async function main() {
     messenger.tabs.onCreated.addListener((tab) => {
         if( tab.type === "messageDisplay" || tab.type === "mail" ) {
             console.log(" messenger.tabs.onCreated.addListener");
-            messenger.DeleteListener.initTab(tab.id);
+            messenger.DeleteListener.initTab(tab.id, (tab.type === "mail"));
         }
     });
     
@@ -378,8 +378,15 @@ async function main() {
     
     let tabs = await browser.tabs.query({})
     for (let tab of tabs) {
-        messenger.DeleteListener.initTab(tab.id);
+        messenger.DeleteListener.initTab(tab.id, (tab.type === "mail"));
     }
+    
+    messenger.tabs.onActivated.addListener(async (activeInfo) => {
+        let isAndDropFolders = await getPrefInStorage("extensions.confirmbeforedelete.folders.lock");
+        messenger.DeleteListener.disableDragAndDropFolder(isAndDropFolders);
+    });
+    let isAndDropFolders = await getPrefInStorage("extensions.confirmbeforedelete.folders.lock");
+    messenger.DeleteListener.disableDragAndDropFolder(isAndDropFolders);
 }
 
 main();

@@ -12,6 +12,7 @@
   const listenerWindow2 = new Set();
   const listenerToolbar = new Set();
   const messageListListener = new ExtensionCommon.EventEmitter();
+  var isDisableDragAndDropFolder = false;
 
   class DeleteListener extends ExtensionCommon.ExtensionAPI {
     onStartup() {
@@ -53,9 +54,28 @@
       // Flush all caches
       Services.obs.notifyObservers(null, "startupcache-invalidate");
     }
-
+    
+    async sleep(delay) {
+        let timer = Components.classes["@mozilla.org/timer;1"].createInstance(
+            Components.interfaces.nsITimer
+        );
+        return new Promise(function (resolve, reject) {
+            let event = {
+                notify: function (timer) {
+                resolve();
+                },
+            };
+            timer.initWithCallback(
+                event,
+                delay,
+                Components.interfaces.nsITimer.TYPE_ONE_SHOT
+            );
+        });
+    }
 
     getAPI(context) {
+         let self = this;
+
       return {
         DeleteListener: {
           onButtonDeleteClick: new ExtensionCommon.EventManager({
@@ -240,7 +260,7 @@
             },
           }).api(),
           
-          initTab: async function (tabId) {
+          initTab: async function (tabId, isMail) {
             let { nativeTab } = context.extension.tabManager.get(tabId);
             let about3PaneWindow = getAbout3PaneWindow(nativeTab);
             if (about3PaneWindow) {
@@ -249,9 +269,30 @@
                 about3PaneWindow.addEventListener("keydown", onSupprPressed, true);
                 if( about3PaneWindow.mailContextMenu?._menupopup)               
                     about3PaneWindow.mailContextMenu._menupopup.addEventListener("command", onContextMenu, true);
+                else {
+                     about3PaneWindow.addEventListener("contextmenu", function (event) {
+                         about3PaneWindow.mailContextMenu._menupopup.addEventListener("command", onContextMenu, true);
+                     }, {
+                        once: true
+                    }, false);
+                }
                 
-                if( about3PaneWindow.folderTree ) 
-                    about3PaneWindow.folderTree.addEventListener("dragstart", onFolderDragStart, true);
+                if (isMail) {
+                    if( about3PaneWindow.folderTree ) 
+                        about3PaneWindow.folderTree.addEventListener("dragstart", onFolderDragStart, true);
+                    else {
+                        
+                        // folderTree is not loaded, waiting 20 x 50 ms
+                        for (let i = 0; i < 20; i++) {
+                            await self.sleep(50);
+                            if (about3PaneWindow.folderTree) {
+                                break;
+                            }
+                        }
+                        if( about3PaneWindow.folderTree) // it is possible that folderTree is not loaded
+                            about3PaneWindow.folderTree.addEventListener("dragstart", onFolderDragStart, true);
+                    }
+                }
             } else {
                 let mailMessageTab = getMailMessageTab(nativeTab);
                 if( !mailMessageTab) {
@@ -290,6 +331,10 @@
             listenerWindow2.add(nativeWindow);
             // if( nativeWindow.mailContextMenu?._menupopup)
                 // nativeWindow.mailContextMenu._menupopup.addEventListener("command", onWindowContextMenu, true);
+          },
+          
+          disableDragAndDropFolder: async function (disable) {
+              isDisableDragAndDropFolder = disable;
           }
         },
       };
@@ -396,7 +441,7 @@
   }
   
   function onFolderDragStart(event) {
-      if (event.target.id != "folderTree") {
+      if (isDisableDragAndDropFolder && event.target.id != "folderTree") {
           event.preventDefault();
           messageListListener.emit("messagelist-folderdragstart", event.shiftKey);
       }
