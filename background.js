@@ -147,20 +147,23 @@ async function askUserToConfirmDelete(shiftKey, selectedMessages) {
 // listen on suppr key
 browser.DeleteListener.onSupprPressed.addListener( async (shiftKey) => {
     let selectedMessages = await messenger.mailTabs.getSelectedMessages();
+    console.log("onSupprPressed");
     await askUserToConfirmDelete(shiftKey, selectedMessages.messages);
 });
 
-// listen on suppr key in a MessageDispaly
+// listen on suppr key in a MessageDisplayed in a window
 browser.DeleteListener.onWindowSupprPressed.addListener( async (shiftKey) => {
     let currentWindow = await messenger.windows.getCurrent({populate:true});
     if( currentWindow && currentWindow.tabs.length > 0) {
         let message = await browser.messageDisplay.getDisplayedMessage(currentWindow.tabs[0].id);
         let messagesDisplayed = [];
         messagesDisplayed.push(message);
+        console.log("onWindowSupprPressed");
         await askUserToConfirmDelete(shiftKey, messagesDisplayed);
     }
 });
 
+// listen on suppr key in a MessageDisplayed in a tab
 browser.DeleteListener.onMailMessageSupprPressed.addListener( async (shiftKey) => {
    let currentWindow = await messenger.windows.getCurrent({populate:true});
    if( currentWindow && currentWindow.tabs.length > 0) {
@@ -175,6 +178,7 @@ browser.DeleteListener.onMailMessageSupprPressed.addListener( async (shiftKey) =
             let displayedMesage = await messenger.messageDisplay.getDisplayedMessage(currentTab.id);
             let messagesDisplayed = [];
             messagesDisplayed.push(displayedMesage);
+            console.log("onMailMessageSupprPressed");
             await askUserToConfirmDelete(shiftKey, messagesDisplayed);
         }
        }
@@ -185,6 +189,7 @@ browser.DeleteListener.onMailMessageSupprPressed.addListener( async (shiftKey) =
 // listen on delete button on unified toolbar
 browser.DeleteListener.onToolBarButtonDeleteClick.addListener( async (shiftKey) => {
     let selectedMessages = await messenger.mailTabs.getSelectedMessages();
+    console.log("onToolBarButtonDeleteClick");
     await askUserToConfirmDelete(shiftKey, selectedMessages.messages);
 });
 
@@ -195,10 +200,12 @@ browser.DeleteListener.onWindowToolBarButtonDeleteClick.addListener( async (shif
         let message = await browser.messageDisplay.getDisplayedMessage(currentWindow.tabs[0].id);
         let messagesDisplayed = [];
         messagesDisplayed.push(message);
+        console.log("onWindowToolBarButtonDeleteClick");
         await askUserToConfirmDelete(shiftKey, messagesDisplayed);
     }
 });
 
+// listen on delete button in a tab message
 browser.DeleteListener.onMailMessageToolBarButtonDeleteClick.addListener( async (shiftKey) => {
    let currentWindow = await messenger.windows.getCurrent({populate:true});
    if( currentWindow && currentWindow.tabs.length > 0) {
@@ -213,18 +220,110 @@ browser.DeleteListener.onMailMessageToolBarButtonDeleteClick.addListener( async 
             let displayedMesage = await messenger.messageDisplay.getDisplayedMessage(currentTab.id);
             let messagesDisplayed = [];
             messagesDisplayed.push(displayedMesage);
+            console.log("onMailMessageToolBarButtonDeleteClick");
             await askUserToConfirmDelete(shiftKey, messagesDisplayed);
         }
        }
    }
 });
 
-
 // listen on delete button
 browser.DeleteListener.onButtonDeleteClick.addListener( async (shiftKey) => {
     let selectedMessages = await messenger.mailTabs.getSelectedMessages();
+    console.log("onButtonDeleteClick");
     await askUserToConfirmDelete(shiftKey, selectedMessages.messages);
 });
+
+// listen on delete from context menu in message tree
+browser.DeleteListener.onContextMenu.addListener( async (shiftKey) => {
+    let selectedMessages = await messenger.mailTabs.getSelectedMessages();
+    console.log("onButtonDeleteClick");
+    await askUserToConfirmDelete(shiftKey, selectedMessages.messages);
+});
+
+// listen on delete from context menu in message tab
+browser.DeleteListener.onMailMessageContextMenu.addListener( async (shiftKey) => {
+    let currentWindow = await messenger.windows.getCurrent({populate:true});
+    if( currentWindow && currentWindow.tabs.length > 0) {
+       let i = 0;
+       for( ; i < currentWindow.tabs.length ; i++ ) {
+           if( currentWindow.tabs[i].active )
+               break;
+       }
+       if( i < currentWindow.tabs.length) {
+        let currentTab = await messenger.tabs.get(currentWindow.tabs[i].id);
+        if( currentTab ) {
+            let displayedMesage = await messenger.messageDisplay.getDisplayedMessage(currentTab.id);
+            let messagesDisplayed = [];
+            messagesDisplayed.push(displayedMesage);
+            console.log("onMailMessageContextMenu");
+            await askUserToConfirmDelete(shiftKey, messagesDisplayed);
+        }
+       }
+    }
+});
+
+browser.DeleteListener.onWindowContextMenu.addListener( async (shiftKey) => {
+    let currentWindow = await messenger.windows.getCurrent({populate:true});
+    if( currentWindow && currentWindow.tabs.length > 0) {
+        let message = await browser.messageDisplay.getDisplayedMessage(currentWindow.tabs[0].id);
+        let messagesDisplayed = [];
+        messagesDisplayed.push(message);
+        console.log("onWindowContextMenu");
+        await askUserToConfirmDelete(shiftKey, messagesDisplayed);
+    }
+});
+
+
+// listen on delete from delete menu in main window
+browser.DeleteListener.onMenuDelete.addListener( async (shiftKey) => {
+    let currentWindow = await messenger.windows.getCurrent({populate:true});
+    if( currentWindow && currentWindow.tabs.length > 0) {
+       let i = 0;
+       for( ; i < currentWindow.tabs.length ; i++ ) {
+           if( currentWindow.tabs[i].active )
+               break;
+       }
+       if( i < currentWindow.tabs.length) {
+        let currentTab = await messenger.tabs.get(currentWindow.tabs[i].id);
+        if( currentTab ) {
+            if( currentTab.type === "messageDisplay") {
+                let displayedMesage = await messenger.messageDisplay.getDisplayedMessage(currentTab.id);
+                let messagesDisplayed = [];
+                messagesDisplayed.push(displayedMesage);
+                console.log("onMenuDelete1");
+                await askUserToConfirmDelete(shiftKey, messagesDisplayed);
+            } else if( currentTab.type === "mail") {
+                let selectedMessages = await messenger.mailTabs.getSelectedMessages();
+                console.log("onMenuDelete2");
+                await askUserToConfirmDelete(shiftKey, selectedMessages.messages);
+            }
+        }
+       }
+    }    
+});
+
+// listen on delete from delete menu in a message window
+browser.DeleteListener.onWindowMenuDelete.addListener( async (shiftKey) => {
+    let currentWindow = await messenger.windows.getCurrent({populate:true});
+    if( currentWindow && currentWindow.tabs.length > 0) {
+        let message = await browser.messageDisplay.getDisplayedMessage(currentWindow.tabs[0].id);
+        let messagesDisplayed = [];
+        messagesDisplayed.push(message);
+        console.log("onWindowMenuDelete");
+        await askUserToConfirmDelete(shiftKey, messagesDisplayed);
+    }
+});
+
+// listen on folder drag start
+browser.DeleteListener.onFolderDragStart.addListener( async (shiftKey) => {
+    let foldersLocked = await getPrefInStorage("extensions.confirmbeforedelete.folders.lock");
+    if (foldersLocked) {
+        alertMessage = messenger.i18n.getMessage("lockedFolder", "Folders are locked by the ConfirmBeforeDelete extension.")
+        await showAlert(alertMessage);
+    }
+});
+
 
 // move preference in local storage, if not exists set value to defaultValue
 async function moveToStorage(prefName, defaultValue) {
@@ -260,10 +359,14 @@ async function main() {
 
 
     messenger.tabs.onCreated.addListener((tab) => {
-        messenger.DeleteListener.initTab(tab.id);
+        if( tab.type === "messageDisplay" || tab.type === "mail" ) {
+            console.log(" messenger.tabs.onCreated.addListener");
+            messenger.DeleteListener.initTab(tab.id);
+        }
     });
     
     messenger.windows.onCreated.addListener((windowCreated) => {
+        console.log(" messenger.windows.onCreated.addListener");
         if( windowCreated.type == "normal" ) 
             messenger.DeleteListener.initWindow(windowCreated.id);
         else if(windowCreated.type == "messageDisplay" ) 

@@ -71,6 +71,66 @@
             "type": "boolean"
           }
         ]
+      },
+      {
+        "name": "onContextMenu",
+        "type": "function",
+        "parameters": [
+          {
+            "name": "shiftKey",
+            "type": "boolean"
+          }
+        ]
+      },
+      {
+        "name": "onMailMessageContextMenu",
+        "type": "function",
+        "parameters": [
+          {
+            "name": "shiftKey",
+            "type": "boolean"
+          }
+        ]
+      },
+      {
+        "name": "onMenuDelete",
+        "type": "function",
+        "parameters": [
+          {
+            "name": "shiftKey",
+            "type": "boolean"
+          }
+        ]
+      },
+      {
+        "name": "onWindowMenuDelete",
+        "type": "function",
+        "parameters": [
+          {
+            "name": "shiftKey",
+            "type": "boolean"
+          }
+        ]
+      },
+      {
+        "name": "onFolderDragStart",
+        "type": "function",
+        "parameters": [
+          {
+            "name": "shiftKey",
+            "type": "boolean"
+          }
+        ]
+      },
+      {
+        "name": "onWindowContextMenu",
+        "type": "function",
+        "parameters": [
+          {
+            "name": "shiftKey",
+            "type": "boolean"
+          }
+        ]
       }
     ],
     "functions": [

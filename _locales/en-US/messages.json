@@ -36,7 +36,7 @@
         "message": "Block the deletion of messages"
     },
     "cantEmptyTrash": {
-        "message": "Unable to empty the trash, because it contains one or more folders.\\n"
+        "message": "Unable to empty the trash, because it contains one or more folders.\n"
     },
     "contactyesno": {
         "message": "Do you want to permanently delete these contacts ?"
@@ -54,7 +54,7 @@
         "message": "Deletion of messages with the"
     },
     "deleteTagLocked2": {
-        "message": "tag is blocked by the ConfirmBeforeDelete extension.\\nYou can change this option by clicking wrench icon in the Add-on Manager.\\nhttps://support.mozilla.org/en-US/kb/thunderbird-add-ons-frequently-asked-questions"
+        "message": "tag is blocked by the ConfirmBeforeDelete extension.\nYou can change this option by clicking wrench icon in the Add-on Manager.\\nhttps://support.mozilla.org/en-US/kb/thunderbird-add-ons-frequently-asked-questions"
     },
     "emptytrash": {
         "message": "Do you want to empty the trash?"
