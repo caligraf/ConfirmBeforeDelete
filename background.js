@@ -34,7 +34,9 @@ async function prompt4Confirm(message) {
          messenger.runtime.onMessage.addListener(handleCommands);
          messenger.windows.create({
              type: "popup",
-             url: "prompt4Confirm/prompt.html?message="+message
+             url: "prompt4Confirm/prompt.html?message="+message,
+             height: 180,
+             width: 600
          });
     });
 }
@@ -60,7 +62,9 @@ async function showAlert(alertMessage) {
         messenger.runtime.onMessage.addListener(handleCommands);
         messenger.windows.create({
             type: "popup",
-            url: "alert/alert.html?message="+alertMessage
+            url: "alert/alert.html?message="+alertMessage,
+            height: 360,
+            width: 600
         });
      });
 }
