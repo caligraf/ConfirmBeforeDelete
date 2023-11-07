@@ -29,7 +29,8 @@
         "activeTab",
         "messagesDelete",
         "accountsRead",
-        "menus"
+        "menus",
+        "accountsFolders"
     ],
     "experiment_apis": {
       "WindowListener": {

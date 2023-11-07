@@ -118,7 +118,7 @@ async function askUserToConfirmDelete(shiftKey, selectedMessages) {
     if( !deleteLocked ) {
         let inTrash = await isMessageInTrash(selectedMessages[0].folder);
         let deleteMessage = false;
-        let confirmDeleteInTrash = await getPrefInStorage("extensions.confirmbeforedelete.delete.enable")
+        let confirmDeleteInTrash = await getPrefInStorage("extensions.confirmbeforedelete.delete.enable");
         if (inTrash && confirmDeleteInTrash)
             deleteMessage = await confirmbeforedelete('mailyesno');
         else if (!inTrash) {
@@ -149,10 +149,24 @@ async function askUserToConfirmDelete(shiftKey, selectedMessages) {
 }
 
 // listen on suppr key
-browser.DeleteListener.onSupprPressed.addListener( async (shiftKey) => {
-    let selectedMessages = await messenger.mailTabs.getSelectedMessages();
-    console.log("onSupprPressed");
-    await askUserToConfirmDelete(shiftKey, selectedMessages.messages);
+browser.DeleteListener.onSupprPressed.addListener( async (shiftKey, foldertree) => {
+    if( !foldertree ) {
+        let selectedMessages = await messenger.mailTabs.getSelectedMessages();
+        console.log("onSupprPressed");
+        await askUserToConfirmDelete(shiftKey, selectedMessages.messages);
+    } else {
+        let mailTab = await messenger.mailTabs.getCurrent();
+        let folderDisplayed = mailTab.displayedFolder;
+        let confirmDeleteInTrash = await getPrefInStorage("extensions.confirmbeforedelete.moveFoldersToTrash.enable");
+        if( confirmDeleteInTrash ) {
+            let deleteFolder = await confirmbeforedelete('gotrashfolder');
+            if( deleteFolder) {
+                await messenger.folders.delete(folderDisplayed);
+            }
+        } else {
+            await messenger.folders.delete(folderDisplayed);
+        }
+    }
 });
 
 // listen on suppr key in a MessageDisplayed in a window
@@ -357,6 +371,7 @@ async function main() {
         await moveToStorage("extensions.confirmbeforedelete.folders.lock", false);
         await moveToStorage("extensions.confirmbeforedelete.delete.lock", false);
         await moveToStorage("extensions.confirmbeforedelete.protect.enable", false);
+        await moveToStorage("extensions.confirmbeforedelete.moveFoldersToTrash.enable", false);
         await moveToStorage("extensions.confirmbeforedelete.protect.tag", "$label1");
         //await setPrefInStorage("CBDMigrated", true);
     }

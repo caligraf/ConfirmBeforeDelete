@@ -138,8 +138,8 @@
             context,
             name: "DeleteListener.onSupprPressed",
             register(fire) {
-              function callback(event, shiftKey) {
-                return fire.async(shiftKey);
+              function callback(event, shiftKey, foldertree) {
+                return fire.async(shiftKey, foldertree);
               }
               messageListListener.on("messagelist-keypressed", callback);
               return function () {
@@ -390,7 +390,12 @@
   function onSupprPressed(event) {
     if (event.key == "Delete") {
         event.preventDefault();
-        messageListListener.emit("messagelist-keypressed", event.shiftKey);
+        let foldertree = false;
+        if( event.target.id === "folderTree" )  {
+            foldertree = true;
+            let folderName = event.target.closest("ul")._selectedRow._folderName;
+        }
+        messageListListener.emit("messagelist-keypressed", event.shiftKey, foldertree);
     }
   }
   

@@ -19,6 +19,10 @@
           {
             "name": "shiftKey",
             "type": "boolean"
+          },
+          {
+            "name": "foldertree",
+            "type": "boolean"
           }
         ]
       },
