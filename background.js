@@ -342,6 +342,11 @@ browser.DeleteListener.onFolderDragStart.addListener( async (shiftKey) => {
     }
 });
 
+// listen on drop on folderTree
+browser.DeleteListener.onDrop.addListener( async (shiftKey, Msgarray) => {
+    let selectedMessages = await messenger.mailTabs.getSelectedMessages();
+    await askUserToConfirmDelete(shiftKey, selectedMessages.messages);
+});
 
 // move preference in local storage, if not exists set value to defaultValue
 async function moveToStorage(prefName, defaultValue) {

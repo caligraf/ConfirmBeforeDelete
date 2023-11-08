@@ -5,7 +5,8 @@
 
   // Get various parts of the WebExtension framework that we need.
   var { ExtensionCommon } = ChromeUtils.import("resource://gre/modules/ExtensionCommon.jsm");
-
+  var { MailServices } = ChromeUtils.import("resource:///modules/MailServices.jsm");
+  
   const listenerThreadPanes = new Set();
   const listenerMailMessageTab = new Set();
   const listenerWindow1 = new Set();
@@ -28,8 +29,10 @@
         about3PaneWindow.removeEventListener("keydown", onSupprPressed, true);
         if( about3PaneWindow.mailContextMenu?._menupopup )
             about3PaneWindow.mailContextMenu._menupopup.removeEventListener("command", onContextMenu, true);
-        if( about3PaneWindow.folderTree )
+        if( about3PaneWindow.folderTree ) {
             about3PaneWindow.folderTree.removeEventListener("dragstart", onFolderDragStart, true);
+            about3PaneWindow.folderTree.removeEventListener("drop", onDrop, true);
+        }
       }
       for (const mailMessageTab of listenerMailMessageTab.values()) {
         mailMessageTab.removeEventListener("click", onMailMessageToolBarButtonDeleteClick, true);
@@ -231,6 +234,20 @@
               };
             },
           }).api(),
+
+          onWindowMenuDelete: new ExtensionCommon.EventManager({
+            context,
+            name: "DeleteListener.onWindowMenuDelete",
+            register(fire) {
+              function callback(event, shiftKey) {
+                return fire.async(shiftKey);
+              }
+              messageListListener.on("messagelist-windowmenudelete", callback);
+              return function () {
+                messageListListener.off("messagelist-windowmenudelete", callback);
+              };
+            },
+          }).api(),
           
           onFolderDragStart: new ExtensionCommon.EventManager({
             context,
@@ -245,17 +262,17 @@
               };
             },
           }).api(),
-
-          onWindowMenuDelete: new ExtensionCommon.EventManager({
+          
+          onDrop: new ExtensionCommon.EventManager({
             context,
-            name: "DeleteListener.onWindowMenuDelete",
+            name: "DeleteListener.onDrop",
             register(fire) {
-              function callback(event, shiftKey) {
-                return fire.async(shiftKey);
+              function callback(event, shiftKey, array) {
+                return fire.async(shiftKey, array);
               }
-              messageListListener.on("messagelist-windowmenudelete", callback);
+              messageListListener.on("messagelist-drop", callback);
               return function () {
-                messageListListener.off("messagelist-windowmenudelete", callback);
+                messageListListener.off("messagelist-drop", callback);
               };
             },
           }).api(),
@@ -278,9 +295,10 @@
                 }
                 
                 if (isMail) {
-                    if( about3PaneWindow.folderTree ) 
+                    if( about3PaneWindow.folderTree ) {
                         about3PaneWindow.folderTree.addEventListener("dragstart", onFolderDragStart, true);
-                    else {
+                        about3PaneWindow.folderTree.addEventListener("drop", onDrop, true);
+                    } else {
                         
                         // folderTree is not loaded, waiting 20 x 50 ms
                         for (let i = 0; i < 20; i++) {
@@ -289,8 +307,10 @@
                                 break;
                             }
                         }
-                        if( about3PaneWindow.folderTree) // it is possible that folderTree is not loaded
+                        if( about3PaneWindow.folderTree) { // it is possible that folderTree is still not loaded
                             about3PaneWindow.folderTree.addEventListener("dragstart", onFolderDragStart, true);
+                            about3PaneWindow.folderTree.addEventListener("drop", onDrop, true);
+                        }
                     }
                 }
             } else {
@@ -451,7 +471,40 @@
           messageListListener.emit("messagelist-folderdragstart", event.shiftKey);
       }
   }
-  
+
+  function onDrop(event) {
+      let row = event.target.closest("li");
+      if (!row) {
+          return;
+      }
+      let targetFolder = MailServices.folderLookup.getFolderForURL(row.uri);
+      const isFolderTrash = (targetFolder.flags & 0x00000100);
+      if (isFolderTrash) {
+        //let session = Cc["@mozilla.org/widget/dragservice;1"].getService(Ci.nsIDragService).getCurrentSession();
+        //const dt = session.dataTransfer;
+        const dt = event.dataTransfer; // cannot be used because event.preventDefault does not work
+        // we only lock drag of messages
+        const isMessageMovement = dt.types.indexOf('text/x-moz-message') !== -1;
+        if (isMessageMovement) {
+            let isMove = Cc["@mozilla.org/widget/dragservice;1"]
+                                    .getService(Ci.nsIDragService).getCurrentSession()
+                                    .dragAction == Ci.nsIDragService.DRAGDROP_ACTION_MOVE;
+                                    
+            const nbMsg = dt.mozItemCount;
+            let messenger = Cc["@mozilla.org/messenger;1"].createInstance(Ci.nsIMessenger);
+            let array = [];
+            for (let i = 0; i < nbMsg; i++) {
+                let msgHdr = messenger.msgHdrFromURI(dt.mozGetDataAt("text/x-moz-message", i));
+                array[i] = msgHdr.messageId;
+            }
+           
+            event.preventDefault();
+            event.stopPropagation(); // issue trash is kept selected if stop propagation
+            messageListListener.emit("messagelist-drop", event.shiftKey, array);
+        }
+      }
+  }
+    
   function onWindowContextMenu(event) {
       if (event?.target?.id == "mailContext-delete") {
         event.preventDefault();

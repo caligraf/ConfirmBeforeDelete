@@ -117,6 +117,16 @@
         ]
       },
       {
+        "name": "onWindowContextMenu",
+        "type": "function",
+        "parameters": [
+          {
+            "name": "shiftKey",
+            "type": "boolean"
+          }
+        ]
+      },
+      {
         "name": "onFolderDragStart",
         "type": "function",
         "parameters": [
@@ -127,12 +137,16 @@
         ]
       },
       {
-        "name": "onWindowContextMenu",
+        "name": "onDrop",
         "type": "function",
         "parameters": [
           {
             "name": "shiftKey",
             "type": "boolean"
+          },
+          {
+            "name": "array",
+            "type": "object"
           }
         ]
       }
