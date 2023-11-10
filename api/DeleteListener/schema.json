@@ -167,6 +167,16 @@
             "type": "boolean"
           }
         ]
+      },
+      {
+        "name": "onEmptyTrash",
+        "type": "function",
+        "parameters": [
+          {
+            "name": "shiftKey",
+            "type": "boolean"
+          }
+        ]
       }
     ],
     "functions": [

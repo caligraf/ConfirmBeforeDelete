@@ -392,6 +392,57 @@ browser.DeleteListener.onFolderContextMenu.addListener( async (shiftKey) => {
 
 });
 
+// listen on empty trash event
+browser.DeleteListener.onEmptyTrash.addListener( async (shiftKey) => {
+    let mailTab = await messenger.mailTabs.getCurrent();
+    let folderDisplayed = mailTab.displayedFolder;
+    let trashFolder = null;
+    if( folderDisplayed.type == "trash" ) {
+       trashFolder = folderDisplayed;
+    } else { // find trash folder
+        let mailAccount = await messenger.accounts.get(folderDisplayed.accountId,true);
+        if( mailAccount.folders) {
+            let i = 0;
+            for(; i< mailAccount.folders.length; i++) {
+                if(mailAccount.folders[i].type == "trash" )
+                    break;
+            }
+            if( i < mailAccount.folders.length) {
+                trashFolder = mailAccount.folders[i];
+            }
+        }
+    }
+    if( trashFolder ) {
+        let messageList = await messenger.messages.list(trashFolder);
+        if( messageList?.messages?.length > 0 ) {
+            let emptyTrash = true;
+            let askConfirmEmptyTrash = await getPrefInStorage("extensions.confirmbeforedelete.emptytrash.enable");
+            if( askConfirmEmptyTrash) {
+                let addGreatThan = '';
+                if( messageList.id )
+                    addGreatThan = '> ';
+                emptyTrash = await confirmbeforedelete('emptytrash', addGreatThan + messageList.messages.length);
+            }
+            if( emptyTrash) {
+                let messageIds = [];
+                for(let i =0; i< messageList.messages.length; i++) {
+                    messageIds.push(messageList.messages[i].id);
+                }
+                messenger.messages.delete(messageIds, true);
+                
+                while (messageList.id) {
+                    messageList = await messenger.messages.continueList(messageList.id);
+                    messageIds = [];
+                    for(let i =0; i< messageList.messages.length; i++) {
+                        messageIds.push(messageList.messages[i].id);
+                    }
+                    messenger.messages.delete(messageIds, true);
+                }
+            }
+        }
+    }
+});
+
 // move preference in local storage, if not exists set value to defaultValue
 async function moveToStorage(prefName, defaultValue) {
     let prefValue = await messenger.LegacyPrefs.getPref(prefName);

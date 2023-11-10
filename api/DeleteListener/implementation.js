@@ -179,6 +179,20 @@
             },
           }).api(),
           
+          onEmptyTrash: new ExtensionCommon.EventManager({
+            context,
+            name: "DeleteListener.onEmptyTrash",
+            register(fire) {
+              function callback(event, shiftKey) {
+                return fire.async(shiftKey);
+              }
+              messageListListener.on("messagelist-emptytrash", callback);
+              return function () {
+                messageListListener.off("messagelist-emptytrash", callback);
+              };
+            },
+          }).api(),
+          
           onMailMessageContextMenu: new ExtensionCommon.EventManager({
             context,
             name: "DeleteListener.onMailMessageContextMenu",
@@ -481,6 +495,10 @@
         event.preventDefault();
         event.stopPropagation();
         messageListListener.emit("messagelist-foldercontextmenu", event.shiftKey);
+    } else if (event?.target?.id == "folderPaneContext-emptyTrash" || event?.target?.id == "cmd_emptyTrash" ) {
+        event.preventDefault();
+        event.stopPropagation();
+        messageListListener.emit("messagelist-emptytrash", event.shiftKey);
     }
   }
   
@@ -534,13 +552,24 @@
                 let msgHdr = messenger.msgHdrFromURI(dt.mozGetDataAt("text/x-moz-message", i));
                 array[i] = msgHdr.messageId;
             }
-           
+            
+            // trash is kept selected if drag indicator is not removed
+            const dragIndicator = this.window.document.getElementById("folder-drag-indicator");
+            if (dragIndicator) {
+                dragIndicator.style.display = "none";
+            }
             event.preventDefault();
-            event.stopPropagation(); // issue trash is kept selected if stop propagation
+            event.stopPropagation(); 
             messageListListener.emit("messagelist-drop", event.shiftKey, array, false);
         } else if( isFolderMovement) {
             let sourceFolder = dt.mozGetDataAt("text/x-moz-folder", 0).QueryInterface(Ci.nsIMsgFolder);
-                        
+            
+            // trash is kept selected if drag indicator is not removed
+            const dragIndicator = this.window.document.getElementById("folder-drag-indicator");
+            if (dragIndicator) {
+                dragIndicator.style.display = "none";
+            }
+            
             event.preventDefault();
             event.stopPropagation(); // issue trash is kept selected if stop propagation
             messageListListener.emit("messagelist-drop", event.shiftKey, array, true);
