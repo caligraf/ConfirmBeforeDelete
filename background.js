@@ -461,7 +461,6 @@ async function main() {
             CBDMigrated: false
         });
     if (!isPreferencesMigrated.CBDMigrated) {
-        await moveToStorage("extensions.confirmbeforedelete.addressbook.enable", true);
         await moveToStorage("extensions.confirmbeforedelete.emptytrash.enable", true);
         await moveToStorage("extensions.confirmbeforedelete.shiftcanc.enable", true);
         await moveToStorage("extensions.confirmbeforedelete.delete.enable", true);
