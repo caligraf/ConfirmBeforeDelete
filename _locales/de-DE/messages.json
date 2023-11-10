@@ -57,7 +57,12 @@
         "message": "wird durch die Erweiterung ConfirmBeforeDelete blockiert.\\nSie können diese Einstellung in den Eigenschaften der Erweiterung ändern.\\nhttps://support.mozilla.org/de/kb/add-ons-faq"
     },
     "emptytrash": {
-        "message": "Möchten Sie den Papierkorb leeren?"
+        "message": "Möchten Sie den Papierkorb leeren ($number$ Nachrichten) ?",
+        "placeholders": {
+            "number": {
+                "content": "$1"
+            }
+        }
     },
     "extensions.confirmbeforedelete.description": {
         "message": "Bestätigungen für Löschvorgänge diverser Elemente"
@@ -69,7 +74,12 @@
         "message": "Möchten Sie diese Nachricht(en) in den Papierkorb verschieben?"
     },
     "gotrashfolder": {
-        "message": "Möchten Sie diese(n) Ordner in den Papierkorb verschieben?"
+        "message": "Möchten Sie den Ordner $folder$ in den Papierkorb verschieben?",
+        "placeholders": {
+            "folder": {
+                "content": "$1"
+            }
+        }
     },
     "lockedFolder": {
         "message": "Ordner sind durch die ConfirmBeforeDelete-Erweiterung gesperrt.\\nSie können diese Einstellung in den Eigenschaften der Erweiterung ändern.\\nhttps://support.mozilla.org/de/kb/add-ons-faq"
@@ -79,5 +89,8 @@
     },
     "wintitle": {
         "message": "Löschen bestätigen"
+    },
+    "CBDcancel": {
+        "message": "Stornieren"
     }
 }

@@ -57,7 +57,7 @@
         "message": "tag is blocked by the ConfirmBeforeDelete extension.\nYou can change this option by clicking wrench icon in the Add-on Manager.\\nhttps://support.mozilla.org/en-US/kb/thunderbird-add-ons-frequently-asked-questions"
     },
     "emptytrash": {
-        "message": "Do you want to empty the trash ( $number$ )messages) ?",
+        "message": "Do you want to empty the trash ( $number$ messages) ?",
         "placeholders": {
             "number": {
                 "content": "$1"
@@ -89,5 +89,8 @@
     },
     "wintitle": {
         "message": "Confirmation of deletion"
+    },
+    "CBDcancel": {
+        "message": "Cancel"
     }
 }

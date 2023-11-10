@@ -12,6 +12,7 @@ function handleClicks(event) {
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
+     i18n.updateDocument();
     const queryString = document.location.search;
     const urlParams = new URLSearchParams(queryString);
     const message = urlParams.get('message');

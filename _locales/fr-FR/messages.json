@@ -89,5 +89,8 @@
     },
     "wintitle": {
         "message": "Confimation de suppression"
+    },
+    "CBDcancel": {
+        "message": "Annuler"
     }
 }
