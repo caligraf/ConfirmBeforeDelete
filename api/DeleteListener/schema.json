@@ -103,6 +103,20 @@
           {
             "name": "shiftKey",
             "type": "boolean"
+          },
+          {
+            "name": "isFolder",
+            "type": "boolean"
+          }
+        ]
+      },
+      {
+        "name": "onFolderContextMenu",
+        "type": "function",
+        "parameters": [
+          {
+            "name": "shiftKey",
+            "type": "boolean"
           }
         ]
       },
@@ -147,6 +161,10 @@
           {
             "name": "array",
             "type": "object"
+          },
+          {
+            "name": "isFolder",
+            "type": "boolean"
           }
         ]
       }

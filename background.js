@@ -20,8 +20,8 @@ async function prompt4Confirm(message) {
              messenger.runtime.onMessage.removeListener(handleCommands);        
              resolve(value);
          }
-         function handleCommands(message, sender) {
-             const { command } = message;
+         function handleCommands(messageCmd, sender) {
+             const { command } = messageCmd;
              switch (command) {
                  case "prompt.clickOk":
                      close(sender, true);
@@ -69,8 +69,8 @@ async function showAlert(alertMessage) {
      });
 }
 
-async function confirmbeforedelete(type) {
-    return await prompt4Confirm(messenger.i18n.getMessage(type,"Do you want to move these messages to the trash?"));
+async function confirmbeforedelete(type, parameter) {
+    return await prompt4Confirm(messenger.i18n.getMessage(type, parameter));
 }
 
 async function isDeleteLocked(messages) {
@@ -159,7 +159,7 @@ browser.DeleteListener.onSupprPressed.addListener( async (shiftKey, foldertree) 
         let folderDisplayed = mailTab.displayedFolder;
         let confirmDeleteInTrash = await getPrefInStorage("extensions.confirmbeforedelete.moveFoldersToTrash.enable");
         if( confirmDeleteInTrash ) {
-            let deleteFolder = await confirmbeforedelete('gotrashfolder');
+            let deleteFolder = await confirmbeforedelete('gotrashfolder', folderDisplayed.name);
             if( deleteFolder) {
                 await messenger.folders.delete(folderDisplayed);
             }
@@ -294,31 +294,45 @@ browser.DeleteListener.onWindowContextMenu.addListener( async (shiftKey) => {
 
 
 // listen on delete from delete menu in main window
-browser.DeleteListener.onMenuDelete.addListener( async (shiftKey) => {
-    let currentWindow = await messenger.windows.getCurrent({populate:true});
-    if( currentWindow && currentWindow.tabs.length > 0) {
-       let i = 0;
-       for( ; i < currentWindow.tabs.length ; i++ ) {
-           if( currentWindow.tabs[i].active )
-               break;
-       }
-       if( i < currentWindow.tabs.length) {
-        let currentTab = await messenger.tabs.get(currentWindow.tabs[i].id);
-        if( currentTab ) {
-            if( currentTab.type === "messageDisplay") {
-                let displayedMesage = await messenger.messageDisplay.getDisplayedMessage(currentTab.id);
-                let messagesDisplayed = [];
-                messagesDisplayed.push(displayedMesage);
-                console.log("onMenuDelete1");
-                await askUserToConfirmDelete(shiftKey, messagesDisplayed);
-            } else if( currentTab.type === "mail") {
-                let selectedMessages = await messenger.mailTabs.getSelectedMessages();
-                console.log("onMenuDelete2");
-                await askUserToConfirmDelete(shiftKey, selectedMessages.messages);
+browser.DeleteListener.onMenuDelete.addListener( async (shiftKey, isFolder) => {
+    if( isFolder ) {
+        let mailTab = await messenger.mailTabs.getCurrent();
+        let folderDisplayed = mailTab.displayedFolder;
+        let confirmDeleteInTrash = await getPrefInStorage("extensions.confirmbeforedelete.moveFoldersToTrash.enable");
+        if( confirmDeleteInTrash ) {
+            let deleteFolder = await confirmbeforedelete('gotrashfolder', folderDisplayed.name);
+            if( deleteFolder) {
+                await messenger.folders.delete(folderDisplayed);
+            }
+        } else {
+            await messenger.folders.delete(folderDisplayed);
+        }
+    } else {
+        let currentWindow = await messenger.windows.getCurrent({populate:true});
+        if( currentWindow && currentWindow.tabs.length > 0) {
+            let i = 0;
+            for( ; i < currentWindow.tabs.length ; i++ ) {
+                if( currentWindow.tabs[i].active )
+                    break;
+            }
+            if( i < currentWindow.tabs.length) {
+                let currentTab = await messenger.tabs.get(currentWindow.tabs[i].id);
+                if( currentTab ) {
+                    if( currentTab.type === "messageDisplay") {
+                        let displayedMesage = await messenger.messageDisplay.getDisplayedMessage(currentTab.id);
+                        let messagesDisplayed = [];
+                        messagesDisplayed.push(displayedMesage);
+                        console.log("onMenuDelete1");
+                        await askUserToConfirmDelete(shiftKey, messagesDisplayed);
+                    } else if( currentTab.type === "mail") {
+                        let selectedMessages = await messenger.mailTabs.getSelectedMessages();
+                        console.log("onMenuDelete2");
+                        await askUserToConfirmDelete(shiftKey, selectedMessages.messages);
+                    }
+                }
             }
         }
-       }
-    }    
+    }
 });
 
 // listen on delete from delete menu in a message window
@@ -343,9 +357,39 @@ browser.DeleteListener.onFolderDragStart.addListener( async (shiftKey) => {
 });
 
 // listen on drop on folderTree
-browser.DeleteListener.onDrop.addListener( async (shiftKey, Msgarray) => {
-    let selectedMessages = await messenger.mailTabs.getSelectedMessages();
-    await askUserToConfirmDelete(shiftKey, selectedMessages.messages);
+browser.DeleteListener.onDrop.addListener( async (shiftKey, Msgarray, isFolder) => {
+    if( isFolder ) {
+        let mailTab = await messenger.mailTabs.getCurrent();
+        let folderDisplayed = mailTab.displayedFolder;
+        let confirmDeleteInTrash = await getPrefInStorage("extensions.confirmbeforedelete.moveFoldersToTrash.enable");
+        if( confirmDeleteInTrash ) {
+            let deleteFolder = await confirmbeforedelete('gotrashfolder', folderDisplayed.name);
+            if( deleteFolder) {
+                await messenger.folders.delete(folderDisplayed);
+            }
+        } else {
+            await messenger.folders.delete(folderDisplayed);
+        }
+    } else {
+        let selectedMessages = await messenger.mailTabs.getSelectedMessages();
+        await askUserToConfirmDelete(shiftKey, selectedMessages.messages);
+    }
+});
+
+// listen on folderTree context Menu
+browser.DeleteListener.onFolderContextMenu.addListener( async (shiftKey) => {
+    let mailTab = await messenger.mailTabs.getCurrent();
+    let folderDisplayed = mailTab.displayedFolder;
+    let confirmDeleteInTrash = await getPrefInStorage("extensions.confirmbeforedelete.moveFoldersToTrash.enable");
+    if( confirmDeleteInTrash ) {
+        let deleteFolder = await confirmbeforedelete('gotrashfolder', folderDisplayed.name);
+        if( deleteFolder) {
+            await messenger.folders.delete(folderDisplayed);
+        }
+    } else {
+        await messenger.folders.delete(folderDisplayed);
+    }
+
 });
 
 // move preference in local storage, if not exists set value to defaultValue

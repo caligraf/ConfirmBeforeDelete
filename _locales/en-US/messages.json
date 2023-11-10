@@ -69,7 +69,12 @@
         "message": "Do you want to move these messages to the trash ?"
     },
     "gotrashfolder": {
-        "message": "Do you want to move these folders to the trash ?"
+        "message": "Do you want to move the folder $folder$ to the trash ?",
+        "placeholders": {
+            "folder": {
+                "content": "$1"
+            }
+        }
     },
     "lockedFolder": {
         "message": "Folders are locked by the ConfirmBeforeDelete extension.\\nYou can change this option by clicking wrench icon in the Add-on Manager.\\nhttps://support.mozilla.org/en-US/kb/thunderbird-add-ons-frequently-asked-questions"

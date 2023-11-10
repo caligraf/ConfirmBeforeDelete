@@ -69,7 +69,12 @@
         "message": "Voulez vous déplacer ces messages dans la corbeille ?"
     },
     "gotrashfolder": {
-        "message": "Voulez vous déplacer ce dossier dans la corbeille ?"
+        "message": "Voulez vous déplacer le dossier $folder$ dans la corbeille ?",
+        "placeholders": {
+            "folder": {
+                "content": "$1"
+            }
+        }
     },
     "lockedFolder": {
         "message": "Les Dossiers sont protégés par l'extension ConfirmBeforeDelete.\nVous pouvez modifier ce choix en cliquant sur l'icône de la clé dans le gestionnaire de modules complémentaires.\nhttps://support.mozilla.org/fr/kb/faq-modules-complementaires-thunderbird"

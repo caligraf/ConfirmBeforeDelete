@@ -165,6 +165,20 @@
             },
           }).api(),
           
+          onFolderContextMenu: new ExtensionCommon.EventManager({
+            context,
+            name: "DeleteListener.onFolderContextMenu",
+            register(fire) {
+              function callback(event, shiftKey) {
+                return fire.async(shiftKey);
+              }
+              messageListListener.on("messagelist-foldercontextmenu", callback);
+              return function () {
+                messageListListener.off("messagelist-foldercontextmenu", callback);
+              };
+            },
+          }).api(),
+          
           onMailMessageContextMenu: new ExtensionCommon.EventManager({
             context,
             name: "DeleteListener.onMailMessageContextMenu",
@@ -225,8 +239,8 @@
             context,
             name: "DeleteListener.onMenuDelete",
             register(fire) {
-              function callback(event, shiftKey) {
-                return fire.async(shiftKey);
+              function callback(event, shiftKey, isFolder) {
+                return fire.async(shiftKey, isFolder);
               }
               messageListListener.on("messagelist-menudelete", callback);
               return function () {
@@ -267,8 +281,8 @@
             context,
             name: "DeleteListener.onDrop",
             register(fire) {
-              function callback(event, shiftKey, array) {
-                return fire.async(shiftKey, array);
+              function callback(event, shiftKey, array, isFolder) {
+                return fire.async(shiftKey, array, isFolder);
               }
               messageListListener.on("messagelist-drop", callback);
               return function () {
@@ -298,6 +312,7 @@
                     if( about3PaneWindow.folderTree ) {
                         about3PaneWindow.folderTree.addEventListener("dragstart", onFolderDragStart, true);
                         about3PaneWindow.folderTree.addEventListener("drop", onDrop, true);
+                        //about3PaneWindow.folderTree.addEventListener("contextmenu", onFolderContextMenu, true);
                     } else {
                         
                         // folderTree is not loaded, waiting 20 x 50 ms
@@ -310,6 +325,7 @@
                         if( about3PaneWindow.folderTree) { // it is possible that folderTree is still not loaded
                             about3PaneWindow.folderTree.addEventListener("dragstart", onFolderDragStart, true);
                             about3PaneWindow.folderTree.addEventListener("drop", onDrop, true);
+                            //about3PaneWindow.folderTree.addEventListener("contextmenu", onFolderContextMenu, true);
                         }
                     }
                 }
@@ -376,7 +392,7 @@
   }
   
   function onToolBarButtonDeleteClick(event) {
-    if (event?.target?.attributes['is'].nodeValue == "delete-button") {
+    if (event?.target?.attributes['is']?.nodeValue == "delete-button") {
         event.preventDefault();
         event.stopPropagation();
         messageListListener.emit("messagelist-toolbarclicked", event.shiftKey);
@@ -451,9 +467,20 @@
   
   function onMenuDelete(event) {
     if (event?.target?.id == "cmd_delete" || event?.target?.id == "mailContext-delete") {
+        
+        let menuDelete = this.window.document.getElementById("menu_delete");
+        let value = menuDelete.getAttribute("data-l10n-id");
+        let isFolder = false;
+        if( value === "menu-edit-delete-folder" )
+            isFolder = true;
         event.preventDefault();
         event.stopPropagation();
-        messageListListener.emit("messagelist-menudelete", event.shiftKey);
+        messageListListener.emit("messagelist-menudelete", event.shiftKey, isFolder);
+        
+    } else if( event?.target?.id == "folderPaneContext-remove" ) {
+        event.preventDefault();
+        event.stopPropagation();
+        messageListListener.emit("messagelist-foldercontextmenu", event.shiftKey);
     }
   }
   
@@ -477,22 +504,32 @@
       if (!row) {
           return;
       }
-      let targetFolder = MailServices.folderLookup.getFolderForURL(row.uri);
-      const isFolderTrash = (targetFolder.flags & 0x00000100);
+      let folderURI = row.uri;
+      let targetFolder = MailServices.folderLookup.getFolderForURL(folderURI);
+      let isFolderTrash = (targetFolder.flags & 0x00000100);
+      while(!isFolderTrash) {
+          
+          let lastSlashIndex = folderURI.lastIndexOf("/");
+          // have parent?
+          if (lastSlashIndex <= 0)
+            break;
+
+          let parentURI = folderURI.substring(0, lastSlashIndex);
+          let parentfolder = MailServices.folderLookup.getFolderForURL(parentURI);
+          if( !parentfolder ) 
+              break;
+          isFolderTrash = (parentfolder.flags & 0x00000100);
+          folderURI = parentURI;
+      }
       if (isFolderTrash) {
-        //let session = Cc["@mozilla.org/widget/dragservice;1"].getService(Ci.nsIDragService).getCurrentSession();
-        //const dt = session.dataTransfer;
-        const dt = event.dataTransfer; // cannot be used because event.preventDefault does not work
+        const dt = event.dataTransfer;
         // we only lock drag of messages
         const isMessageMovement = dt.types.indexOf('text/x-moz-message') !== -1;
-        if (isMessageMovement) {
-            let isMove = Cc["@mozilla.org/widget/dragservice;1"]
-                                    .getService(Ci.nsIDragService).getCurrentSession()
-                                    .dragAction == Ci.nsIDragService.DRAGDROP_ACTION_MOVE;
-                                    
+        const isFolderMovement = dt.types.includes("text/x-moz-folder") !== -1;
+        let array = [];
+        if (isMessageMovement) {                                  
             const nbMsg = dt.mozItemCount;
             let messenger = Cc["@mozilla.org/messenger;1"].createInstance(Ci.nsIMessenger);
-            let array = [];
             for (let i = 0; i < nbMsg; i++) {
                 let msgHdr = messenger.msgHdrFromURI(dt.mozGetDataAt("text/x-moz-message", i));
                 array[i] = msgHdr.messageId;
@@ -500,7 +537,13 @@
            
             event.preventDefault();
             event.stopPropagation(); // issue trash is kept selected if stop propagation
-            messageListListener.emit("messagelist-drop", event.shiftKey, array);
+            messageListListener.emit("messagelist-drop", event.shiftKey, array, false);
+        } else if( isFolderMovement) {
+            let sourceFolder = dt.mozGetDataAt("text/x-moz-folder", 0).QueryInterface(Ci.nsIMsgFolder);
+                        
+            event.preventDefault();
+            event.stopPropagation(); // issue trash is kept selected if stop propagation
+            messageListListener.emit("messagelist-drop", event.shiftKey, array, true);
         }
       }
   }
@@ -512,6 +555,14 @@
         messageListListener.emit("messagelist-windowcontextmenu", event.shiftKey);
     }
   }
+  
+  // function onFolderContextMenu(event) {
+      // if (event?.target?.id == "mailContext-delete") {
+        // event.preventDefault();
+        // event.stopPropagation();
+        // messageListListener.emit("messagelist-foldercontextmenu", event.shiftKey);
+    // }
+  // }
   
   // Export the api by assigning in to the exports parameter of the anonymous closure
   // function, which is the global this.
