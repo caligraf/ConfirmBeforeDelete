@@ -1,27 +1,28 @@
 .prompt-page {
-    /*font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;*/
-    /* font-weight: bold; */
     height: 60px;
     padding: 10px;
     background-color: rgb(245, 245, 245);
 }
-.buttons {
-    align-content: end;
-    align-items: end;
+.image {
+  width: 42px;
+  height: 42px;
+  margin-right: 5px;
 }
-div {
+.flex-box {
+  display: flex;
+  align-items: center;
+}
+.buttons {
   display: flex;
   justify-content: end;
 }
 button {
   background: lightgrey;
   color: black;
-    margin-right: 5px;
-  /*font-family: courier new;
-  font-size: 17px;
-  font-style: italic;
-  font-weight: bold;
-  height: 50px;*/
+  margin-right: 5px;
+  min-width: 90px;
+  min-height: 28px;
   text-align: center;
-  /* width: 75px; */
+  border-radius: 10%;
+  border: 1px solid transparent;
 }

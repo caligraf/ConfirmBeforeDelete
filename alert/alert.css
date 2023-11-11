@@ -4,3 +4,26 @@
     height: 60px;
     padding: 10px;
 }
+.image {
+  width: 42px;
+  height: 42px;
+  margin-right: 5px;
+}
+.flex-box {
+  display: flex;
+  align-items: center;
+}
+.buttons {
+  display: flex;
+  justify-content: end;
+}
+button {
+  background: lightgrey;
+  color: black;
+  margin-right: 5px;
+  min-width: 90px;
+  min-height: 28px;
+  text-align: center;
+  border-radius: 10%;
+  border: 1px solid transparent;
+}

@@ -30,7 +30,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         document.getElementById("button-ok").style.color="white";
     }
     
-     document.addEventListener('keyup', (e) => {
+    document.addEventListener('keyup', (e) => {
         if (e.key === "Enter" && !cancelDefaultButton) {
             messenger.runtime.sendMessage({ command: "prompt.clickOk" });
         } else if (e.key === "Enter" && cancelDefaultButton) {
