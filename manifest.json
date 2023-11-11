@@ -33,14 +33,6 @@
         "accountsFolders"
     ],
     "experiment_apis": {
-      "WindowListener": {
-        "schema": "api/WindowListener/schema.json",
-        "parent": {
-          "scopes": ["addon_parent"],
-          "paths": [["WindowListener"]],
-          "script": "api/WindowListener/implementation.js"
-        }
-      },
       "LegacyPrefs": {
             "schema": "api/LegacyPrefs/schema.json",
             "parent": {
