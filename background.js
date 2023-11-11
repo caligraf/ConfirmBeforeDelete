@@ -152,7 +152,6 @@ async function askUserToConfirmDelete(shiftKey, selectedMessages) {
 browser.DeleteListener.onSupprPressed.addListener( async (shiftKey, foldertree) => {
     if( !foldertree ) {
         let selectedMessages = await messenger.mailTabs.getSelectedMessages();
-        console.log("onSupprPressed");
         await askUserToConfirmDelete(shiftKey, selectedMessages.messages);
     } else {
         let mailTab = await messenger.mailTabs.getCurrent();
@@ -176,7 +175,6 @@ browser.DeleteListener.onWindowSupprPressed.addListener( async (shiftKey) => {
         let message = await browser.messageDisplay.getDisplayedMessage(currentWindow.tabs[0].id);
         let messagesDisplayed = [];
         messagesDisplayed.push(message);
-        console.log("onWindowSupprPressed");
         await askUserToConfirmDelete(shiftKey, messagesDisplayed);
     }
 });
@@ -196,7 +194,6 @@ browser.DeleteListener.onMailMessageSupprPressed.addListener( async (shiftKey) =
             let displayedMesage = await messenger.messageDisplay.getDisplayedMessage(currentTab.id);
             let messagesDisplayed = [];
             messagesDisplayed.push(displayedMesage);
-            console.log("onMailMessageSupprPressed");
             await askUserToConfirmDelete(shiftKey, messagesDisplayed);
         }
        }
@@ -207,7 +204,6 @@ browser.DeleteListener.onMailMessageSupprPressed.addListener( async (shiftKey) =
 // listen on delete button on unified toolbar
 browser.DeleteListener.onToolBarButtonDeleteClick.addListener( async (shiftKey) => {
     let selectedMessages = await messenger.mailTabs.getSelectedMessages();
-    console.log("onToolBarButtonDeleteClick");
     await askUserToConfirmDelete(shiftKey, selectedMessages.messages);
 });
 
@@ -218,7 +214,6 @@ browser.DeleteListener.onWindowToolBarButtonDeleteClick.addListener( async (shif
         let message = await browser.messageDisplay.getDisplayedMessage(currentWindow.tabs[0].id);
         let messagesDisplayed = [];
         messagesDisplayed.push(message);
-        console.log("onWindowToolBarButtonDeleteClick");
         await askUserToConfirmDelete(shiftKey, messagesDisplayed);
     }
 });
@@ -238,7 +233,6 @@ browser.DeleteListener.onMailMessageToolBarButtonDeleteClick.addListener( async 
             let displayedMesage = await messenger.messageDisplay.getDisplayedMessage(currentTab.id);
             let messagesDisplayed = [];
             messagesDisplayed.push(displayedMesage);
-            console.log("onMailMessageToolBarButtonDeleteClick");
             await askUserToConfirmDelete(shiftKey, messagesDisplayed);
         }
        }
@@ -248,14 +242,12 @@ browser.DeleteListener.onMailMessageToolBarButtonDeleteClick.addListener( async 
 // listen on delete button
 browser.DeleteListener.onButtonDeleteClick.addListener( async (shiftKey) => {
     let selectedMessages = await messenger.mailTabs.getSelectedMessages();
-    console.log("onButtonDeleteClick");
     await askUserToConfirmDelete(shiftKey, selectedMessages.messages);
 });
 
 // listen on delete from context menu in message tree
 browser.DeleteListener.onContextMenu.addListener( async (shiftKey) => {
     let selectedMessages = await messenger.mailTabs.getSelectedMessages();
-    console.log("onButtonDeleteClick");
     await askUserToConfirmDelete(shiftKey, selectedMessages.messages);
 });
 
@@ -274,7 +266,6 @@ browser.DeleteListener.onMailMessageContextMenu.addListener( async (shiftKey) =>
             let displayedMesage = await messenger.messageDisplay.getDisplayedMessage(currentTab.id);
             let messagesDisplayed = [];
             messagesDisplayed.push(displayedMesage);
-            console.log("onMailMessageContextMenu");
             await askUserToConfirmDelete(shiftKey, messagesDisplayed);
         }
        }
@@ -287,7 +278,6 @@ browser.DeleteListener.onWindowContextMenu.addListener( async (shiftKey) => {
         let message = await browser.messageDisplay.getDisplayedMessage(currentWindow.tabs[0].id);
         let messagesDisplayed = [];
         messagesDisplayed.push(message);
-        console.log("onWindowContextMenu");
         await askUserToConfirmDelete(shiftKey, messagesDisplayed);
     }
 });
@@ -322,11 +312,9 @@ browser.DeleteListener.onMenuDelete.addListener( async (shiftKey, isFolder) => {
                         let displayedMesage = await messenger.messageDisplay.getDisplayedMessage(currentTab.id);
                         let messagesDisplayed = [];
                         messagesDisplayed.push(displayedMesage);
-                        console.log("onMenuDelete1");
                         await askUserToConfirmDelete(shiftKey, messagesDisplayed);
                     } else if( currentTab.type === "mail") {
                         let selectedMessages = await messenger.mailTabs.getSelectedMessages();
-                        console.log("onMenuDelete2");
                         await askUserToConfirmDelete(shiftKey, selectedMessages.messages);
                     }
                 }
@@ -342,7 +330,6 @@ browser.DeleteListener.onWindowMenuDelete.addListener( async (shiftKey) => {
         let message = await browser.messageDisplay.getDisplayedMessage(currentWindow.tabs[0].id);
         let messagesDisplayed = [];
         messagesDisplayed.push(message);
-        console.log("onWindowMenuDelete");
         await askUserToConfirmDelete(shiftKey, messagesDisplayed);
     }
 });
@@ -478,13 +465,11 @@ async function main() {
 
     messenger.tabs.onCreated.addListener((tab) => {
         if( tab.type === "messageDisplay" || tab.type === "mail" ) {
-            console.log(" messenger.tabs.onCreated.addListener");
             messenger.DeleteListener.initTab(tab.id, (tab.type === "mail"));
         }
     });
     
     messenger.windows.onCreated.addListener((windowCreated) => {
-        console.log(" messenger.windows.onCreated.addListener");
         if( windowCreated.type == "normal" ) {
             messenger.DeleteListener.initWindow(windowCreated.id);
         } else if(windowCreated.type == "messageDisplay" ) 
