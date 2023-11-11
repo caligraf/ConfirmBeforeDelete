@@ -485,9 +485,9 @@ async function main() {
     
     messenger.windows.onCreated.addListener((windowCreated) => {
         console.log(" messenger.windows.onCreated.addListener");
-        if( windowCreated.type == "normal" ) 
+        if( windowCreated.type == "normal" ) {
             messenger.DeleteListener.initWindow(windowCreated.id);
-        else if(windowCreated.type == "messageDisplay" ) 
+        } else if(windowCreated.type == "messageDisplay" ) 
             messenger.DeleteListener.initWindowDisplay(windowCreated.id);
     });
 
@@ -502,9 +502,19 @@ async function main() {
     messenger.tabs.onActivated.addListener(async (activeInfo) => {
         let isAndDropFolders = await getPrefInStorage("extensions.confirmbeforedelete.folders.lock");
         messenger.DeleteListener.disableDragAndDropFolder(isAndDropFolders);
+        // update value on expirement API side ( calendars not yet available on webextension-api ) 
+        let isConfirmCalendarDelete = await getPrefInStorage("extensions.confirmbeforedelete.calendar.enable");
+        messenger.DeleteListener.setIsConfirmCalendar(isConfirmCalendarDelete);
     });
     let isAndDropFolders = await getPrefInStorage("extensions.confirmbeforedelete.folders.lock");
     messenger.DeleteListener.disableDragAndDropFolder(isAndDropFolders);
+    
+    // update values on expirement API side ( calendars not yet available on webextension-api )
+    let calendarConfirmMessage = messenger.i18n.getMessage('deleteCalendar', "Do you want to permanently delete this item?");
+    messenger.DeleteListener.setConfirmCalendarMessage(calendarConfirmMessage);
+    
+    let isConfirmCalendarDelete = await getPrefInStorage("extensions.confirmbeforedelete.calendar.enable");
+    messenger.DeleteListener.setIsConfirmCalendar(isConfirmCalendarDelete);
 }
 
 main();

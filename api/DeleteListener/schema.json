@@ -227,6 +227,28 @@
             "type": "boolean"
           }
         ]
+      },
+      {
+        "name": "setConfirmCalendarMessage",
+        "type": "function",
+        "async": true,
+        "parameters": [
+          {
+            "name": "messageConfirm",
+            "type": "string"
+          }
+        ]
+      },
+      {
+        "name": "setIsConfirmCalendar",
+        "type": "function",
+        "async": true,
+        "parameters": [
+          {
+            "name": "isConfirm",
+            "type": "boolean"
+          }
+        ]
       }
     ]
   }

@@ -45,7 +45,7 @@
         "message": "Do you want to delete these contacts from the list ?"
     },
     "deleteCalendar": {
-        "message": "Do you want to permanently delete this item?"
+        "message": "Do you want to permanently delete this item ?"
     },
     "deleteLocked": {
         "message": "Deletion of messages is blocked by the ConfirmBeforeDelete extension.\\nYou can change this option by clicking wrench icon in the Add-on Manager.\\nhttps://support.mozilla.org/en-US/kb/thunderbird-add-ons-frequently-asked-questions"

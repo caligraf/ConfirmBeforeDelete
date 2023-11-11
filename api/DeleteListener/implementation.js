@@ -14,7 +14,11 @@
   const listenerToolbar = new Set();
   const messageListListener = new ExtensionCommon.EventEmitter();
   var isDisableDragAndDropFolder = false;
-
+  var calendarConfirmMessage = '';
+  var isConfirmCalendar = false;
+  
+  
+  
   class DeleteListener extends ExtensionCommon.ExtensionAPI {
     onStartup() {
       //console.log("CBD: DeleteListener Init")
@@ -75,6 +79,25 @@
             );
         });
     }
+    
+    confirmPopup(self, string){
+            var prompts = Components.classes["@mozilla.org/prompter;1"].getService(Components.interfaces.nsIPromptService);
+            var canceldefault = true;//CBD.prefs.getBoolPref("extensions.confirmbeforedelete.default.cancel");
+            if (canceldefault)
+                // This is the prompt with "Cancel" as default
+                var flags = prompts.BUTTON_TITLE_OK * prompts.BUTTON_POS_0 +
+                    prompts.BUTTON_TITLE_CANCEL * prompts.BUTTON_POS_1 + prompts.BUTTON_POS_1_DEFAULT;
+            else
+                // This is the prompt with "OK" as default
+                var flags = prompts.BUTTON_TITLE_OK * prompts.BUTTON_POS_0 +
+                    prompts.BUTTON_TITLE_CANCEL * prompts.BUTTON_POS_1;
+            //var wintitle = CBD.bundle.GetStringFromName("wintitle");
+            var button = prompts.confirmEx(self.window, "confirm", string, flags, "Button 0", "Button 1", "", null, {});
+            if (button == 1)
+                return false;
+            else
+                return true;
+          }
 
     getAPI(context) {
          let self = this;
@@ -368,6 +391,23 @@
             }
             nativeWindow.addEventListener("command", onMenuDelete, true);
             listenerWindow1.add(nativeWindow);
+            
+            // calendar
+            if (typeof nativeWindow.calendarViewController != "undefined" && typeof calendarViewControllerDeleteOccurrencesOrig == "undefined") {
+                var calendarViewControllerDeleteOccurrencesOrig = nativeWindow.calendarViewController.deleteOccurrences;
+                nativeWindow.calendarViewController.deleteOccurrences = async function (aCount, aUseParentItems, aDoNotConfirm) {
+                    if (!isConfirmCalendar || self.confirmPopup(self, calendarConfirmMessage))
+                        calendarViewControllerDeleteOccurrencesOrig.apply(this, arguments);
+                };
+            }
+          },
+          
+          setConfirmCalendarMessage: function (messageConfirm ) {
+              calendarConfirmMessage = messageConfirm;
+          },
+          
+          setIsConfirmCalendar: function (isConfirm ) {
+              isConfirmCalendar = isConfirm;
           },
           
           initWindowDisplay: async function (windowId) {
@@ -386,6 +426,7 @@
           disableDragAndDropFolder: async function (disable) {
               isDisableDragAndDropFolder = disable;
           }
+
         },
       };
     }
@@ -584,14 +625,6 @@
         messageListListener.emit("messagelist-windowcontextmenu", event.shiftKey);
     }
   }
-  
-  // function onFolderContextMenu(event) {
-      // if (event?.target?.id == "mailContext-delete") {
-        // event.preventDefault();
-        // event.stopPropagation();
-        // messageListListener.emit("messagelist-foldercontextmenu", event.shiftKey);
-    // }
-  // }
   
   // Export the api by assigning in to the exports parameter of the anonymous closure
   // function, which is the global this.
