@@ -10,7 +10,7 @@
     "name": "ConfirmBeforeDelete",
     "description": "Ask a confirm before to delete some items",
     "author": "Caligraf",
-    "version": "1.9.0",
+    "version": "1.9.1",
     "default_locale": "en-US",
     "homepage_url": "https://github.com/caligraf/ConfirmBeforeDelete/wiki",
     "icons": {
