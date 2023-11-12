@@ -1,0 +1,96 @@
+{
+    "CBDcaption": {
+        "message": "ConfirmBeforeDelete - Options"
+    },
+    "CBDcheck1": {
+        "message": "Confirm deletion of address book contacts"
+    },
+    "CBDcheck10": {
+        "message": "Block the deletion of messages with tag:"
+    },
+    "CBDcheck11": {
+        "message": "Confirm moving folders to the trash"
+    },
+    "CBDcheck2": {
+        "message": "Confirm emptying of the trash"
+    },
+    "CBDcheck3": {
+        "message": "Confirm deletion of messages with shift+del"
+    },
+    "CBDcheck4": {
+        "message": "Confirm deletion of messages from the trash"
+    },
+    "CBDcheck5": {
+        "message": "OK as default action"
+    },
+    "CBDcheck6": {
+        "message": "Confirm deletion of items in calendar and agenda"
+    },
+    "CBDcheck7": {
+        "message": "Lock folders"
+    },
+    "CBDcheck8": {
+        "message": "Confirm moving messages to the trash"
+    },
+    "CBDcheck9": {
+        "message": "Block the deletion of messages"
+    },
+    "cantEmptyTrash": {
+        "message": "Unable to empty the trash, because it contains one or more folders."
+    },
+    "contactyesno": {
+        "message": "Do you want to permanently delete these contacts ?"
+    },
+    "contactyesno2": {
+        "message": "Do you want to delete these contacts from the list ?"
+    },
+    "deleteCalendar": {
+        "message": "Do you want to permanently delete this item ?"
+    },
+    "deleteLocked": {
+        "message": "Deletion of messages is blocked by the ConfirmBeforeDelete extension. You can change this option by clicking wrench icon in the Add-on Manager. https://support.mozilla.org/en-US/kb/thunderbird-add-ons-frequently-asked-questions"
+    },
+    "deleteTagLocked1": {
+        "message": "Deletion of messages with the"
+    },
+    "deleteTagLocked2": {
+        "message": "tag is blocked by the ConfirmBeforeDelete extension. You can change this option by clicking wrench icon in the Add-on Manager. https://support.mozilla.org/en-US/kb/thunderbird-add-ons-frequently-asked-questions"
+    },
+    "emptytrash": {
+        "message": "Do you want to empty the trash ( $number$ messages) ?",
+        "placeholders": {
+            "number": {
+                "content": "$1"
+            }
+        }
+    },
+    "extensions.confirmbeforedelete.description": {
+        "message": "Request confirmation before deletion of items"
+    },
+    "folderyesno": {
+        "message": "Do you want to permanently delete these folders ?"
+    },
+    "gotrash": {
+        "message": "Do you want to move these messages to the trash ?"
+    },
+    "gotrashfolder": {
+        "message": "Do you want to move the folder $folder$ to the trash ?",
+        "placeholders": {
+            "folder": {
+                "content": "$1"
+            }
+        }
+    },
+    "lockedFolder": {
+        "message": "Folders are locked by the ConfirmBeforeDelete extension. You can change this option by clicking wrench icon in the Add-on Manager. https://support.mozilla.org/en-US/kb/thunderbird-add-ons-frequently-asked-questions"
+    },
+    "mailyesno": {
+        "message": "Do you want to permanently delete these messages ?"
+    },
+    "wintitle": {
+        "message": "Confirmation of deletion"
+    },
+    "CBDcancel": {
+        "message": "Cancel"
+    }
+}

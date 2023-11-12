@@ -1,0 +1,255 @@
+[
+  {
+    "namespace": "DeleteListener",
+    "events": [
+      {
+        "name": "onButtonDeleteClick",
+        "type": "function",
+        "parameters": [
+          {
+            "name": "shiftKey",
+            "type": "boolean"
+          }
+        ]
+      },
+      {
+        "name": "onSupprPressed",
+        "type": "function",
+        "parameters": [
+          {
+            "name": "shiftKey",
+            "type": "boolean"
+          },
+          {
+            "name": "foldertree",
+            "type": "boolean"
+          }
+        ]
+      },
+      {
+        "name": "onWindowSupprPressed",
+        "type": "function",
+        "parameters": [
+          {
+            "name": "shiftKey",
+            "type": "boolean"
+          }
+        ]
+      },
+      {
+        "name": "onToolBarButtonDeleteClick",
+        "type": "function",
+        "parameters": [
+          {
+            "name": "shiftKey",
+            "type": "boolean"
+          }
+        ]
+      },
+      {
+        "name": "onWindowToolBarButtonDeleteClick",
+        "type": "function",
+        "parameters": [
+          {
+            "name": "shiftKey",
+            "type": "boolean"
+          }
+        ]
+      },
+      {
+        "name": "onMailMessageToolBarButtonDeleteClick",
+        "type": "function",
+        "parameters": [
+          {
+            "name": "shiftKey",
+            "type": "boolean"
+          }
+        ]
+      },
+      {
+        "name": "onMailMessageSupprPressed",
+        "type": "function",
+        "parameters": [
+          {
+            "name": "shiftKey",
+            "type": "boolean"
+          }
+        ]
+      },
+      {
+        "name": "onContextMenu",
+        "type": "function",
+        "parameters": [
+          {
+            "name": "shiftKey",
+            "type": "boolean"
+          }
+        ]
+      },
+      {
+        "name": "onMailMessageContextMenu",
+        "type": "function",
+        "parameters": [
+          {
+            "name": "shiftKey",
+            "type": "boolean"
+          }
+        ]
+      },
+      {
+        "name": "onMenuDelete",
+        "type": "function",
+        "parameters": [
+          {
+            "name": "shiftKey",
+            "type": "boolean"
+          },
+          {
+            "name": "isFolder",
+            "type": "boolean"
+          }
+        ]
+      },
+      {
+        "name": "onFolderContextMenu",
+        "type": "function",
+        "parameters": [
+          {
+            "name": "shiftKey",
+            "type": "boolean"
+          }
+        ]
+      },
+      {
+        "name": "onWindowMenuDelete",
+        "type": "function",
+        "parameters": [
+          {
+            "name": "shiftKey",
+            "type": "boolean"
+          }
+        ]
+      },
+      {
+        "name": "onWindowContextMenu",
+        "type": "function",
+        "parameters": [
+          {
+            "name": "shiftKey",
+            "type": "boolean"
+          }
+        ]
+      },
+      {
+        "name": "onFolderDragStart",
+        "type": "function",
+        "parameters": [
+          {
+            "name": "shiftKey",
+            "type": "boolean"
+          }
+        ]
+      },
+      {
+        "name": "onDrop",
+        "type": "function",
+        "parameters": [
+          {
+            "name": "shiftKey",
+            "type": "boolean"
+          },
+          {
+            "name": "array",
+            "type": "object"
+          },
+          {
+            "name": "isFolder",
+            "type": "boolean"
+          }
+        ]
+      },
+      {
+        "name": "onEmptyTrash",
+        "type": "function",
+        "parameters": [
+          {
+            "name": "shiftKey",
+            "type": "boolean"
+          }
+        ]
+      }
+    ],
+    "functions": [
+      {
+        "name": "initTab",
+        "type": "function",
+        "async": true,
+        "parameters": [
+          {
+            "name": "tabId",
+            "type": "integer"
+          },
+          {
+            "name": "isMail",
+            "type": "boolean"
+          }
+        ]
+      },
+      {
+        "name": "initWindow",
+        "type": "function",
+        "async": true,
+        "parameters": [
+          {
+            "name": "windowId",
+            "type": "integer"
+          }
+        ]
+      },
+      {
+        "name": "initWindowDisplay",
+        "type": "function",
+        "async": true,
+        "parameters": [
+          {
+            "name": "windowId",
+            "type": "integer"
+          }
+        ]
+      },
+      {
+        "name": "disableDragAndDropFolder",
+        "type": "function",
+        "async": true,
+        "parameters": [
+          {
+            "name": "disable",
+            "type": "boolean"
+          }
+        ]
+      },
+      {
+        "name": "setConfirmCalendarMessage",
+        "type": "function",
+        "async": true,
+        "parameters": [
+          {
+            "name": "messageConfirm",
+            "type": "string"
+          }
+        ]
+      },
+      {
+        "name": "setIsConfirmCalendar",
+        "type": "function",
+        "async": true,
+        "parameters": [
+          {
+            "name": "isConfirm",
+            "type": "boolean"
+          }
+        ]
+      }
+    ]
+  }
+]

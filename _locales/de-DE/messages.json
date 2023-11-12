@@ -1,0 +1,96 @@
+{
+    "CBDcaption": {
+        "message": "ConfirmBeforeDelete - Einstellungen"
+    },
+    "CBDcheck1": {
+        "message": "Löschen eines Kontaktes bestätigen"
+    },
+    "CBDcheck10": {
+        "message": "Löschen von Nachrichten blockieren mit folgendem Tag:"
+    },
+    "CBDcheck11": {
+        "message": "Verschieben von Ordnern in den Papierkorb bestätigen"
+    },
+    "CBDcheck2": {
+        "message": "Leeren des Papierkorbes bestätigen"
+    },
+    "CBDcheck3": {
+        "message": "Löschen von Nachrichten mit [Umschalt]+[Entf] bestätigen"
+    },
+    "CBDcheck4": {
+        "message": "Löschen von Nachrichten aus dem Papierkorb bestätigen"
+    },
+    "CBDcheck5": {
+        "message": "&quot;OK&quot; als Standardaktion festlegen"
+    },
+    "CBDcheck6": {
+        "message": "Löschen von Elementen im Kalender oder in der Agenda bestätigen"
+    },
+    "CBDcheck7": {
+        "message": "Ordner sperren"
+    },
+    "CBDcheck8": {
+        "message": "Verschieben von Nachrichten in den Papierkorb bestätigen"
+    },
+    "CBDcheck9": {
+        "message": "Löschen von Nachrichten blockieren"
+    },
+    "cantEmptyTrash": {
+        "message": "Der Papierkorb kann nicht geleert werden, da er einen oder mehrere Ordner enthält."
+    },
+    "contactyesno": {
+        "message": "Möchten Sie den/die gewählten Kontakt(e) löschen?"
+    },
+    "contactyesno2": {
+        "message": "Möchten Sie die gewählten Kontakte aus dieser Liste löschen?"
+    },
+    "deleteCalendar": {
+        "message": "Möchten Sie dieses Element löschen?"
+    },
+    "deleteLocked": {
+        "message": "Das Löschen von Nachrichten wird durch die Erweiterung ConfirmBeforeDelete blockiert. Sie können diese Einstellung in den Eigenschaften der Erweiterung ändern. https://support.mozilla.org/de/kb/add-ons-faq"
+    },
+    "deleteTagLocked1": {
+        "message": "Das Löschen von Nachrichten mit folgendem Tag"
+    },
+    "deleteTagLocked2": {
+        "message": "wird durch die Erweiterung ConfirmBeforeDelete blockiert. Sie können diese Einstellung in den Eigenschaften der Erweiterung ändern. https://support.mozilla.org/de/kb/add-ons-faq"
+    },
+    "emptytrash": {
+        "message": "Möchten Sie den Papierkorb leeren ($number$ Nachrichten) ?",
+        "placeholders": {
+            "number": {
+                "content": "$1"
+            }
+        }
+    },
+    "extensions.confirmbeforedelete.description": {
+        "message": "Bestätigungen für Löschvorgänge diverser Elemente"
+    },
+    "folderyesno": {
+        "message": "Möchten Sie diese(n) Ordner unwideruflich löschen?"
+    },
+    "gotrash": {
+        "message": "Möchten Sie diese Nachricht(en) in den Papierkorb verschieben?"
+    },
+    "gotrashfolder": {
+        "message": "Möchten Sie den Ordner $folder$ in den Papierkorb verschieben?",
+        "placeholders": {
+            "folder": {
+                "content": "$1"
+            }
+        }
+    },
+    "lockedFolder": {
+        "message": "Ordner sind durch die ConfirmBeforeDelete-Erweiterung gesperrt. Sie können diese Einstellung in den Eigenschaften der Erweiterung ändern. https://support.mozilla.org/de/kb/add-ons-faq"
+    },
+    "mailyesno": {
+        "message": "Möchten Sie diese Nachricht(en) unwideruflich löschen?"
+    },
+    "wintitle": {
+        "message": "Löschen bestätigen"
+    },
+    "CBDcancel": {
+        "message": "Stornieren"
+    }
+}

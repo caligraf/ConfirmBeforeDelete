@@ -1,0 +1,96 @@
+{
+    "CBDcaption": {
+        "message": "ConfirmBeforeDelete - Options"
+    },
+    "CBDcheck1": {
+        "message": "Activer la confirmation de suppression pour les contacts du carnet d'adresses"
+    },
+    "CBDcheck10": {
+        "message": "Interdire la suppression des messages avec l'étiquette:"
+    },
+    "CBDcheck11": {
+        "message": "Activer la confirmation pour le déplacement des dossiers dans la corbeille"
+    },
+    "CBDcheck2": {
+        "message": "Activer la confirmation de suppression pour vider la corbeille"
+    },
+    "CBDcheck3": {
+        "message": "Activer la confirmation de suppression pour les messages supprimés avec maj+suppr"
+    },
+    "CBDcheck4": {
+        "message": "Activer la confirmation de suppression pour les messages dans la corbeille"
+    },
+    "CBDcheck5": {
+        "message": "OK est selectionné par défaut"
+    },
+    "CBDcheck6": {
+        "message": "Activer la confirmation de suppression pour les élements du calendrier et de l'agenda"
+    },
+    "CBDcheck7": {
+        "message": "Verrouiller les dossiers"
+    },
+    "CBDcheck8": {
+        "message": "Activer la confirmation pour le déplacement des messages dans la corbeille"
+    },
+    "CBDcheck9": {
+        "message": "Interdire la suppression des messages"
+    },
+    "cantEmptyTrash": {
+        "message": "Impossible de vider la corbeille, parce qu'il contient un ou plusieurs dossiers."
+    },
+    "contactyesno": {
+        "message": "Voulez vous supprimer définitivement ces contacts ?"
+    },
+    "contactyesno2": {
+        "message": "Voulez vous supprimer ces contacts de la liste ?"
+    },
+    "deleteCalendar": {
+        "message": "Voulez vous supprimer définitivement cet élement ?"
+    },
+    "deleteLocked": {
+        "message": "La suppression des messages est bloquée par l'extension ConfirmBeforeDelete.Vous pouvez modifier ce choix en cliquant sur l'icône de la clé dans le gestionnaire de modules complémentaires. https://support.mozilla.org/fr/kb/faq-modules-complementaires-thunderbird"
+    },
+    "deleteTagLocked1": {
+        "message": "La suppression des messages avec l'étiquette"
+    },
+    "deleteTagLocked2": {
+        "message": "est bloquée par l'extension ConfirmBeforeDelete. Vous pouvez modifier ce choix en cliquant sur l'icône de la clé dans le gestionnaire de modules complémentaires. https://support.mozilla.org/fr/kb/faq-modules-complementaires-thunderbird"
+    },
+    "emptytrash": {
+        "message": "Voulez vous vider la corbeille ($number$ messages) ?",
+        "placeholders": {
+            "number": {
+                "content": "$1"
+            }
+        }
+    },
+    "extensions.confirmbeforedelete.description": {
+        "message": "Demande confirmation avant de supprimer des éléments"
+    },
+    "folderyesno": {
+        "message": "Voulez vous supprimer définitivement ces dossiers ?"
+    },
+    "gotrash": {
+        "message": "Voulez vous déplacer ces messages dans la corbeille ?"
+    },
+    "gotrashfolder": {
+        "message": "Voulez vous déplacer le dossier $folder$ dans la corbeille ?",
+        "placeholders": {
+            "folder": {
+                "content": "$1"
+            }
+        }
+    },
+    "lockedFolder": {
+        "message": "Les Dossiers sont protégés par l'extension ConfirmBeforeDelete. Vous pouvez modifier ce choix en cliquant sur l'icône de la clé dans le gestionnaire de modules complémentaires. https://support.mozilla.org/fr/kb/faq-modules-complementaires-thunderbird"
+    },
+    "mailyesno": {
+        "message": "Voulez vous supprimer définitivement ces messages ?"
+    },
+    "wintitle": {
+        "message": "Confimation de suppression"
+    },
+    "CBDcancel": {
+        "message": "Annuler"
+    }
+}

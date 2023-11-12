@@ -1,0 +1,96 @@
+{
+    "CBDcaption": {
+        "message": "ConfirmBeforeDelete - Opzioni"
+    },
+    "CBDcheck1": {
+        "message": "Chiedere la conferma per l'eliminazione  dei contatti dalla rubrica"
+    },
+    "CBDcheck10": {
+        "message": "Bloccare la cancellazione dei messaggi con il tag:"
+    },
+    "CBDcheck11": {
+        "message": "Chiedere la conferma per lo spostamento delle cartelle nel cestino"
+    },
+    "CBDcheck2": {
+        "message": "Chiedere la conferma per lo svuotamento del cestino"
+    },
+    "CBDcheck3": {
+        "message": "Chiedere la conferma per l'eliminazione diretta dei messaggi (Maiusc+Canc)"
+    },
+    "CBDcheck4": {
+        "message": "Chiedere la conferma per l'eliminazione di messaggi dal cestino"
+    },
+    "CBDcheck5": {
+        "message": "Impostare 'OK' come azione predefinita"
+    },
+    "CBDcheck6": {
+        "message": "Chiedere la conferma per l'eliminazione di elementi dal calendario e dall'agenda"
+    },
+    "CBDcheck7": {
+        "message": "Bloccare gli spostamenti e la cancellazione delle cartelle"
+    },
+    "CBDcheck8": {
+        "message": "Chiedere la conferma per lo spostamento dei messaggi nel cestino"
+    },
+    "CBDcheck9": {
+        "message": "Bloccare la cancellazione dei messaggi"
+    },
+    "cantEmptyTrash": {
+        "message": "Impossibile svuotare il cestino, perché contiene una o più cartelle."
+    },
+    "contactyesno": {
+        "message": "Cancellare definitivamente i contatti?"
+    },
+    "contactyesno2": {
+        "message": "Cancellare i contatti da questa lista?"
+    },
+    "deleteCalendar": {
+        "message": "Cancellare definitivamente questo elemento?"
+    },
+    "deleteLocked": {
+        "message": "Le cancellazione dei messaggi è bloccata dall'estensione ConfirmBeforeDelete. Questa opzione può essere modificata dal pannello delle preferenze dell'estensione. https://support.mozilla.org/it/kb/domande-frequenti-componenti-aggiuntivi-thunderbird"
+    },
+    "deleteTagLocked1": {
+        "message": "Le cancellazione dei messaggi con il tag"
+    },
+    "deleteTagLocked2": {
+        "message": "è bloccata dall'estensione ConfirmBeforeDelete. Questa opzione può essere modificata dal pannello delle preferenze dell'estensione. https://support.mozilla.org/it/kb/domande-frequenti-componenti-aggiuntivi-thunderbird"
+    },
+    "emptytrash": {
+        "message": "Svuotare definitivamente il cestino ( $number$ messaggi) ?",
+        "placeholders": {
+            "number": {
+                "content": "$1"
+            }
+        }
+    },
+    "extensions.confirmbeforedelete.description": {
+        "message": "Aggiunge la richiesta di conferma per le cancellazioni"
+    },
+    "folderyesno": {
+        "message": "Cancellare definitivamente queste cartelle?"
+    },
+    "gotrash": {
+        "message": "Spostare questi messaggi nel cestino?"
+    },
+    "gotrashfolder": {
+        "message": "Spostare la cartella $folder$ nel cestino ?",
+        "placeholders": {
+            "folder": {
+                "content": "$1"
+            }
+        }
+    },
+    "lockedFolder": {
+        "message": "Le cartelle sono bloccate dall'estensione ConfirmBeforeDelete. Questa opzione può essere modificata dal pannello delle preferenze dell'estensione https://support.mozilla.org/it/kb/domande-frequenti-componenti-aggiuntivi-thunderbird"
+    },
+    "mailyesno": {
+        "message": "Cancellare definitivamente questi messaggi?"
+    },
+    "wintitle": {
+        "message": "Conferma cancellazione"
+    },
+    "CBDcancel": {
+        "message": "Annulla"
+    }
+}
