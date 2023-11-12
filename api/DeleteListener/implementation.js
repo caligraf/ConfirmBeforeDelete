@@ -349,7 +349,6 @@
                     if( about3PaneWindow.folderTree ) {
                         about3PaneWindow.folderTree.addEventListener("dragstart", onFolderDragStart, true);
                         about3PaneWindow.folderTree.addEventListener("drop", onDrop, true);
-                        //about3PaneWindow.folderTree.addEventListener("contextmenu", onFolderContextMenu, true);
                     } else {
                         
                         // folderTree is not loaded, waiting 20 x 50 ms
@@ -362,7 +361,6 @@
                         if( about3PaneWindow.folderTree) { // it is possible that folderTree is still not loaded
                             about3PaneWindow.folderTree.addEventListener("dragstart", onFolderDragStart, true);
                             about3PaneWindow.folderTree.addEventListener("drop", onDrop, true);
-                            //about3PaneWindow.folderTree.addEventListener("contextmenu", onFolderContextMenu, true);
                         }
                     }
                 }
@@ -594,11 +592,17 @@
                 array[i] = msgHdr.messageId;
             }
             
+            event.view.document.getElementById("folder-drag-indicator")
+            
+            Array.from(event.view.document.querySelectorAll('.total.drop-target')).forEach(
+                (el) => el.classList.remove('drop-target')
+            );
+            
             // trash is kept selected if drag indicator is not removed
-            const dragIndicator = this.window.document.getElementById("folder-drag-indicator");
-            if (dragIndicator) {
-                dragIndicator.style.display = "none";
-            }
+            // const dragIndicator = self.window.document.getElementById("folder-drag-indicator");
+            // if (dragIndicator) {
+                // dragIndicator.style.display = "none";
+            // }
             event.preventDefault();
             event.stopPropagation(); 
             messageListListener.emit("messagelist-drop", event.shiftKey, array, false);
@@ -606,10 +610,13 @@
             let sourceFolder = dt.mozGetDataAt("text/x-moz-folder", 0).QueryInterface(Ci.nsIMsgFolder);
             
             // trash is kept selected if drag indicator is not removed
-            const dragIndicator = this.window.document.getElementById("folder-drag-indicator");
-            if (dragIndicator) {
-                dragIndicator.style.display = "none";
-            }
+            // const dragIndicator = self.window.document.getElementById("folder-drag-indicator");
+            // if (dragIndicator) {
+                // dragIndicator.style.display = "none";
+            // }
+            Array.from(event.view.document.querySelectorAll('.total.drop-target')).forEach(
+                (el) => el.classList.remove('drop-target')
+            );
             
             event.preventDefault();
             event.stopPropagation(); // issue trash is kept selected if stop propagation
