@@ -35,8 +35,8 @@ async function prompt4Confirm(message) {
          messenger.windows.create({
              type: "popup",
              url: "prompt4Confirm/prompt.html?message="+message,
-             height: 180,
-             width: 600
+             height: 150,
+             width: 450
          });
     });
 }
@@ -63,7 +63,7 @@ async function showAlert(alertMessage) {
         messenger.windows.create({
             type: "popup",
             url: "alert/alert.html?message="+alertMessage,
-            height: 360,
+            height: 200,
             width: 600
         });
      });
@@ -86,7 +86,15 @@ async function isDeleteLocked(messages) {
         for (let i = 0; i < messages.length; i++) {
             let msgTags = messages[i].tags;
             if( msgTags.indexOf(tagKey) != -1 ) {
-                alertMessage = messenger.i18n.getMessage("deleteTagLocked1", "Deletion of messages with the") + " " + tagKey /*tagName */ + " " + messenger.i18n.getMessage("deleteTagLocked2", "tag is blocked by the ConfirmBeforeDelete extension");
+                let messageTags = await messenger.messages.listTags();
+                let tagName = '';
+                for( let j = 0; j< messageTags.length ; j++ ) {
+                    if( messageTags[j].key == tagKey ) {
+                        tagName = messageTags[j].tag;
+                        break;
+                    }
+                }
+                alertMessage = messenger.i18n.getMessage("deleteTagLocked1", "Deletion of messages with the") + " " + tagName + " " + messenger.i18n.getMessage("deleteTagLocked2", "tag is blocked by the ConfirmBeforeDelete extension");
                 locked = true;
                 break;
             }
@@ -459,7 +467,7 @@ async function main() {
         await moveToStorage("extensions.confirmbeforedelete.protect.enable", false);
         await moveToStorage("extensions.confirmbeforedelete.moveFoldersToTrash.enable", false);
         await moveToStorage("extensions.confirmbeforedelete.protect.tag", "$label1");
-        //await setPrefInStorage("CBDMigrated", true);
+        await setPrefInStorage("CBDMigrated", true);
     }
 
 

@@ -36,7 +36,7 @@
         "message": "Bloccare la cancellazione dei messaggi"
     },
     "cantEmptyTrash": {
-        "message": "Impossibile svuotare il cestino, perché contiene una o più cartelle.\\n"
+        "message": "Impossibile svuotare il cestino, perché contiene una o più cartelle."
     },
     "contactyesno": {
         "message": "Cancellare definitivamente i contatti?"
@@ -48,13 +48,13 @@
         "message": "Cancellare definitivamente questo elemento?"
     },
     "deleteLocked": {
-        "message": "Le cancellazione dei messaggi è bloccata dall'estensione ConfirmBeforeDelete.\\nQuesta opzione può essere modificata dal pannello delle preferenze dell'estensione\\nhttps://support.mozilla.org/it/kb/domande-frequenti-componenti-aggiuntivi-thunderbird"
+        "message": "Le cancellazione dei messaggi è bloccata dall'estensione ConfirmBeforeDelete. Questa opzione può essere modificata dal pannello delle preferenze dell'estensione. https://support.mozilla.org/it/kb/domande-frequenti-componenti-aggiuntivi-thunderbird"
     },
     "deleteTagLocked1": {
         "message": "Le cancellazione dei messaggi con il tag"
     },
     "deleteTagLocked2": {
-        "message": "è bloccata dall'estensione ConfirmBeforeDelete.\\nQuesta opzione può essere modificata dal pannello delle preferenze dell'estensione\\nhttps://support.mozilla.org/it/kb/domande-frequenti-componenti-aggiuntivi-thunderbird"
+        "message": "è bloccata dall'estensione ConfirmBeforeDelete. Questa opzione può essere modificata dal pannello delle preferenze dell'estensione. https://support.mozilla.org/it/kb/domande-frequenti-componenti-aggiuntivi-thunderbird"
     },
     "emptytrash": {
         "message": "Svuotare definitivamente il cestino ( $number$ messaggi) ?",
@@ -82,7 +82,7 @@
         }
     },
     "lockedFolder": {
-        "message": "Le cartelle sono bloccate dall'estensione ConfirmBeforeDelete.\\nQuesta opzione può essere modificata dal pannello delle preferenze dell'estensione\\nhttps://support.mozilla.org/it/kb/domande-frequenti-componenti-aggiuntivi-thunderbird"
+        "message": "Le cartelle sono bloccate dall'estensione ConfirmBeforeDelete. Questa opzione può essere modificata dal pannello delle preferenze dell'estensione https://support.mozilla.org/it/kb/domande-frequenti-componenti-aggiuntivi-thunderbird"
     },
     "mailyesno": {
         "message": "Cancellare definitivamente questi messaggi?"

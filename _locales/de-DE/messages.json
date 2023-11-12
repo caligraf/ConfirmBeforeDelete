@@ -36,7 +36,7 @@
         "message": "Löschen von Nachrichten blockieren"
     },
     "cantEmptyTrash": {
-        "message": "Der Papierkorb kann nicht geleert werden, da er einen oder mehrere Ordner enthält.\\n"
+        "message": "Der Papierkorb kann nicht geleert werden, da er einen oder mehrere Ordner enthält."
     },
     "contactyesno": {
         "message": "Möchten Sie den/die gewählten Kontakt(e) löschen?"
@@ -48,13 +48,13 @@
         "message": "Möchten Sie dieses Element löschen?"
     },
     "deleteLocked": {
-        "message": "Das Löschen von Nachrichten wird durch die Erweiterung ConfirmBeforeDelete blockiert.\\nSie können diese Einstellung in den Eigenschaften der Erweiterung ändern.\\nhttps://support.mozilla.org/de/kb/add-ons-faq"
+        "message": "Das Löschen von Nachrichten wird durch die Erweiterung ConfirmBeforeDelete blockiert. Sie können diese Einstellung in den Eigenschaften der Erweiterung ändern. https://support.mozilla.org/de/kb/add-ons-faq"
     },
     "deleteTagLocked1": {
         "message": "Das Löschen von Nachrichten mit folgendem Tag"
     },
     "deleteTagLocked2": {
-        "message": "wird durch die Erweiterung ConfirmBeforeDelete blockiert.\\nSie können diese Einstellung in den Eigenschaften der Erweiterung ändern.\\nhttps://support.mozilla.org/de/kb/add-ons-faq"
+        "message": "wird durch die Erweiterung ConfirmBeforeDelete blockiert. Sie können diese Einstellung in den Eigenschaften der Erweiterung ändern. https://support.mozilla.org/de/kb/add-ons-faq"
     },
     "emptytrash": {
         "message": "Möchten Sie den Papierkorb leeren ($number$ Nachrichten) ?",
@@ -82,7 +82,7 @@
         }
     },
     "lockedFolder": {
-        "message": "Ordner sind durch die ConfirmBeforeDelete-Erweiterung gesperrt.\\nSie können diese Einstellung in den Eigenschaften der Erweiterung ändern.\\nhttps://support.mozilla.org/de/kb/add-ons-faq"
+        "message": "Ordner sind durch die ConfirmBeforeDelete-Erweiterung gesperrt. Sie können diese Einstellung in den Eigenschaften der Erweiterung ändern. https://support.mozilla.org/de/kb/add-ons-faq"
     },
     "mailyesno": {
         "message": "Möchten Sie diese Nachricht(en) unwideruflich löschen?"

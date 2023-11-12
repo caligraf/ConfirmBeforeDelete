@@ -1,12 +1,17 @@
-.prompt-page {
-    height: 60px;
-    padding: 10px;
+body {
     background-color: rgb(245, 245, 245);
+    height: 50px;
+    width: 400px;
+    padding: 5px;
 }
-.image {
+
+img {
   width: 42px;
   height: 42px;
-  margin-right: 5px;
+  margin-right: 10px;
+}
+p {
+  font-size: 14px;
 }
 .flex-box {
   display: flex;
@@ -15,14 +20,19 @@
 .buttons {
   display: flex;
   justify-content: end;
+  margin-top: 10px;
+  margin-bottom: 1px;
+  margin-right: 6px;
 }
 button {
   background: lightgrey;
   color: black;
-  margin-right: 5px;
-  min-width: 90px;
-  min-height: 28px;
+  min-width: 77px;
+  min-height: 26px;
+  margin-right: 6px;
+  margin-bottom: 1px;
   text-align: center;
   border-radius: 10%;
   border: 1px solid transparent;
+  font-size: 12px;
 }

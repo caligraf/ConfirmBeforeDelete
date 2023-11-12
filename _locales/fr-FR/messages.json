@@ -36,7 +36,7 @@
         "message": "Interdire la suppression des messages"
     },
     "cantEmptyTrash": {
-        "message": "Impossible de vider la corbeille, parce qu'il contient un ou plusieurs dossiers.\n"
+        "message": "Impossible de vider la corbeille, parce qu'il contient un ou plusieurs dossiers."
     },
     "contactyesno": {
         "message": "Voulez vous supprimer définitivement ces contacts ?"
@@ -48,13 +48,13 @@
         "message": "Voulez vous supprimer définitivement cet élement ?"
     },
     "deleteLocked": {
-        "message": "La suppression des messages est bloquée par l'extension ConfirmBeforeDelete.\nVous pouvez modifier ce choix en cliquant sur l'icône de la clé dans le gestionnaire de modules complémentaires.\nhttps://support.mozilla.org/fr/kb/faq-modules-complementaires-thunderbird"
+        "message": "La suppression des messages est bloquée par l'extension ConfirmBeforeDelete.Vous pouvez modifier ce choix en cliquant sur l'icône de la clé dans le gestionnaire de modules complémentaires. https://support.mozilla.org/fr/kb/faq-modules-complementaires-thunderbird"
     },
     "deleteTagLocked1": {
         "message": "La suppression des messages avec l'étiquette"
     },
     "deleteTagLocked2": {
-        "message": "est bloquée par l'extension ConfirmBeforeDelete.\nVous pouvez modifier ce choix en cliquant sur l'icône de la clé dans le gestionnaire de modules complémentaires.\nhttps://support.mozilla.org/fr/kb/faq-modules-complementaires-thunderbird"
+        "message": "est bloquée par l'extension ConfirmBeforeDelete. Vous pouvez modifier ce choix en cliquant sur l'icône de la clé dans le gestionnaire de modules complémentaires. https://support.mozilla.org/fr/kb/faq-modules-complementaires-thunderbird"
     },
     "emptytrash": {
         "message": "Voulez vous vider la corbeille ($number$ messages) ?",
@@ -82,7 +82,7 @@
         }
     },
     "lockedFolder": {
-        "message": "Les Dossiers sont protégés par l'extension ConfirmBeforeDelete.\nVous pouvez modifier ce choix en cliquant sur l'icône de la clé dans le gestionnaire de modules complémentaires.\nhttps://support.mozilla.org/fr/kb/faq-modules-complementaires-thunderbird"
+        "message": "Les Dossiers sont protégés par l'extension ConfirmBeforeDelete. Vous pouvez modifier ce choix en cliquant sur l'icône de la clé dans le gestionnaire de modules complémentaires. https://support.mozilla.org/fr/kb/faq-modules-complementaires-thunderbird"
     },
     "mailyesno": {
         "message": "Voulez vous supprimer définitivement ces messages ?"
