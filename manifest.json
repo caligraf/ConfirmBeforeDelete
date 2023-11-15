@@ -30,7 +30,8 @@
         "messagesDelete",
         "accountsRead",
         "menus",
-        "accountsFolders"
+        "accountsFolders",
+        "messagesMove"
     ],
     "experiment_apis": {
       "LegacyPrefs": {

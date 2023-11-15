@@ -20,6 +20,9 @@
     "CBDcheck4": {
         "message": "Activer la confirmation de suppression pour les messages dans la corbeille"
     },
+    "CBDcheckFolderInTrash": {
+        "message": "Activer la confirmation de suppression pour les dossiers dans la corbeille"
+    },
     "CBDcheck5": {
         "message": "OK est selectionné par défaut"
     },
@@ -68,7 +71,12 @@
         "message": "Demande confirmation avant de supprimer des éléments"
     },
     "folderyesno": {
-        "message": "Voulez vous supprimer définitivement ces dossiers ?"
+        "message": "Voulez vous supprimer définitivement le dossier $folder$ ?",
+        "placeholders": {
+            "folder": {
+                "content": "$1"
+            }
+        }
     },
     "gotrash": {
         "message": "Voulez vous déplacer ces messages dans la corbeille ?"

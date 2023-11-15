@@ -68,7 +68,12 @@
         "message": "Bestätigungen für Löschvorgänge diverser Elemente"
     },
     "folderyesno": {
-        "message": "Möchten Sie diese(n) Ordner unwideruflich löschen?"
+        "message": "Möchten Sie diesen Ordner $folder$ dauerhaft löschen?",
+        "placeholders": {
+            "folder": {
+                "content": "$1"
+            }
+        }
     },
     "gotrash": {
         "message": "Möchten Sie diese Nachricht(en) in den Papierkorb verschieben?"

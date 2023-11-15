@@ -159,11 +159,15 @@
             "type": "boolean"
           },
           {
-            "name": "array",
-            "type": "object"
+            "name": "targetFolderName",
+            "type": "string"
           },
           {
             "name": "isFolder",
+            "type": "boolean"
+          },
+          {
+            "name": "subFolderOfTrash",
             "type": "boolean"
           }
         ]

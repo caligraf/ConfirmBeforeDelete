@@ -20,6 +20,9 @@
     "CBDcheck4": {
         "message": "Confirm deletion of messages from the trash"
     },
+    "CBDcheckFolderInTrash": {
+        "message": "Confirm deletion of folders from the trash"
+    },
     "CBDcheck5": {
         "message": "OK as default action"
     },
@@ -68,7 +71,12 @@
         "message": "Request confirmation before deletion of items"
     },
     "folderyesno": {
-        "message": "Do you want to permanently delete these folders ?"
+        "message": "Do you want to permanently delete thes folder $folder$ ?",
+        "placeholders": {
+            "folder": {
+                "content": "$1"
+            }
+        }
     },
     "gotrash": {
         "message": "Do you want to move these messages to the trash ?"

@@ -68,7 +68,13 @@
         "message": "Aggiunge la richiesta di conferma per le cancellazioni"
     },
     "folderyesno": {
-        "message": "Cancellare definitivamente queste cartelle?"
+        "message": "Vuoi eliminare definitivamente questa cartella $folder$ ?",
+        "placeholders": {
+            "folder": {
+                "content": "$1"
+            }
+        }
+        
     },
     "gotrash": {
         "message": "Spostare questi messaggi nel cestino?"

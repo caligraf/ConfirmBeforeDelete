@@ -318,8 +318,8 @@
             context,
             name: "DeleteListener.onDrop",
             register(fire) {
-              function callback(event, shiftKey, array, isFolder) {
-                return fire.async(shiftKey, array, isFolder);
+              function callback(event, shiftKey, array, isFolder, subFolderOfTrash) {
+                return fire.async(shiftKey, array, isFolder, subFolderOfTrash);
               }
               messageListListener.on("messagelist-drop", callback);
               return function () {
@@ -564,6 +564,8 @@
       let folderURI = row.uri;
       let targetFolder = MailServices.folderLookup.getFolderForURL(folderURI);
       let isFolderTrash = (targetFolder.flags & 0x00000100);
+      let targetFolderName = '';
+      let subFolderOfTrash = false;
       while(!isFolderTrash) {
           
           let lastSlashIndex = folderURI.lastIndexOf("/");
@@ -571,11 +573,15 @@
           if (lastSlashIndex <= 0)
             break;
 
+          if( targetFolderName == '' )
+              targetFolderName = folderURI.substring(lastSlashIndex + 1, folderURI.length);
           let parentURI = folderURI.substring(0, lastSlashIndex);
           let parentfolder = MailServices.folderLookup.getFolderForURL(parentURI);
           if( !parentfolder ) 
               break;
           isFolderTrash = (parentfolder.flags & 0x00000100);
+          if( isFolderTrash)
+              subFolderOfTrash = true;
           folderURI = parentURI;
       }
       if (isFolderTrash) {
@@ -583,14 +589,14 @@
         // we only lock drag of messages
         const isMessageMovement = dt.types.indexOf('text/x-moz-message') !== -1;
         const isFolderMovement = dt.types.includes("text/x-moz-folder") !== -1;
-        let array = [];
+        //let array = [];
         if (isMessageMovement) {                                  
-            const nbMsg = dt.mozItemCount;
-            let messenger = Cc["@mozilla.org/messenger;1"].createInstance(Ci.nsIMessenger);
-            for (let i = 0; i < nbMsg; i++) {
-                let msgHdr = messenger.msgHdrFromURI(dt.mozGetDataAt("text/x-moz-message", i));
-                array[i] = msgHdr.messageId;
-            }
+            //const nbMsg = dt.mozItemCount;
+            //let messenger = Cc["@mozilla.org/messenger;1"].createInstance(Ci.nsIMessenger);
+            // for (let i = 0; i < nbMsg; i++) {
+                // let msgHdr = messenger.msgHdrFromURI(dt.mozGetDataAt("text/x-moz-message", i));
+                // array[i] = msgHdr.messageId;
+            // }
             
             event.view.document.getElementById("folder-drag-indicator")
             
@@ -598,29 +604,19 @@
                 (el) => el.classList.remove('drop-target')
             );
             
-            // trash is kept selected if drag indicator is not removed
-            // const dragIndicator = self.window.document.getElementById("folder-drag-indicator");
-            // if (dragIndicator) {
-                // dragIndicator.style.display = "none";
-            // }
             event.preventDefault();
             event.stopPropagation(); 
-            messageListListener.emit("messagelist-drop", event.shiftKey, array, false);
+            messageListListener.emit("messagelist-drop", event.shiftKey, targetFolderName, false, subFolderOfTrash);
         } else if( isFolderMovement) {
             let sourceFolder = dt.mozGetDataAt("text/x-moz-folder", 0).QueryInterface(Ci.nsIMsgFolder);
             
-            // trash is kept selected if drag indicator is not removed
-            // const dragIndicator = self.window.document.getElementById("folder-drag-indicator");
-            // if (dragIndicator) {
-                // dragIndicator.style.display = "none";
-            // }
             Array.from(event.view.document.querySelectorAll('.total.drop-target')).forEach(
                 (el) => el.classList.remove('drop-target')
             );
-            
+
             event.preventDefault();
             event.stopPropagation(); // issue trash is kept selected if stop propagation
-            messageListListener.emit("messagelist-drop", event.shiftKey, array, true);
+            messageListListener.emit("messagelist-drop", event.shiftKey, targetFolderName, true, subFolderOfTrash);
         }
       }
   }

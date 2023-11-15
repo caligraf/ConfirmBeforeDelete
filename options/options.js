@@ -16,6 +16,7 @@ function toggleDeleteLock(checked) {
         document.getElementById("CBDMovetoTrash").setAttribute("disabled", "true");
         document.getElementById("CBDMsgTag").setAttribute("disabled", "true");
         document.getElementById("CBDMoveFoldertoTrash").setAttribute("disabled", "true");
+        document.getElementById("CBDcheckFolderInTrash").setAttribute("disabled", "true");
         document.getElementById("CBDtags").setAttribute("disabled", "true");
     } else {
         document.getElementById("CBDConfirmShiftDel").removeAttribute("disabled");
@@ -23,6 +24,7 @@ function toggleDeleteLock(checked) {
         document.getElementById("CBDMovetoTrash").removeAttribute("disabled");
         document.getElementById("CBDMsgTag").removeAttribute("disabled");
         document.getElementById("CBDMoveFoldertoTrash").removeAttribute("disabled");
+        document.getElementById("CBDcheckFolderInTrash").removeAttribute("disabled");
         if (document.getElementById("CBDMsgTag").checked) {
             document.getElementById("CBDtags").removeAttribute("disabled");
         }
@@ -30,11 +32,14 @@ function toggleDeleteLock(checked) {
 }
 
 function toggleFolderLock(checked) {
-    var confirmDeleteFolder = document.getElementById("CBDMoveFoldertoTrash");
+    let confirmDeleteFolder = document.getElementById("CBDMoveFoldertoTrash");
+    let confirmDeleteFolderInTrash = document.getElementById("CBDcheckFolderInTrash");
     if (checked) {
         confirmDeleteFolder.setAttribute("disabled", "true");
+        confirmDeleteFolderInTrash.setAttribute("disabled", "true");
     } else {
         confirmDeleteFolder.removeAttribute("disabled");
+        confirmDeleteFolderInTrash.removeAttribute("disabled");
     }
 }
 
@@ -66,6 +71,7 @@ async function InitCheckBox() {
 
     if (document.getElementById("CBDLockFolders").checked) {
         document.getElementById("CBDMoveFoldertoTrash").setAttribute("disabled", "true");
+        document.getElementById("CBDcheckFolderInTrash").setAttribute("disabled", "true");
     }
     
     let messageTags = await messenger.messages.listTags();
