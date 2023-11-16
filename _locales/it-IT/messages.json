@@ -56,6 +56,17 @@
     "deleteTagLocked2": {
         "message": "è bloccata dall'estensione ConfirmBeforeDelete. Questa opzione può essere modificata dal pannello delle preferenze dell'estensione. https://support.mozilla.org/it/kb/domande-frequenti-componenti-aggiuntivi-thunderbird"
     },
+    "emptyTrashWithFolders": {
+        "message": "Svuotare definitivamente il cestino ( $number$ messaggi e $folders$ cartelle ) ?",
+        "placeholders": {
+            "number": {
+                "content": "$1"
+            },
+            "folders": {
+                "content": "$2"
+            }
+        }
+    },
     "emptytrash": {
         "message": "Svuotare definitivamente il cestino ( $number$ messaggi) ?",
         "placeholders": {

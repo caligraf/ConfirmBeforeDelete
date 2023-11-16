@@ -59,6 +59,17 @@
     "deleteTagLocked2": {
         "message": "est bloquée par l'extension ConfirmBeforeDelete. Vous pouvez modifier ce choix en cliquant sur l'icône de la clé dans le gestionnaire de modules complémentaires. https://support.mozilla.org/fr/kb/faq-modules-complementaires-thunderbird"
     },
+    "emptyTrashWithFolders": {
+        "message": "Voulez vous vider la corbeille ($number$ messages et $folders$ folders ) ?",
+        "placeholders": {
+            "number": {
+                "content": "$1"
+            },
+            "folders": {
+                "content": "$2"
+            }
+        }
+    },
     "emptytrash": {
         "message": "Voulez vous vider la corbeille ($number$ messages) ?",
         "placeholders": {

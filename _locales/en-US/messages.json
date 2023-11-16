@@ -59,6 +59,17 @@
     "deleteTagLocked2": {
         "message": "tag is blocked by the ConfirmBeforeDelete extension. You can change this option by clicking wrench icon in the Add-on Manager. https://support.mozilla.org/en-US/kb/thunderbird-add-ons-frequently-asked-questions"
     },
+    "emptyTrashWithFolders": {
+        "message": "Do you want to empty the trash ( $number$ messages and $folders$ folders ) ?",
+        "placeholders": {
+            "number": {
+                "content": "$1"
+            },
+            "folders": {
+                "content": "$2"
+            }
+        }
+    },
     "emptytrash": {
         "message": "Do you want to empty the trash ( $number$ messages) ?",
         "placeholders": {

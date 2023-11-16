@@ -56,6 +56,17 @@
     "deleteTagLocked2": {
         "message": "wird durch die Erweiterung ConfirmBeforeDelete blockiert. Sie können diese Einstellung in den Eigenschaften der Erweiterung ändern. https://support.mozilla.org/de/kb/add-ons-faq"
     },
+    "emptyTrashWithFolders": {
+        "message": "Möchten Sie den Papierkorb leeren ($number$ Nachrichten und $folders$ Ordner ) ?",
+        "placeholders": {
+            "number": {
+                "content": "$1"
+            },
+            "folders": {
+                "content": "$2"
+            }
+        }
+    },
     "emptytrash": {
         "message": "Möchten Sie den Papierkorb leeren ($number$ Nachrichten) ?",
         "placeholders": {

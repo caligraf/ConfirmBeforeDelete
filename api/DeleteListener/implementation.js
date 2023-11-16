@@ -598,9 +598,18 @@
                 // array[i] = msgHdr.messageId;
             // }
             
-            event.view.document.getElementById("folder-drag-indicator")
+            
+             // trash is kept selected if drag indicator is not removed
+            const dragIndicator = event.view.document.getElementById("folder-drag-indicator")
+            if (dragIndicator) {
+                dragIndicator.style.display = "none";
+            }
             
             Array.from(event.view.document.querySelectorAll('.total.drop-target')).forEach(
+                (el) => el.classList.remove('drop-target')
+            );
+            
+            Array.from(event.view.document.querySelectorAll('.drop-target')).forEach(
                 (el) => el.classList.remove('drop-target')
             );
             
@@ -610,7 +619,17 @@
         } else if( isFolderMovement) {
             let sourceFolder = dt.mozGetDataAt("text/x-moz-folder", 0).QueryInterface(Ci.nsIMsgFolder);
             
+             // trash is kept selected if drag indicator is not removed
+            const dragIndicator = event.view.document.getElementById("folder-drag-indicator")
+            if (dragIndicator) {
+                dragIndicator.style.display = "none";
+            }
+            
             Array.from(event.view.document.querySelectorAll('.total.drop-target')).forEach(
+                (el) => el.classList.remove('drop-target')
+            );
+            
+            Array.from(event.view.document.querySelectorAll('.drop-target')).forEach(
                 (el) => el.classList.remove('drop-target')
             );
 

@@ -69,8 +69,8 @@ async function showAlert(alertMessage) {
      });
 }
 
-async function confirmbeforedelete(type, parameter) {
-    return await prompt4Confirm(messenger.i18n.getMessage(type, parameter));
+async function confirmbeforedelete(type, parameters) {
+    return await prompt4Confirm(messenger.i18n.getMessage(type, parameters));
 }
 
 async function isDeleteLocked(messages) {
@@ -396,6 +396,21 @@ browser.DeleteListener.onFolderDragStart.addListener( async (shiftKey) => {
     }
 });
 
+async function findSubfolder(rootFolder, targetFolderName) {
+    let targetFolder = null;
+    let subFolders = await messenger.folders.getSubFolders(rootFolder);
+    for(let i = 0 ; i < subFolders.length ; i++) {
+        if( subFolders[i].name == targetFolderName ) {
+            targetFolder = subFolders[i];
+            break;
+        }
+        targetFolder = await findSubfolder(subFolders[i], targetFolderName);
+        if( targetFolder )
+            return targetFolder;
+    }
+    return targetFolder;
+}
+
 // listen on drop on folderTree
 browser.DeleteListener.onDrop.addListener( async (shiftKey, targetFolderName, isFolder, subFolderOfTrash) => {
     let targetFolder = null;
@@ -415,7 +430,7 @@ browser.DeleteListener.onDrop.addListener( async (shiftKey, targetFolderName, is
                 }
                 let subfolders = await messenger.folders.getSubFolders(mailAccount.folders[i], true);
                 let k = 0;
-                for(;k<subfolders.length;k++) {
+                for(;k < subfolders.length;k++) {
                     if(subfolders[k].type == "trash" ) {
                         trashFolder = subfolders[k];
                         break;
@@ -426,21 +441,7 @@ browser.DeleteListener.onDrop.addListener( async (shiftKey, targetFolderName, is
             }
             // find the subfolder in trash
             if( i < mailAccount.folders.length) {
-                let subFoldersOfTrash = await messenger.folders.getSubFolders(trashFolder);
-                let j = 0;
-                for( ; j < subFoldersOfTrash.length ; j++) {
-                    if( subFoldersOfTrash[j].name == targetFolderName )
-                        break;
-                }
-                targetFolder = subFoldersOfTrash[j];
-            } else {
-                // target folder not found in trash , use name as a workaround
-                for(let j = 0; j< mailAccount.folders.length; j++) {
-                    if(mailAccount.folders[j].name == targetFolderName ) {
-                        targetFolder = mailAccount.folders[j];
-                        break;
-                    }
-                }
+                targetFolder = await findSubfolder(trashFolder, targetFolderName);
             }
         }
     }
@@ -507,6 +508,24 @@ browser.DeleteListener.onFolderContextMenu.addListener( async (shiftKey) => {
     }
 });
 
+async function deleteSubfolderOfTrash(foldersOfTrash) {
+    if( foldersOfTrash?.length > 0 ) {
+        for(let j = 0; j < foldersOfTrash.length ; j++) {
+            let messageListInSubFolder = await messenger.messages.list(foldersOfTrash[j]);
+            if( messageListInSubFolder?.messages?.length > 0 ) {
+                let messageIdsInSubFolder = [];
+                for(let i =0; i< messageListInSubFolder.messages.length; i++) {
+                    messageIdsInSubFolder.push(messageListInSubFolder.messages[i].id);
+                }
+                messenger.messages.delete(messageIdsInSubFolder, true);
+            }
+            let subfolders = await messenger.folders.getSubFolders(foldersOfTrash[j]);
+            await deleteSubfolderOfTrash(subfolders);
+            messenger.folders.delete(foldersOfTrash[j]);                        
+        }
+    }
+}
+
 // listen on empty trash event
 browser.DeleteListener.onEmptyTrash.addListener( async (shiftKey) => {
     let mailTab = await messenger.mailTabs.getCurrent();
@@ -540,14 +559,19 @@ browser.DeleteListener.onEmptyTrash.addListener( async (shiftKey) => {
     }
     if( trashFolder ) {
         let messageList = await messenger.messages.list(trashFolder);
-        if( messageList?.messages?.length > 0 ) {
+        let subfoldersOfTrash = await messenger.folders.getSubFolders(trashFolder);
+        if( messageList?.messages?.length > 0 || subfoldersOfTrash?.length > 0) {
             let emptyTrash = true;
             let askConfirmEmptyTrash = await getPrefInStorage("extensions.confirmbeforedelete.emptytrash.enable");
             if( askConfirmEmptyTrash) {
                 let addGreatThan = '';
                 if( messageList.id )
                     addGreatThan = '> ';
-                emptyTrash = await confirmbeforedelete('emptytrash', addGreatThan + messageList.messages.length);
+                if( subfoldersOfTrash?.length > 0) {
+                    emptyTrash = await confirmbeforedelete('emptyTrashWithFolders', [ addGreatThan + messageList.messages.length, subfoldersOfTrash.length]);
+                } else {
+                    emptyTrash = await confirmbeforedelete('emptytrash', addGreatThan + messageList.messages.length);
+                }
             }
             if( emptyTrash) {
                 let messageIds = [];
@@ -564,6 +588,8 @@ browser.DeleteListener.onEmptyTrash.addListener( async (shiftKey) => {
                     }
                     messenger.messages.delete(messageIds, true);
                 }
+                
+                await deleteSubfolderOfTrash(subfoldersOfTrash);
             }
         }
     }
