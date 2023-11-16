@@ -127,9 +127,10 @@ async function askUserToConfirmDelete(shiftKey, selectedMessages, moveToSubFolde
         let inTrash = await isMessageInTrash(selectedMessages[0].folder);
         let deleteMessage = false;
         let confirmDeleteInTrash = await getPrefInStorage("extensions.confirmbeforedelete.delete.enable");
-        if (inTrash && confirmDeleteInTrash)
+        if (inTrash && confirmDeleteInTrash) {
             deleteMessage = await confirmbeforedelete('mailyesno');
-        else if (!inTrash) {
+            shiftKey = true; // force delete because message(s) can be in a subfolder of trash, so we want to delete them and not move them in trash root
+        } else if (!inTrash) {
             if( shiftKey ) {
                 let confirmShift = await getPrefInStorage("extensions.confirmbeforedelete.shiftcanc.enable");
                 if( confirmShift )
@@ -162,10 +163,10 @@ async function askUserToConfirmDelete(shiftKey, selectedMessages, moveToSubFolde
 
 // listen on suppr key
 browser.DeleteListener.onSupprPressed.addListener( async (shiftKey, foldertree) => {
-    if( !foldertree ) {
+    if( !foldertree ) { // delete of a message
         let selectedMessages = await messenger.mailTabs.getSelectedMessages();
         await askUserToConfirmDelete(shiftKey, selectedMessages.messages, false , null);
-    } else {
+    } else { // delete of a folder
         let mailTab = await messenger.mailTabs.getCurrent();
         let folderDisplayed = mailTab.displayedFolder;
         let parentFolders = await messenger.folders.getParentFolders(folderDisplayed);
@@ -517,14 +518,25 @@ browser.DeleteListener.onEmptyTrash.addListener( async (shiftKey) => {
         let mailAccount = await messenger.accounts.get(folderDisplayed.accountId,true);
         if( mailAccount.folders) {
             let i = 0;
+            // find the trash
             for(; i< mailAccount.folders.length; i++) {
-                if(mailAccount.folders[i].type == "trash" )
+                if(mailAccount.folders[i].type == "trash" ) {
+                    trashFolder = mailAccount.folders[i];
+                    break;
+                }
+                let subfolders = await messenger.folders.getSubFolders(mailAccount.folders[i], true);
+                let k = 0;
+                for(;k<subfolders.length;k++) {
+                    if(subfolders[k].type == "trash" ) {
+                        trashFolder = subfolders[k];
+                        break;
+                    }
+                }
+                if( k < subfolders.length )
                     break;
             }
-            if( i < mailAccount.folders.length) {
-                trashFolder = mailAccount.folders[i];
-            }
         }
+        
     }
     if( trashFolder ) {
         let messageList = await messenger.messages.list(trashFolder);
