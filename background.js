@@ -152,9 +152,13 @@ async function askUserToConfirmDelete(shiftKey, selectedMessages, moveToSubFolde
                 messagesIds.push(selectedMessages[i].id);
             }
             if( moveToSubFolder) {
-                 messenger.messages.move(messagesIds,targetFolder);
+                messenger.messages.move(messagesIds,targetFolder);
             } else {
                 messenger.messages.delete(messagesIds, shiftKey);
+            }
+            
+            for( let i =0; i < messagesIds.length; i++) {
+                await messenger.messages.update(messagesIds[i], { read:true });
             }
         }
     }
