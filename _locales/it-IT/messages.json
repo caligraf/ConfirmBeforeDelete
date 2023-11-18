@@ -20,6 +20,9 @@
     "CBDcheck4": {
         "message": "Chiedere la conferma per l'eliminazione di messaggi dal cestino"
     },
+    "CBDcheckFolderInTrash": {
+        "message": "Conferma l'eliminazione delle cartelle dal cestino"
+    },
     "CBDcheck5": {
         "message": "Impostare 'OK' come azione predefinita"
     },

@@ -20,6 +20,9 @@
     "CBDcheck4": {
         "message": "Löschen von Nachrichten aus dem Papierkorb bestätigen"
     },
+    "CBDcheckFolderInTrash": {
+        "message": "Löschen von Ordnern aus dem Papierkorb bestätigen"
+    },
     "CBDcheck5": {
         "message": "&quot;OK&quot; als Standardaktion festlegen"
     },
