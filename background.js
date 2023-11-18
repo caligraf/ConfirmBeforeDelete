@@ -35,8 +35,8 @@ async function prompt4Confirm(message) {
          messenger.windows.create({
              type: "popup",
              url: "prompt4Confirm/prompt.html?message="+message,
-             height: 150,
-             width: 450
+             height: 160,
+             width: 480
          });
     });
 }

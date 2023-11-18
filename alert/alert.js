@@ -13,10 +13,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const message = urlParams.get('message');
     document.getElementById("alertMessage").textContent = message;
     
-     document.addEventListener('keyup', (e) => {
-        if (e.key === "Enter" || e.key === "Escape") 
-            messenger.runtime.sendMessage({ command: "prompt.clickOk" });
-     });
+    document.addEventListener('keyup', (e) => {
+       if (e.key === "Enter" || e.key === "Escape") 
+           messenger.runtime.sendMessage({ command: "prompt.clickOk" });
+    });
+     
+    document.getElementById("button-ok").focus();
 }, {
     once: true
 });

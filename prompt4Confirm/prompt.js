@@ -25,9 +25,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     if( cancelDefaultButton ) {
         document.getElementById("button-cancel").style.backgroundColor="#1373d9";
         document.getElementById("button-cancel").style.color="white";
+        document.getElementById("button-cancel").focus();
     } else {
         document.getElementById("button-ok").style.backgroundColor="#1373d9";
         document.getElementById("button-ok").style.color="white";
+        document.getElementById("button-ok").focus();
     }
     
     document.addEventListener('keyup', (e) => {
@@ -37,9 +39,14 @@ document.addEventListener('DOMContentLoaded', async () => {
             messenger.runtime.sendMessage({ command: "prompt.clickCancel" });
         } else if (e.key === "Escape") {
             messenger.runtime.sendMessage({ command: "prompt.clickCancel" });
+        } else if (e.key === "ArrowLeft") {
+            document.getElementById("button-ok").focus();
+        } else if (e.key === "ArrowRight") {
+            document.getElementById("button-cancel").focus();
         }
     });
-    document.getElementById("confirmMesssage").textContent = message;
+    document.getElementById("confirmMesssage").textContent = message;  
+    
 }, {
     once: true
 });
