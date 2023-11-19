@@ -318,8 +318,8 @@
             context,
             name: "DeleteListener.onDrop",
             register(fire) {
-              function callback(event, shiftKey, array, isFolder, subFolderOfTrash) {
-                return fire.async(shiftKey, array, isFolder, subFolderOfTrash);
+              function callback(event, shiftKey, array, isFolder, subFolderOfTrash, nbMsg, firstMessageId) {
+                return fire.async(shiftKey, array, isFolder, subFolderOfTrash, nbMsg, firstMessageId);
               }
               messageListListener.on("messagelist-drop", callback);
               return function () {
@@ -589,10 +589,15 @@
         // we only lock drag of messages
         const isMessageMovement = dt.types.indexOf('text/x-moz-message') !== -1;
         const isFolderMovement = dt.types.includes("text/x-moz-folder") !== -1;
-        //let array = [];
+        
         if (isMessageMovement) {                                  
-            //const nbMsg = dt.mozItemCount;
-            //let messenger = Cc["@mozilla.org/messenger;1"].createInstance(Ci.nsIMessenger);
+            const nbMsg = dt.mozItemCount;
+            let firstMessageId = null;
+            let messenger = Cc["@mozilla.org/messenger;1"].createInstance(Ci.nsIMessenger);
+            if( nbMsg == 1) {
+                let msgHdr = messenger.msgHdrFromURI(dt.mozGetDataAt("text/x-moz-message", 0));
+                firstMessageId = msgHdr.messageId;
+            }
             // for (let i = 0; i < nbMsg; i++) {
                 // let msgHdr = messenger.msgHdrFromURI(dt.mozGetDataAt("text/x-moz-message", i));
                 // array[i] = msgHdr.messageId;
@@ -615,7 +620,7 @@
             
             event.preventDefault();
             event.stopPropagation(); 
-            messageListListener.emit("messagelist-drop", event.shiftKey, targetFolderName, false, subFolderOfTrash);
+            messageListListener.emit("messagelist-drop", event.shiftKey, targetFolderName, false, subFolderOfTrash, nbMsg, firstMessageId);
         } else if( isFolderMovement) {
             let sourceFolder = dt.mozGetDataAt("text/x-moz-folder", 0).QueryInterface(Ci.nsIMsgFolder);
             
@@ -635,7 +640,7 @@
 
             event.preventDefault();
             event.stopPropagation(); // issue trash is kept selected if stop propagation
-            messageListListener.emit("messagelist-drop", event.shiftKey, targetFolderName, true, subFolderOfTrash);
+            messageListListener.emit("messagelist-drop", event.shiftKey, targetFolderName, true, subFolderOfTrash, 0, null);
         }
       }
   }

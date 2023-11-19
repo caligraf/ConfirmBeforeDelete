@@ -413,7 +413,7 @@ async function findSubfolder(rootFolder, targetFolderName) {
 }
 
 // listen on drop on folderTree
-browser.DeleteListener.onDrop.addListener( async (shiftKey, targetFolderName, isFolder, subFolderOfTrash) => {
+browser.DeleteListener.onDrop.addListener( async (shiftKey, targetFolderName, isFolder, subFolderOfTrash, nbMsg, firstMessageId) => {
     let targetFolder = null;
     let mailTab = await messenger.mailTabs.getCurrent();
     let folderDisplayed = mailTab.displayedFolder;
@@ -466,6 +466,19 @@ browser.DeleteListener.onDrop.addListener( async (shiftKey, targetFolderName, is
         }
     } else {
         let selectedMessages = await messenger.mailTabs.getSelectedMessages();
+        //TODO : handle case of more than 100 messages selected
+        if( nbMsg == 1) { 
+            // drag message can be not selected
+            if( selectedMessages.messages.length == 0 || selectedMessages.messages[0].headerMessageId !== firstMessageId ) {
+                let foundMessages = await messenger.messages.query({headerMessageId: firstMessageId, folder: folderDisplayed});
+                if( foundMessages.messages.length == 1) {
+                    selectedMessages = foundMessages;
+                } else {
+                    await showAlert("ConfirmBeforeDelete error: selected message to delete not found. Try again: selecting first the message and next drag and drop it to trash or use another method ( Del key, context menu ...)");
+                    return;
+                }
+            }
+        }
         if( !subFolderOfTrash ) {
             await askUserToConfirmDelete(shiftKey, selectedMessages.messages, false, null);
         } else {
