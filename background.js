@@ -609,39 +609,7 @@ browser.DeleteListener.onEmptyTrash.addListener( async (shiftKey) => {
     }
 });
 
-// move preference in local storage, if not exists set value to defaultValue
-async function moveToStorage(prefName, defaultValue) {
-    let prefValue = await messenger.LegacyPrefs.getPref(prefName);
-    let prefObj = {};
-    if (prefValue) {
-        prefObj[prefName] = prefValue;
-    } else {
-        prefObj[prefName] = defaultValue;
-    }
-    await browser.storage.local.set(prefObj);
-}
-
 async function main() {
-    // move preferences in local storage
-    let isPreferencesMigrated = await browser.storage.local.get({
-            CBDMigrated: false
-        });
-    if (!isPreferencesMigrated.CBDMigrated) {
-        await moveToStorage("extensions.confirmbeforedelete.emptytrash.enable", true);
-        await moveToStorage("extensions.confirmbeforedelete.shiftcanc.enable", true);
-        await moveToStorage("extensions.confirmbeforedelete.delete.enable", true);
-        await moveToStorage("extensions.confirmbeforedelete.default.cancel", true);
-        await moveToStorage("extensions.confirmbeforedelete.calendar.enable", true);
-        await moveToStorage("extensions.confirmbeforedelete.gotrash.enable", true);
-        await moveToStorage("extensions.confirmbeforedelete.folders.lock", false);
-        await moveToStorage("extensions.confirmbeforedelete.delete.lock", false);
-        await moveToStorage("extensions.confirmbeforedelete.protect.enable", false);
-        await moveToStorage("extensions.confirmbeforedelete.moveFoldersToTrash.enable", false);
-        await moveToStorage("extensions.confirmbeforedelete.protect.tag", "$label1");
-        await moveToStorage("extensions.confirmbeforedelete.folderInTrash.enable", false);
-        await setPrefInStorage("CBDMigrated", true);
-    }
-
 
     messenger.tabs.onCreated.addListener((tab) => {
         if( tab.type === "messageDisplay" || tab.type === "mail" ) {

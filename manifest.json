@@ -3,14 +3,14 @@
     "applications": {
         "gecko": {
             "id": "confirmbeforedelete@caligraf",
-            "strict_min_version": "115.0",
-            "strict_max_version": "115.*"
+            "strict_min_version": "137.0",
+            "strict_max_version": "137.*"
         }
     },
     "name": "ConfirmBeforeDelete",
     "description": "Ask a confirm before to delete some items",
     "author": "Caligraf",
-    "version": "1.9.3",
+    "version": "1.9.4",
     "default_locale": "en-US",
     "homepage_url": "https://github.com/caligraf/ConfirmBeforeDelete/wiki",
     "icons": {
@@ -24,6 +24,7 @@
     },
     "permissions": [
         "messagesRead",
+        "messagesUpdate",
         "storage",
         "tabs",
         "activeTab",
@@ -34,14 +35,6 @@
         "messagesMove"
     ],
     "experiment_apis": {
-      "LegacyPrefs": {
-            "schema": "api/LegacyPrefs/schema.json",
-            "parent": {
-                "scopes": ["addon_parent"],
-                "paths": [["LegacyPrefs"]],
-                "script": "api/LegacyPrefs/implementation.js"
-            }
-      },
       "DeleteListener": {
           "schema": "api/DeleteListener/schema.json",
           "parent": {

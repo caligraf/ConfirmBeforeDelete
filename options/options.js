@@ -54,15 +54,6 @@ function toggleTag(checked) {
 
 
 async function InitCheckBox() {
-    let nativeShiftDelete = await browser.LegacyPrefs.getPref("mail.warn_on_shift_delete");
-    if (nativeShiftDelete) {
-        document.getElementById("CBDConfirmShiftDel").checked = true;
-    }
-    let nativeEmptyTrash = await browser.LegacyPrefs.getPref("mailnews.emptyTrash.dontAskAgain");
-    if (!nativeEmptyTrash) {
-        document.getElementById("CBDEmptyTrashConfirmation").checked = true;
-    }
-
     if (document.getElementById("CBDBlockMsgDeletion").checked) {
         document.getElementById("CBDConfirmShiftDel").setAttribute("disabled", "true");
         document.getElementById("CBDMsgInTrashConfirmation").setAttribute("disabled", "true");
