@@ -609,8 +609,31 @@ browser.DeleteListener.onEmptyTrash.addListener( async (shiftKey) => {
     }
 });
 
+async function setDefaults(prefName, defaultValue) {
+    let prefValue = await browser.storage.local
+        .get({ [prefName] : null })
+        .then(rv => rv[prefName]);
+    if (prefValue === null) {
+        await browser.storage.local.set({ [prefName] : defaultValue });
+    }
+}
+
+
 async function main() {
 
+    await setDefaults("extensions.confirmbeforedelete.emptytrash.enable", true);
+    await setDefaults("extensions.confirmbeforedelete.shiftcanc.enable", true);
+    await setDefaults("extensions.confirmbeforedelete.delete.enable", true);
+    await setDefaults("extensions.confirmbeforedelete.default.cancel", true);
+    await setDefaults("extensions.confirmbeforedelete.calendar.enable", true);
+    await setDefaults("extensions.confirmbeforedelete.gotrash.enable", true);
+    await setDefaults("extensions.confirmbeforedelete.folders.lock", false);
+    await setDefaults("extensions.confirmbeforedelete.delete.lock", false);
+    await setDefaults("extensions.confirmbeforedelete.protect.enable", false);
+    await setDefaults("extensions.confirmbeforedelete.moveFoldersToTrash.enable", false);
+    await setDefaults("extensions.confirmbeforedelete.protect.tag", "$label1");
+    await setDefaults("extensions.confirmbeforedelete.folderInTrash.enable", false);
+         
     messenger.tabs.onCreated.addListener((tab) => {
         if( tab.type === "messageDisplay" || tab.type === "mail" ) {
             messenger.DeleteListener.initTab(tab.id, (tab.type === "mail"));
